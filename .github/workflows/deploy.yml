@@ -1,0 +1,57 @@
+name: CI · Validación
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  php-lint:
+    name: Sintaxis PHP (php -l)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: pdo_mysql, mysqli, mbstring
+
+      - name: Validar sintaxis de todos los .php
+        run: |
+          err=0
+          while IFS= read -r -d '' f; do
+            php -l "$f" || err=1
+          done < <(find backend -name '*.php' -print0)
+          if [ "$err" -ne 0 ]; then
+            echo "::error::Se encontraron errores de sintaxis en PHP."
+            exit 1
+          fi
+          echo "Todos los archivos PHP tienen sintaxis válida."
+
+  json-lint:
+    name: JSON (workflows n8n + vercel.json)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validar JSON
+        run: |
+          err=0
+          for f in n8n/workflows/*.json frontend/vercel.json; do
+            node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" \
+              && echo "OK  $f" || { echo "FAIL $f"; err=1; }
+          done
+          exit $err
+
+  sql-check:
+    name: DDL presente
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verificar que el DDL existe y no está vacío
+        run: |
+          test -s database/gastrodigest.sql || { echo "::error::Falta database/gastrodigest.sql"; exit 1; }
+          echo "DDL presente."

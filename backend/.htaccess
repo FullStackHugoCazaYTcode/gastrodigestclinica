@@ -1,0 +1,24 @@
+# GastroDigest — Enrutamiento Apache hacia el front-controller.
+# Toda llamada /api/* que no corresponda a un archivo real se entrega a api/index.php.
+
+RewriteEngine On
+
+# No reescribir archivos ni directorios existentes.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Enrutar el API al front-controller.
+RewriteRule ^api(/.*)?$ api/index.php [QSA,L]
+
+# Cabeceras de seguridad básicas.
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "DENY"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Bloquear acceso directo a archivos sensibles.
+<FilesMatch "\.(env|sql|md)$">
+    Require all denied
+</FilesMatch>

@@ -1,0 +1,62 @@
+{
+  "name": "GastroDigest · 03 · Recordatorio interactivo (Schedule + MySQL)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "days", "triggerAtHour": 9 }] }
+      },
+      "id": "node-schedule",
+      "name": "Cada dia 09:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 320]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT c.id_cita, p.telefono, CONCAT(p.nombres,' ',p.apellidos) AS paciente, DATE_FORMAT(c.fecha_hora, '%d/%m/%Y %H:%i') AS fecha_hora FROM Citas c JOIN Pacientes p ON p.id_paciente = c.id_paciente WHERE c.estado_actual IN ('RESERVADA_WEB','CONFIRMADA_WSP') AND DATE(c.fecha_hora) = DATE_ADD(CURDATE(), INTERVAL 1 DAY)",
+        "options": {}
+      },
+      "id": "node-mysql",
+      "name": "Citas de manana",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [520, 320]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $env.WHATSAPP_PHONE_NUMBER_ID }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "=Bearer {{ $env.WHATSAPP_API_TOKEN }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"messaging_product\": \"whatsapp\", \"to\": \"{{ $json.telefono }}\", \"type\": \"interactive\", \"interactive\": { \"type\": \"button\", \"body\": { \"text\": \"Hola {{ $json.paciente }}, le recordamos su cita en GastroDigest el {{ $json.fecha_hora }}. Que desea hacer?\" }, \"action\": { \"buttons\": [ { \"type\": \"reply\", \"reply\": { \"id\": \"1_{{ $json.id_cita }}\", \"title\": \"Confirmar\" } }, { \"type\": \"reply\", \"reply\": { \"id\": \"2_{{ $json.id_cita }}\", \"title\": \"Reprogramar\" } }, { \"type\": \"reply\", \"reply\": { \"id\": \"3_{{ $json.id_cita }}\", \"title\": \"Cancelar\" } } ] } } }",
+        "options": {}
+      },
+      "id": "node-wsp-recordatorio",
+      "name": "Enviar recordatorio (1/2/3)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [820, 320],
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "connections": {
+    "Cada dia 09:00": {
+      "main": [[{ "node": "Citas de manana", "type": "main", "index": 0 }]]
+    },
+    "Citas de manana": {
+      "main": [[{ "node": "Enviar recordatorio (1/2/3)", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "pinData": {},
+  "tags": [{ "name": "gastrodigest" }]
+}

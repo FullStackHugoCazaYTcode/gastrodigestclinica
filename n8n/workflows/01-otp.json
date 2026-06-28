@@ -1,0 +1,99 @@
+{
+  "name": "GastroDigest · 01 · OTP (WhatsApp + fallback SMTP)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "otp",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "node-webhook-otp",
+      "name": "Recibir OTP (PHP)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 320],
+      "webhookId": "gastrodigest-otp"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $env.WHATSAPP_PHONE_NUMBER_ID }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "=Bearer {{ $env.WHATSAPP_API_TOKEN }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"messaging_product\": \"whatsapp\", \"to\": \"{{ $('Recibir OTP (PHP)').item.json.body.telefono }}\", \"type\": \"text\", \"text\": { \"body\": \"GastroDigest: tu codigo de verificacion es {{ $('Recibir OTP (PHP)').item.json.body.codigo }}. Vence en 5 minutos. No lo compartas con nadie.\" } }",
+        "options": {}
+      },
+      "id": "node-http-whatsapp",
+      "name": "Enviar WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [540, 320],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"success\": true, \"message\": \"OTP enviado por WhatsApp\", \"canal\": \"whatsapp\" }",
+        "options": {}
+      },
+      "id": "node-respond-ok",
+      "name": "Responder OK (WhatsApp)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [860, 200]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.SMTP_FROM }}",
+        "toEmail": "={{ $('Recibir OTP (PHP)').item.json.body.correo }}",
+        "subject": "Tu codigo de verificacion · GastroDigest",
+        "emailFormat": "text",
+        "text": "=Tu codigo de verificacion es {{ $('Recibir OTP (PHP)').item.json.body.codigo }}. Vence en 5 minutos.\n\nClinica GastroDigest",
+        "options": {}
+      },
+      "id": "node-smtp-fallback",
+      "name": "Fallback SMTP",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [860, 440]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"success\": true, \"message\": \"WhatsApp fallo; OTP enviado por correo\", \"canal\": \"email\" }",
+        "options": {}
+      },
+      "id": "node-respond-email",
+      "name": "Responder OK (Email)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1140, 440]
+    }
+  ],
+  "connections": {
+    "Recibir OTP (PHP)": {
+      "main": [[{ "node": "Enviar WhatsApp", "type": "main", "index": 0 }]]
+    },
+    "Enviar WhatsApp": {
+      "main": [
+        [{ "node": "Responder OK (WhatsApp)", "type": "main", "index": 0 }],
+        [{ "node": "Fallback SMTP", "type": "main", "index": 0 }]
+      ]
+    },
+    "Fallback SMTP": {
+      "main": [[{ "node": "Responder OK (Email)", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "pinData": {},
+  "tags": [{ "name": "gastrodigest" }]
+}

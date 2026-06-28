@@ -1,0 +1,78 @@
+/* =====================================================================
+   GastroDigest · Design Tokens (Sección 6 — Identidad Visual Clínica)
+   Estilo: Soft UI Evolution · Minimalista moderno · WCAG AA
+   ===================================================================== */
+:root {
+  /* ---- Paleta ---- */
+  --color-primary:      #1A6B9A;   /* azul médico, confianza */
+  --color-primary-600:  #155B85;
+  --color-primary-700:  #114C70;
+  --color-primary-50:   #EAF3F8;
+  --color-secondary:    #2EAD8E;   /* verde salud, bienestar */
+  --color-secondary-50: #E7F6F1;
+  --color-cta:          #F97316;   /* naranja, acciones principales */
+  --color-cta-600:      #EA670C;
+
+  --color-bg:           #F8FAFC;   /* fondo limpio */
+  --color-surface:      #FFFFFF;
+  --color-surface-alt:  #F1F5F9;
+  --color-text:         #1E293B;   /* alta legibilidad */
+  --color-text-muted:   #64748B;
+  --color-border:       #E2E8F0;
+
+  --color-error:        #EF4444;
+  --color-error-50:     #FEF2F2;
+  --color-success:      #22C55E;
+  --color-success-50:   #F0FDF4;
+  --color-warning:      #F59E0B;
+  --color-warning-50:   #FFFBEB;
+
+  /* ---- Tipografía · Inter · escala modular 1.25 desde 16px ---- */
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --text-xs:   0.8rem;     /* 12.8px */
+  --text-sm:   0.9rem;     /* 14.4px */
+  --text-base: 1rem;       /* 16px   */
+  --text-lg:   1.25rem;    /* 20px   */
+  --text-xl:   1.5625rem;  /* 25px   */
+  --text-2xl:  1.9531rem;  /* 31.25px*/
+  --text-3xl:  2.4414rem;  /* 39px   */
+  --leading:        1.6;
+  --leading-tight:  1.2;
+  --weight-normal:  400;
+  --weight-medium:  500;
+  --weight-semibold:600;
+  --weight-bold:    700;
+
+  /* ---- Espaciado ---- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-8: 3rem;
+  --space-10: 4rem;
+
+  /* ---- Radios ---- */
+  --radius-sm:   8px;
+  --radius:      12px;   /* cards (Sección 6) */
+  --radius-lg:   16px;
+  --radius-full: 999px;
+
+  /* ---- Sombras suaves (Soft UI) ---- */
+  --shadow-sm:    0 1px 2px rgba(15, 23, 42, 0.06), 0 1px 1px rgba(15, 23, 42, 0.04);
+  --shadow:       0 6px 20px -6px rgba(26, 107, 154, 0.16), 0 2px 6px -2px rgba(15, 23, 42, 0.06);
+  --shadow-lg:    0 18px 40px -12px rgba(26, 107, 154, 0.26), 0 6px 14px -6px rgba(15, 23, 42, 0.10);
+  --shadow-focus: 0 0 0 3px rgba(26, 107, 154, 0.28);
+  --shadow-error-focus: 0 0 0 3px rgba(239, 68, 68, 0.25);
+
+  /* ---- Movimiento ---- */
+  --duration-fast: 150ms;
+  --duration:      200ms;
+  --duration-slow: 320ms;
+  --ease:          cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ---- Layout ---- */
+  --container: 1120px;
+  --header-h:  68px;
+}

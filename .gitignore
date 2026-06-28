@@ -1,0 +1,26 @@
+# === Secretos / entorno (NUNCA versionar) ===
+.env
+.env.*
+!.env.example
+
+# === Logs ===
+*.log
+backend/logs/
+
+# === Dependencias ===
+/node_modules/
+/vendor/
+
+# === n8n (datos locales) ===
+n8n/.n8n/
+n8n/data/
+
+# === Sistema operativo / IDE ===
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# === Tooling local (agente / preview) ===
+.claude/

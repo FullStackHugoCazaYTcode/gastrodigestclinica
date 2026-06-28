@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GastroDigest · Reserva de citas</title>
+  <meta name="description" content="Clínica Gastroenterológica GastroDigest — reserva de citas en línea, validación de identidad y portal del paciente." />
+  <meta name="theme-color" content="#1A6B9A" />
+
+  <!-- Tipografía Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+</head>
+<body>
+  <a class="skip-link" href="#app">Saltar al contenido</a>
+
+  <!-- ===== Navbar con espacio para el logo "I.S." ===== -->
+  <header class="navbar">
+    <div class="container navbar__inner">
+      <a class="brand" href="/" data-link aria-label="GastroDigest — inicio">
+        <!-- Espacio reservado para el logotipo oficial de Ingeniería de Sistemas -->
+        <span class="brand__logo" aria-hidden="true">I.S.</span>
+        <span class="brand__text">
+          <span class="brand__name">GastroDigest</span>
+          <span class="brand__sub">Clínica Gastroenterológica</span>
+        </span>
+      </a>
+      <nav aria-label="Navegación principal">
+        <ul class="nav-links" id="nav-links"><!-- inyectado por app.js --></ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== Contenido (vistas montadas aquí) ===== -->
+  <main>
+    <div class="container" id="app" tabindex="-1"></div>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span>© <span id="year"></span> GastroDigest · Huánuco, Perú</span>
+      <span>Datos protegidos conforme a la Ley N.° 29733 · Escuela Profesional de Ingeniería de Sistemas (I.S.)</span>
+    </div>
+  </footer>
+
+  <!-- Raíces de feedback (sin alert nativo) -->
+  <div class="toast-root" id="toast-root" aria-live="polite" aria-atomic="false"></div>
+  <div id="modal-root"></div>
+
+  <!-- Configuración de entorno (regenerada en build de Vercel) -->
+  <script src="js/config.js"></script>
+  <!-- Aplicación (módulos ES) -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

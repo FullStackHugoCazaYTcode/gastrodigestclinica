@@ -1,0 +1,204 @@
+{
+  "name": "GastroDigest · 02 · Respuesta del paciente (1/2/3)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "whatsapp-respuesta",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "node-webhook-in",
+      "name": "Recibir respuesta WhatsApp",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [220, 360],
+      "webhookId": "gastrodigest-wsp-in"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Normaliza el payload entrante de WhatsApp Cloud API.\n// El id de la respuesta de boton viene como \"<opcion>_<id_cita>\" (ver workflow 03).\nconst msg = $json.body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0] ?? {};\nconst replyId = msg?.interactive?.button_reply?.id ?? msg?.button?.payload ?? $json.body?.opcion_id ?? '';\nconst telefono = msg?.from ?? $json.body?.telefono ?? '';\nconst [opcion, idCita] = String(replyId).split('_');\nreturn [{ json: { opcion: opcion ?? '', id_cita: Number(idCita) || null, telefono } }];"
+      },
+      "id": "node-normalizar",
+      "name": "Normalizar respuesta",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 360]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": { "caseSensitive": true, "typeValidation": "loose" },
+                "conditions": [
+                  { "leftValue": "={{ $json.opcion }}", "rightValue": "1", "operator": { "type": "string", "operation": "equals" } }
+                ],
+                "combinator": "and"
+              },
+              "outputKey": "Confirmar"
+            },
+            {
+              "conditions": {
+                "options": { "caseSensitive": true, "typeValidation": "loose" },
+                "conditions": [
+                  { "leftValue": "={{ $json.opcion }}", "rightValue": "2", "operator": { "type": "string", "operation": "equals" } }
+                ],
+                "combinator": "and"
+              },
+              "outputKey": "Reprogramar"
+            },
+            {
+              "conditions": {
+                "options": { "caseSensitive": true, "typeValidation": "loose" },
+                "conditions": [
+                  { "leftValue": "={{ $json.opcion }}", "rightValue": "3", "operator": { "type": "string", "operation": "equals" } }
+                ],
+                "combinator": "and"
+              },
+              "outputKey": "Cancelar"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "node-switch",
+      "name": "Segun opcion",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [720, 360]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ $env.PHP_API_BASE_URL }}/api/citas/webhook-wsp",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "X-Webhook-Secret", "value": "={{ $env.N8N_WEBHOOK_SECRET }}" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"id_cita\": {{ $('Normalizar respuesta').item.json.id_cita }}, \"estado\": \"CONFIRMADA_WSP\", \"detalle\": \"Paciente confirmo por WhatsApp\" }",
+        "options": {}
+      },
+      "id": "node-confirmar",
+      "name": "PHP · Confirmar",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1000, 180]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.PHP_API_BASE_URL }}/api/citas/reprogramacion",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "X-Webhook-Secret", "value": "={{ $env.N8N_WEBHOOK_SECRET }}" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"id_cita\": {{ $('Normalizar respuesta').item.json.id_cita }} }",
+        "options": {}
+      },
+      "id": "node-reprogramar",
+      "name": "PHP · Generar link reprog.",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1000, 360]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $env.WHATSAPP_PHONE_NUMBER_ID }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "=Bearer {{ $env.WHATSAPP_API_TOKEN }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"messaging_product\": \"whatsapp\", \"to\": \"{{ $('Normalizar respuesta').item.json.telefono }}\", \"type\": \"text\", \"text\": { \"body\": \"Para reprogramar tu cita ingresa aqui: {{ $json.data.link }}\" } }",
+        "options": {}
+      },
+      "id": "node-enviar-link",
+      "name": "Enviar link de reprog.",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1280, 360]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ $env.PHP_API_BASE_URL }}/api/citas/webhook-wsp",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "X-Webhook-Secret", "value": "={{ $env.N8N_WEBHOOK_SECRET }}" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"id_cita\": {{ $('Normalizar respuesta').item.json.id_cita }}, \"estado\": \"CANCELADA_PACIENTE\", \"detalle\": \"Paciente cancelo por WhatsApp\" }",
+        "options": {}
+      },
+      "id": "node-cancelar",
+      "name": "PHP · Cancelar",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1000, 540]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"success\": true, \"message\": \"Respuesta procesada\" }",
+        "options": {}
+      },
+      "id": "node-respond",
+      "name": "Responder n8n",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1560, 360]
+    }
+  ],
+  "connections": {
+    "Recibir respuesta WhatsApp": {
+      "main": [[{ "node": "Normalizar respuesta", "type": "main", "index": 0 }]]
+    },
+    "Normalizar respuesta": {
+      "main": [[{ "node": "Segun opcion", "type": "main", "index": 0 }]]
+    },
+    "Segun opcion": {
+      "main": [
+        [{ "node": "PHP · Confirmar", "type": "main", "index": 0 }],
+        [{ "node": "PHP · Generar link reprog.", "type": "main", "index": 0 }],
+        [{ "node": "PHP · Cancelar", "type": "main", "index": 0 }]
+      ]
+    },
+    "PHP · Confirmar": {
+      "main": [[{ "node": "Responder n8n", "type": "main", "index": 0 }]]
+    },
+    "PHP · Generar link reprog.": {
+      "main": [[{ "node": "Enviar link de reprog.", "type": "main", "index": 0 }]]
+    },
+    "Enviar link de reprog.": {
+      "main": [[{ "node": "Responder n8n", "type": "main", "index": 0 }]]
+    },
+    "PHP · Cancelar": {
+      "main": [[{ "node": "Responder n8n", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "pinData": {},
+  "tags": [{ "name": "gastrodigest" }]
+}
