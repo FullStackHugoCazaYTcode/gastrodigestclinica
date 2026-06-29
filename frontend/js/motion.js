@@ -6,7 +6,6 @@
 
 let gsap = null;
 let ScrollTrigger = null;
-let lenis = null;
 let _resolveReady;
 
 /** Se resuelve cuando initMotion termina (con o sin GSAP). Las vistas la esperan antes de animar. */
@@ -26,14 +25,7 @@ export async function initMotion() {
     const st = await import("https://esm.sh/gsap@3.12.5/ScrollTrigger");
     ScrollTrigger = st.ScrollTrigger || st.default;
     gsap.registerPlugin(ScrollTrigger);
-
-    const L = await import("https://esm.sh/lenis@1.1.13");
-    const Lenis = L.default || L.Lenis;
-    lenis = new Lenis({ duration: 1.1, smoothWheel: true });
-    window.__lenis = lenis; // handle para scroll programático (verificación)
-    const raf = (t) => { lenis.raf(t); requestAnimationFrame(raf); };
-    requestAnimationFrame(raf);
-    lenis.on("scroll", () => ScrollTrigger.update());
+    // Scroll nativo (sin Lenis): respuesta inmediata de la rueda, sin lag.
   } catch (e) {
     console.warn("[motion] modo estático:", e?.message ?? e);
     gsap = null;

@@ -10,8 +10,8 @@
   --color-primary-50:   #EAF3F8;
   --color-secondary:    #2EAD8E;   /* verde salud, bienestar */
   --color-secondary-50: #E7F6F1;
-  --color-cta:          #F97316;   /* naranja, acciones principales */
-  --color-cta-600:      #EA670C;
+  --color-cta:          #C2410C;   /* naranja, acciones principales (AA: texto blanco 5.18:1) */
+  --color-cta-600:      #9A3412;
 
   --color-bg:           #F8FAFC;   /* fondo limpio */
   --color-surface:      #FFFFFF;
