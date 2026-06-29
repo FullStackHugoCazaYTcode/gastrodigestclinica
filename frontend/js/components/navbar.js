@@ -24,8 +24,8 @@ export function renderNavbar() {
           <span class="brand__sub">Clínica Gastroenterológica</span>
         </span>
       </a>
-      <button class="navbar__toggle" aria-label="Abrir menú" aria-expanded="false">${icon("menu", 24)}</button>
-      <nav class="navbar__menu" aria-label="Navegación principal">
+      <button class="navbar__toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="navbar-menu">${icon("menu", 24)}</button>
+      <nav class="navbar__menu" id="navbar-menu" aria-label="Navegación principal">
         <ul class="nav-links">
           ${LINKS.map(([h, t]) => `<li><a href="${h}" data-link>${t}</a></li>`).join("")}
         </ul>

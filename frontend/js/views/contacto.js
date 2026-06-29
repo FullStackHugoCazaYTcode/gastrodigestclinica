@@ -3,7 +3,7 @@
 // =====================================================================
 import { mountFull, icon } from "../ui.js";
 import { auroraHTML } from "../components/aurora.js";
-import { revealOnScroll } from "../motion.js";
+import { revealOnScroll, motionReady } from "../motion.js";
 
 export function renderContacto() {
   mountFull(`
@@ -28,10 +28,11 @@ export function renderContacto() {
         <div class="contact__map" data-reveal>
           <iframe title="Ubicación de GastroDigest en Huánuco"
             src="https://www.google.com/maps?q=Huanuco,Peru&output=embed"
-            loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+            tabindex="-1" sandbox="allow-scripts allow-same-origin"></iframe>
         </div>
       </div>
     </section>
   `);
-  revealOnScroll();
+  motionReady.then(() => revealOnScroll());
 }

@@ -3,7 +3,7 @@
 // =====================================================================
 import { mountFull, icon } from "../ui.js";
 import { auroraHTML } from "../components/aurora.js";
-import { revealOnScroll } from "../motion.js";
+import { revealOnScroll, motionReady } from "../motion.js";
 import { faqHTML, wireFaq, injectFaqJsonLd } from "../components/faq.js";
 
 const SERVICIOS = [
@@ -47,5 +47,5 @@ export function renderServicios() {
 
   wireFaq();
   injectFaqJsonLd();
-  revealOnScroll();
+  motionReady.then(() => revealOnScroll());
 }

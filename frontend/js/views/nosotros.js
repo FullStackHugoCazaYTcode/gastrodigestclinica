@@ -3,7 +3,7 @@
 // =====================================================================
 import { mountFull, icon } from "../ui.js";
 import { auroraHTML } from "../components/aurora.js";
-import { revealOnScroll, countUp } from "../motion.js";
+import { revealOnScroll, countUp, motionReady } from "../motion.js";
 
 const RAZONES = [
   ["sparkles", "Tecnología de punta", "Equipos modernos de endoscopía y diagnóstico para resultados precisos."],
@@ -64,7 +64,7 @@ export function renderNosotros() {
       </div>
     </section>
 
-    <section class="section">
+    <section class="section" aria-label="Cifras de la clínica">
       <div class="container stats">
         ${STATS.map(([n, suf, label]) => `
           <div class="stat" data-reveal>
@@ -85,6 +85,8 @@ export function renderNosotros() {
     </section>
   `);
 
-  document.querySelectorAll("[data-count]").forEach((el) => countUp(el));
-  revealOnScroll();
+  motionReady.then(() => {
+    document.querySelectorAll("[data-count]").forEach((el) => countUp(el));
+    revealOnScroll();
+  });
 }

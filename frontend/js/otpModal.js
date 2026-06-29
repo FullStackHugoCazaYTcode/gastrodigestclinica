@@ -8,6 +8,7 @@ const TTL_SECONDS = 300;
 
 export function openOtpModal(idCita, { otpEnviado = true, onSuccess } = {}) {
   const root = document.getElementById("modal-root");
+  const previousFocus = document.activeElement;
 
   const backdrop = el(`
     <div class="modal-backdrop">
@@ -43,7 +44,7 @@ export function openOtpModal(idCita, { otpEnviado = true, onSuccess } = {}) {
             </span>
             <span class="countdown__time" id="otp-time">5:00</span>
           </div>
-          <div class="countdown__track"><div class="countdown__bar" id="otp-bar"></div></div>
+          <div class="countdown__track" id="otp-progress" role="progressbar" aria-label="Tiempo restante para validar el código" aria-valuemin="0" aria-valuemax="${TTL_SECONDS}" aria-valuenow="${TTL_SECONDS}"><div class="countdown__bar" id="otp-bar"></div></div>
         </div>
 
         <button class="btn btn--cta btn--block mt-6" id="otp-validate" type="button">Validar código</button>
@@ -57,6 +58,7 @@ export function openOtpModal(idCita, { otpEnviado = true, onSuccess } = {}) {
   const errorEl = backdrop.querySelector("#otp-error");
   const timeEl = backdrop.querySelector("#otp-time");
   const barEl = backdrop.querySelector("#otp-bar");
+  const progressEl = backdrop.querySelector("#otp-progress");
   const countdownEl = backdrop.querySelector("#otp-countdown");
   const validateBtn = backdrop.querySelector("#otp-validate");
 
@@ -70,12 +72,22 @@ export function openOtpModal(idCita, { otpEnviado = true, onSuccess } = {}) {
     clearInterval(timer);
     backdrop.remove();
     document.removeEventListener("keydown", onKey);
+    previousFocus?.focus?.();
   };
   const onKey = (e) => { if (e.key === "Escape") close(); };
 
   document.addEventListener("keydown", onKey);
   backdrop.querySelector(".modal__close").addEventListener("click", close);
   backdrop.addEventListener("mousedown", (e) => { if (e.target === backdrop) close(); });
+  backdrop.addEventListener("keydown", (e) => {
+    if (e.key !== "Tab") return;
+    const f = [...backdrop.querySelectorAll("button:not([disabled]), input:not([disabled])")];
+    if (!f.length) return;
+    const first = f[0];
+    const last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
 
   // ---- Countdown ----
   const renderTime = () => {

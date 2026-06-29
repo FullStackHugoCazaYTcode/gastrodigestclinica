@@ -69,11 +69,11 @@
     flex-direction: column; align-items: stretch; gap: var(--space-4);
     background: #fff; padding: var(--space-5);
     border-bottom: 1px solid var(--color-border); box-shadow: var(--shadow);
-    transform: translateY(-12px); opacity: 0; pointer-events: none;
-    transition: opacity var(--duration) var(--ease), transform var(--duration) var(--ease);
+    transform: translateY(-12px); opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity var(--duration) var(--ease), transform var(--duration) var(--ease), visibility 0s linear var(--duration);
   }
   .navbar.is-open { background: #fff; }
-  .navbar.is-open .navbar__menu { transform: translateY(0); opacity: 1; pointer-events: auto; }
+  .navbar.is-open .navbar__menu { transform: translateY(0); opacity: 1; visibility: visible; pointer-events: auto; transition-delay: 0s; }
   .nav-links { flex-direction: column; align-items: stretch; gap: var(--space-1); }
   .navbar__cta { flex-direction: column; align-items: stretch; }
   .footer__grid { grid-template-columns: 1fr 1fr; }

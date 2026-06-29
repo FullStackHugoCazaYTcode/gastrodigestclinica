@@ -47,6 +47,16 @@ export function icon(name, size = 20) {
     aria-hidden="true">${paths}</svg>`;
 }
 
+/** Escapa texto para interpolarlo de forma segura en innerHTML (anti-XSS). */
+export function esc(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 // ---- Montaje de vistas ----
 const appRoot = () => document.getElementById("app");
 
@@ -79,12 +89,13 @@ const TOAST_ICON = { success: "checkCircle", error: "alert", warning: "warning",
 
 export function toast(message, type = "info", title = "") {
   const root = document.getElementById("toast-root");
+  const liveRole = type === "error" ? "alert" : "status";
   const node = el(`
-    <div class="toast toast--${type}" role="status">
+    <div class="toast toast--${type}" role="${liveRole}">
       <span class="toast__icon">${icon(TOAST_ICON[type] || "info")}</span>
       <div class="toast__body">
-        ${title ? `<div class="toast__title">${title}</div>` : ""}
-        <div>${message}</div>
+        ${title ? `<div class="toast__title">${esc(title)}</div>` : ""}
+        <div>${esc(message)}</div>
       </div>
     </div>`);
   root.appendChild(node);
@@ -98,7 +109,12 @@ export function toast(message, type = "info", title = "") {
 
 // ---- Feedback inline en formularios ----
 export function clearErrors(form) {
-  form.querySelectorAll(".field.has-error").forEach((f) => f.classList.remove("has-error"));
+  form.querySelectorAll(".field.has-error").forEach((f) => {
+    f.classList.remove("has-error");
+    const input = f.querySelector("input, select, textarea");
+    input?.removeAttribute("aria-invalid");
+    input?.removeAttribute("aria-describedby");
+  });
 }
 
 export function setFieldError(form, name, message) {
@@ -106,7 +122,16 @@ export function setFieldError(form, name, message) {
   if (!field) return;
   field.classList.add("has-error");
   const errEl = field.querySelector(".field__error");
-  if (errEl) errEl.innerHTML = `${icon("alert", 14)}<span>${message}</span>`;
+  const input = field.querySelector("input, select, textarea");
+  const errId = `err-${name}`;
+  if (errEl) {
+    errEl.id = errId;
+    errEl.innerHTML = `${icon("alert", 14)}<span>${esc(message)}</span>`;
+  }
+  if (input) {
+    input.setAttribute("aria-invalid", "true");
+    input.setAttribute("aria-describedby", errId);
+  }
 }
 
 /** Aplica un objeto de errores {campo: mensaje} del backend al formulario. */

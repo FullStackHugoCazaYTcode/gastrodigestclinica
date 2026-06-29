@@ -4,7 +4,8 @@
 import { mountFull, icon } from "../ui.js";
 import { auroraHTML } from "../components/aurora.js";
 import { trustStripHTML } from "../components/trustStrip.js";
-import { revealOnScroll, countUp } from "../motion.js";
+import { revealOnScroll, countUp, motionReady } from "../motion.js";
+import { medicoCard } from "../components/medicoCard.js";
 import { api } from "../api.js";
 
 const SERVICIOS = [
@@ -65,7 +66,7 @@ export function renderHome() {
     ${trustStripHTML()}
 
     <!-- STATS -->
-    <section class="section stats-section">
+    <section class="section stats-section" aria-label="Cifras de la clínica">
       <div class="container stats">
         ${STATS.map(([n, suf, label]) => `
           <div class="stat" data-reveal>
@@ -118,7 +119,7 @@ export function renderHome() {
         <div class="testimonials">
           ${TESTIMONIOS.map(([name, text, stars]) => `
             <figure class="testimonial" data-reveal>
-              <div class="testimonial__stars">${icon("star", 16).repeat(stars)}</div>
+              <div class="testimonial__stars" aria-label="${stars} de 5 estrellas">${icon("star", 16).repeat(stars)}</div>
               <blockquote>"${text}"</blockquote>
               <figcaption>${name}</figcaption>
             </figure>`).join("")}
@@ -138,9 +139,11 @@ export function renderHome() {
     </section>
   `);
 
-  // Post-montaje: animaciones + datos en vivo.
-  document.querySelectorAll("[data-count]").forEach((el) => countUp(el));
-  revealOnScroll();
+  // Post-montaje: animaciones (tras cargar GSAP) + datos en vivo.
+  motionReady.then(() => {
+    document.querySelectorAll("[data-count]").forEach((el) => countUp(el));
+    revealOnScroll();
+  });
   cargarMedicos();
 }
 
@@ -150,7 +153,7 @@ async function cargarMedicos() {
   const res = await api.get("/api/medicos");
   if (res.success && Array.isArray(res.data) && res.data.length) {
     grid.innerHTML = res.data.slice(0, 3).map(medicoCard).join("");
-    revealOnScroll(grid);
+    motionReady.then(() => revealOnScroll(grid));
   } else {
     grid.innerHTML = `<div class="state" style="grid-column:1/-1">
       <div class="state__icon state__icon--info">${icon("users", 28)}</div>
@@ -158,15 +161,4 @@ async function cargarMedicos() {
       <a class="btn btn--cta" href="/reservar" data-link>${icon("calendar")} Reservar cita</a>
     </div>`;
   }
-}
-
-function medicoCard(m) {
-  const ini = ((m.nombres?.[0] || "") + (m.apellidos?.[0] || "")).toUpperCase();
-  return `<article class="medico-card" data-reveal>
-    <div class="medico-card__avatar">${ini}</div>
-    <h3>Dr(a). ${m.nombres} ${m.apellidos}</h3>
-    <p class="medico-card__esp">${m.especialidad}</p>
-    <p class="medico-card__cmp">CMP ${m.cmp}</p>
-    <a class="btn btn--ghost btn--sm" href="/reservar" data-link>Reservar ${icon("arrowRight", 16)}</a>
-  </article>`;
 }

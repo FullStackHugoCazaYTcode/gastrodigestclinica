@@ -1,7 +1,7 @@
 /* =====================================================================
    GastroDigest · Motion — reveals y fondo aurora
    ===================================================================== */
-[data-reveal] { will-change: transform, opacity; }
+/* will-change se aplica por animación en motion.js (onStart/onComplete) */
 
 /* ---------- Fondo aurora ---------- */
 .aurora {

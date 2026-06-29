@@ -3,8 +3,9 @@
 // =====================================================================
 import { api } from "../api.js";
 import { mountFull, icon } from "../ui.js";
-import { revealOnScroll } from "../motion.js";
+import { revealOnScroll, motionReady } from "../motion.js";
 import { auroraHTML } from "../components/aurora.js";
+import { medicoCard } from "../components/medicoCard.js";
 
 export async function renderMedicos() {
   mountFull(`
@@ -38,16 +39,5 @@ export async function renderMedicos() {
       <a class="btn btn--cta" href="/reservar" data-link>${icon("calendar")} Reservar cita</a>
     </div>`;
   }
-  revealOnScroll();
-}
-
-function medicoCard(m) {
-  const ini = ((m.nombres?.[0] || "") + (m.apellidos?.[0] || "")).toUpperCase();
-  return `<article class="medico-card" data-reveal>
-    <div class="medico-card__avatar">${ini}</div>
-    <h3>Dr(a). ${m.nombres} ${m.apellidos}</h3>
-    <p class="medico-card__esp">${m.especialidad}</p>
-    <p class="medico-card__cmp">CMP ${m.cmp}</p>
-    <a class="btn btn--ghost btn--sm" href="/reservar" data-link>Reservar ${icon("arrowRight", 16)}</a>
-  </article>`;
+  motionReady.then(() => revealOnScroll());
 }

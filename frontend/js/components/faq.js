@@ -29,7 +29,7 @@ export function faqHTML() {
             <button class="faq__q" aria-expanded="false" aria-controls="faq-a-${i}">
               <span>${q}</span>${icon("chevronDown", 20)}
             </button>
-            <div class="faq__a" id="faq-a-${i}">
+            <div class="faq__a" id="faq-a-${i}" aria-hidden="true">
               <div class="faq__a-inner"><p>${a}</p></div>
             </div>
           </div>`).join("")}
@@ -44,6 +44,7 @@ export function wireFaq(root = document) {
       const item = btn.closest(".faq__item");
       const open = item.classList.toggle("is-open");
       btn.setAttribute("aria-expanded", String(open));
+      item.querySelector(".faq__a").setAttribute("aria-hidden", String(!open));
     });
   });
 }

@@ -7,6 +7,10 @@
 let gsap = null;
 let ScrollTrigger = null;
 let lenis = null;
+let _resolveReady;
+
+/** Se resuelve cuando initMotion termina (con o sin GSAP). Las vistas la esperan antes de animar. */
+export const motionReady = new Promise((res) => { _resolveReady = res; });
 
 export function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -14,8 +18,9 @@ export function prefersReducedMotion() {
 
 /** Inicializa scroll suave + GSAP/ScrollTrigger. Idempotente y a prueba de fallos. */
 export async function initMotion() {
-  if (prefersReducedMotion() || gsap) return;
+  if (gsap) { _resolveReady(); return; }
   try {
+    if (prefersReducedMotion()) return;
     const g = await import("https://esm.sh/gsap@3.12.5");
     gsap = g.gsap || g.default;
     const st = await import("https://esm.sh/gsap@3.12.5/ScrollTrigger");
@@ -30,8 +35,10 @@ export async function initMotion() {
     requestAnimationFrame(raf);
     lenis.on("scroll", () => ScrollTrigger.update());
   } catch (e) {
-    console.warn("[motion] librerías no disponibles, modo estático:", e);
+    console.warn("[motion] modo estático:", e?.message ?? e);
     gsap = null;
+  } finally {
+    _resolveReady();
   }
 }
 
@@ -49,10 +56,12 @@ export function revealOnScroll(root = document) {
       el,
       { opacity: 0, y: 28 },
       { opacity: 1, y: 0, duration: 0.7, ease: "power3.out",
+        onStart: () => { el.style.willChange = "transform, opacity"; },
+        onComplete: () => { el.style.willChange = "auto"; },
         scrollTrigger: { trigger: el, start: "top 85%" } }
     );
   });
-  ScrollTrigger.refresh();
+  if (ScrollTrigger) ScrollTrigger.refresh();
 }
 
 /** Anima un contador numérico (usa data-count). */
