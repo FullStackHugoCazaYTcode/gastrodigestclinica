@@ -74,3 +74,19 @@ export function countUp(el) {
 export function refreshMotion() {
   if (ScrollTrigger) ScrollTrigger.refresh();
 }
+
+/** Congela el motion (para capturas/verificación): libera el scroll nativo. */
+export function freezeMotion() {
+  try { window.__lenis?.destroy?.(); window.__lenis = null; } catch {}
+  try { if (gsap) { gsap.globalTimeline.clear(); gsap.ticker?.sleep?.(); } } catch {}
+  document.querySelectorAll("[data-reveal]").forEach((el) => {
+    el.style.opacity = "1";
+    el.style.transform = "none";
+  });
+  if (!document.getElementById("freeze-style")) {
+    const s = document.createElement("style");
+    s.id = "freeze-style";
+    s.textContent = "*,*::before,*::after{animation:none!important;transition:none!important}";
+    document.head.appendChild(s);
+  }
+}
