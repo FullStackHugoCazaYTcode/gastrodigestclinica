@@ -13,11 +13,9 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # --- Apache: garantizar un ÚNICO MPM (prefork, requerido por mod_php) ---
-# Evita "AH00534: More than one MPM loaded" desactivando event/worker.
-RUN a2dismod mpm_event mpm_worker 2>/dev/null || true
-
-# --- Apache: habilitar prefork + rewrite/headers y permitir .htaccess ---
-RUN a2enmod mpm_prefork rewrite headers \
+# Borra CUALQUIER MPM activo y deja solo prefork → imposible "More than one MPM loaded".
+RUN rm -f /etc/apache2/mods-enabled/mpm_*.load /etc/apache2/mods-enabled/mpm_*.conf \
+    && a2enmod mpm_prefork rewrite headers \
     && sed -ri 's!AllowOverride None!AllowOverride All!g' /etc/apache2/apache2.conf
 
 # --- Configuración PHP de producción ---
