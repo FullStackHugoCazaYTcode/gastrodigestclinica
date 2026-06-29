@@ -77,6 +77,7 @@ export function refreshMotion() {
 
 /** Congela el motion (para capturas/verificación): libera el scroll nativo. */
 export function freezeMotion() {
+  try { if (ScrollTrigger) ScrollTrigger.getAll().forEach((t) => t.kill()); } catch {}
   try { window.__lenis?.destroy?.(); window.__lenis = null; } catch {}
   try { if (gsap) { gsap.globalTimeline.clear(); gsap.ticker?.sleep?.(); } } catch {}
   document.querySelectorAll("[data-reveal]").forEach((el) => {
