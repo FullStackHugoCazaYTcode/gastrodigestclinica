@@ -25,6 +25,7 @@ export async function initMotion() {
     const L = await import("https://esm.sh/lenis@1.1.13");
     const Lenis = L.default || L.Lenis;
     lenis = new Lenis({ duration: 1.1, smoothWheel: true });
+    window.__lenis = lenis; // handle para scroll programático (verificación)
     const raf = (t) => { lenis.raf(t); requestAnimationFrame(raf); };
     requestAnimationFrame(raf);
     lenis.on("scroll", () => ScrollTrigger.update());

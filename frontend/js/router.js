@@ -41,9 +41,8 @@ function resolve() {
 }
 
 function updateActiveLinks(path) {
-  document.querySelectorAll("#nav-links a").forEach((a) => {
-    const href = a.getAttribute("href");
-    a.classList.toggle("is-active", href === path || (href === "/" && path === "/"));
+  document.querySelectorAll("#site-nav .nav-links a").forEach((a) => {
+    a.classList.toggle("is-active", a.getAttribute("href") === path);
   });
 }
 

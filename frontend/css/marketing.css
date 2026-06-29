@@ -1,4 +1,81 @@
 /* =====================================================================
-   GastroDigest · Marketing — estilos del sitio (navbar, footer, páginas)
-   Se completa en las tareas siguientes (navbar/footer, landing, etc.).
+   GastroDigest · Marketing — navbar, footer, layout de páginas
    ===================================================================== */
+
+/* ---------- Layout ---------- */
+.app-page { padding-block: var(--space-8); }
+.section { position: relative; padding-block: var(--space-10); }
+.section__title { font-size: var(--text-2xl); text-align: center; margin-bottom: var(--space-2); }
+.section__lead { text-align: center; color: var(--color-text-muted); max-width: 56ch; margin: 0 auto var(--space-6); }
+
+/* ---------- Navbar (transparente sobre hero → sólida al scroll) ---------- */
+.navbar {
+  background: transparent;
+  backdrop-filter: none;
+  border-bottom: 1px solid transparent;
+  transition: background var(--duration) var(--ease),
+              box-shadow var(--duration) var(--ease),
+              border-color var(--duration) var(--ease);
+}
+.navbar.is-scrolled {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: saturate(180%) blur(10px);
+  border-bottom-color: var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+.navbar__menu { display: flex; align-items: center; gap: var(--space-5); }
+.navbar__cta { display: flex; align-items: center; gap: var(--space-3); }
+.navbar__toggle {
+  display: none;
+  place-items: center;
+  width: 42px; height: 42px;
+  background: transparent; border: none; color: var(--color-text);
+  border-radius: var(--radius-sm);
+}
+.navbar__toggle:hover { background: var(--color-surface-alt); }
+.btn--sm { padding: var(--space-2) var(--space-4); font-size: var(--text-sm); }
+
+/* ---------- Footer ---------- */
+.footer { background: var(--color-text); color: #CBD5E1; margin-top: var(--space-10); }
+.footer__grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1.2fr 1.1fr;
+  gap: var(--space-6);
+  padding-block: var(--space-8);
+}
+.footer .brand__name { color: #fff; }
+.footer .brand__sub { color: #94A3B8; }
+.footer__tag { margin-top: var(--space-3); font-size: var(--text-sm); color: #94A3B8; max-width: 34ch; }
+.footer__title {
+  font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.06em;
+  color: #fff; margin-bottom: var(--space-3);
+}
+.footer__col ul { list-style: none; display: grid; gap: var(--space-2); padding: 0; }
+.footer__col a { color: #CBD5E1; font-size: var(--text-sm); }
+.footer__col a:hover { color: #fff; text-decoration: none; }
+.footer__contact li { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); color: #CBD5E1; }
+.footer__cta { display: grid; gap: var(--space-3); align-content: start; }
+.footer__bottom { border-top: 1px solid rgba(255, 255, 255, 0.1); }
+.footer__bottom .container {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-3);
+  padding-block: var(--space-4); font-size: var(--text-xs); color: #94A3B8;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 860px) {
+  .navbar__toggle { display: grid; }
+  .navbar__menu {
+    position: fixed; inset: var(--header-h) 0 auto 0;
+    flex-direction: column; align-items: stretch; gap: var(--space-4);
+    background: #fff; padding: var(--space-5);
+    border-bottom: 1px solid var(--color-border); box-shadow: var(--shadow);
+    transform: translateY(-12px); opacity: 0; pointer-events: none;
+    transition: opacity var(--duration) var(--ease), transform var(--duration) var(--ease);
+  }
+  .navbar.is-open { background: #fff; }
+  .navbar.is-open .navbar__menu { transform: translateY(0); opacity: 1; pointer-events: auto; }
+  .nav-links { flex-direction: column; align-items: stretch; gap: var(--space-1); }
+  .navbar__cta { flex-direction: column; align-items: stretch; }
+  .footer__grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 560px) { .footer__grid { grid-template-columns: 1fr; } }
