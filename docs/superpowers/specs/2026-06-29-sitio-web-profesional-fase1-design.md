@@ -55,8 +55,8 @@ SPA vanilla existente, extendida con:
 
 | Ruta | Página | Contenido |
 |---|---|---|
-| `/` | Inicio (landing) | Hero animado (fondo aurora) + CTAs "Reservar"/"Portal"; propuesta de valor; franja de confianza (stats con contador animado); servicios destacados; médicos en vivo; testimonios; CTA final |
-| `/servicios` | Servicios | Especialidades (consulta gastroenterológica, endoscopía digestiva alta, colonoscopía, pruebas de laboratorio, control y seguimiento) en bento grid animado |
+| `/` | Inicio (landing) | Hero animado (fondo aurora) + CTAs "Reservar"/"Portal"; propuesta de valor; **franja de instituciones/certificaciones** (logos en escala de grises); franja de confianza (stats con contador animado); servicios destacados; médicos en vivo; testimonios; CTA final |
+| `/servicios` | Servicios | Especialidades (consulta gastroenterológica, endoscopía digestiva alta, colonoscopía, pruebas de laboratorio, control y seguimiento) en bento grid animado **+ sección FAQ con acordeón animado** |
 | `/nosotros` | Nosotros | Historia, misión/visión, "por qué elegirnos", valores — con revelados al scroll |
 | `/medicos` | Equipo médico | Tarjetas de médicos desde `/api/medicos` (nombre, especialidad), con estados de carga/skeleton |
 | `/contacto` | Contacto | Ubicación (Huánuco), horarios, teléfono, mapa embebido/ilustración + CTA a reservar |
@@ -65,6 +65,19 @@ SPA vanilla existente, extendida con:
 | `/reprogramar/{token}` | Reprogramación (existente) | Sin cambios |
 
 **Integración clave:** `/` deja de ser la reserva y pasa a ser el landing; la reserva se mueve a `/reservar`. Se actualizan router, navbar y los enlaces internos (`data-link`) que apuntaban a la reserva.
+
+### 6.1 Elementos de confianza y autoridad
+
+- **Franja de instituciones / certificaciones (en `/inicio`):** hilera sutil de logotipos en **escala de grises / opacidad reducida** que se realzan al pasar el cursor, mostrando instituciones de respaldo (ej. Sociedad Peruana de Gastroenterología, Colegio Médico del Perú, universidades como UNMSM / UPCH). Genera autoridad médica inmediata. En la demo se usan **logos placeholder en grises o tratamiento tipográfico de "logo"**, fácilmente reemplazables por los reales. Sin afirmaciones falsas: se rotula como "Respaldo y formación de nuestro equipo".
+- **FAQ con acordeón animado (en `/servicios`):** preguntas reales que reducen el abandono y resuelven dudas previas a la reserva. La animación de apertura/cierre usa `max-height`/`grid-template-rows` + `opacity` (suave, accesible, con `aria-expanded`). Preguntas semilla:
+  - ¿Qué preparación necesito para una colonoscopía?
+  - ¿La endoscopía duele? ¿Incluye sedación?
+  - ¿Atienden emergencias gastroenterológicas?
+  - ¿Trabajan con seguros (EsSalud, EPS, particular)?
+  - ¿Necesito ayuno antes de mi consulta?
+  - ¿Cuánto dura una consulta y cómo recibo mis resultados?
+
+> **SEO:** el FAQ se acompaña de datos estructurados **`FAQPage` (JSON-LD)** y la página incluye meta tags básicos (title, description, Open Graph). Mejora la visibilidad en búsquedas locales sin necesidad de SSR.
 
 ## 7. Identidad visual
 
@@ -103,11 +116,11 @@ Extiende los tokens existentes (`css/tokens.css`): primario `#1A6B9A`, secundari
 **Nuevos**
 - `frontend/js/views/home.js`, `servicios.js`, `nosotros.js`, `medicos.js`, `contacto.js`
 - `frontend/js/motion.js` (GSAP/Lenis + utilidades reveal/parallax/counter)
-- `frontend/js/components/navbar.js`, `footer.js`, `aurora.js`
+- `frontend/js/components/navbar.js`, `footer.js`, `aurora.js`, `faq.js`, `trustStrip.js`
 - `frontend/css/marketing.css`, `motion.css`
 
 **Modificados**
-- `frontend/index.html` (cargar GSAP/Lenis por CDN; montar navbar/footer)
+- `frontend/index.html` (cargar GSAP/Lenis por CDN; montar navbar/footer; meta tags SEO + JSON-LD `FAQPage`)
 - `frontend/js/app.js` (registrar nuevas rutas; reserva → `/reservar`)
 - `frontend/js/router.js` (si requiere ajustes para layout persistente)
 - `frontend/js/views/reserva.js` (enlaces/CTA de éxito apuntan a rutas nuevas)
