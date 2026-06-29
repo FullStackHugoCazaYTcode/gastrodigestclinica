@@ -390,7 +390,7 @@ function renderExito(r) {
         <div class="summary__row"><span>Fecha y hora</span><span>${r.fechaHora}</span></div>
       </div>
       <div class="actions">
-        <a class="btn btn--ghost" href="/" data-link>${icon("calendar")} Reservar otra cita</a>
+        <a class="btn btn--ghost" href="/reservar" data-link>${icon("calendar")} Reservar otra cita</a>
         <a class="btn btn--primary" href="/portal" data-link>${icon("user")} Ir al portal</a>
       </div>
     </div>
