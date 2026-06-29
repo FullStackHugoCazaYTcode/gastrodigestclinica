@@ -1,5 +1,5 @@
 {
-  "name": "GastroDigest · 01 · OTP (WhatsApp + fallback SMTP)",
+  "name": "GastroDigest · 01 · OTP (correo via Brevo API)",
   "nodes": [
     {
       "parameters": {
@@ -18,78 +18,46 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://graph.facebook.com/v21.0/{{ $env.WHATSAPP_PHONE_NUMBER_ID }}/messages",
+        "url": "https://api.brevo.com/v3/smtp/email",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "Authorization", "value": "=Bearer {{ $env.WHATSAPP_API_TOKEN }}" },
-            { "name": "Content-Type", "value": "application/json" }
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "accept", "value": "application/json" }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={ \"messaging_product\": \"whatsapp\", \"to\": \"{{ $('Recibir OTP (PHP)').item.json.body.telefono }}\", \"type\": \"text\", \"text\": { \"body\": \"GastroDigest: tu codigo de verificacion es {{ $('Recibir OTP (PHP)').item.json.body.codigo }}. Vence en 5 minutos. No lo compartas con nadie.\" } }",
+        "jsonBody": "={ \"sender\": { \"email\": \"hr177153@gmail.com\", \"name\": \"GastroDigest\" }, \"to\": [ { \"email\": \"{{ $('Recibir OTP (PHP)').item.json.body.correo }}\" } ], \"subject\": \"Tu codigo de verificacion - GastroDigest\", \"textContent\": \"Tu codigo de verificacion es {{ $('Recibir OTP (PHP)').item.json.body.codigo }}. Vence en 5 minutos. No lo compartas con nadie.\" }",
         "options": {}
       },
-      "id": "node-http-whatsapp",
-      "name": "Enviar WhatsApp",
+      "id": "node-brevo",
+      "name": "Enviar Email (Brevo)",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [540, 320],
-      "onError": "continueErrorOutput"
+      "position": [540, 320]
     },
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={ \"success\": true, \"message\": \"OTP enviado por WhatsApp\", \"canal\": \"whatsapp\" }",
+        "responseBody": "={ \"success\": true, \"message\": \"OTP enviado por correo\", \"canal\": \"email\" }",
         "options": {}
       },
-      "id": "node-respond-ok",
-      "name": "Responder OK (WhatsApp)",
+      "id": "node-respond",
+      "name": "Responder OK",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
-      "position": [860, 200]
-    },
-    {
-      "parameters": {
-        "fromEmail": "={{ $env.SMTP_FROM }}",
-        "toEmail": "={{ $('Recibir OTP (PHP)').item.json.body.correo }}",
-        "subject": "Tu codigo de verificacion · GastroDigest",
-        "emailFormat": "text",
-        "text": "=Tu codigo de verificacion es {{ $('Recibir OTP (PHP)').item.json.body.codigo }}. Vence en 5 minutos.\n\nClinica GastroDigest",
-        "options": {}
-      },
-      "id": "node-smtp-fallback",
-      "name": "Fallback SMTP",
-      "type": "n8n-nodes-base.emailSend",
-      "typeVersion": 2.1,
-      "position": [860, 440]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={ \"success\": true, \"message\": \"WhatsApp fallo; OTP enviado por correo\", \"canal\": \"email\" }",
-        "options": {}
-      },
-      "id": "node-respond-email",
-      "name": "Responder OK (Email)",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1,
-      "position": [1140, 440]
+      "position": [840, 320]
     }
   ],
   "connections": {
     "Recibir OTP (PHP)": {
-      "main": [[{ "node": "Enviar WhatsApp", "type": "main", "index": 0 }]]
+      "main": [[{ "node": "Enviar Email (Brevo)", "type": "main", "index": 0 }]]
     },
-    "Enviar WhatsApp": {
-      "main": [
-        [{ "node": "Responder OK (WhatsApp)", "type": "main", "index": 0 }],
-        [{ "node": "Fallback SMTP", "type": "main", "index": 0 }]
-      ]
-    },
-    "Fallback SMTP": {
-      "main": [[{ "node": "Responder OK (Email)", "type": "main", "index": 0 }]]
+    "Enviar Email (Brevo)": {
+      "main": [[{ "node": "Responder OK", "type": "main", "index": 0 }]]
     }
   },
   "active": false,
