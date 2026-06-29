@@ -33,7 +33,10 @@ RUN { \
 COPY . /var/www/html/
 RUN chown -R www-data:www-data /var/www/html
 
-# Railway inyecta el puerto en $PORT; Apache debe escuchar ahí (forma shell para expandir la variable).
-CMD sed -i "s/Listen 80/Listen ${PORT:-80}/" /etc/apache2/ports.conf \
-    && sed -i "s/<VirtualHost \*:80>/<VirtualHost *:${PORT:-80}>/" /etc/apache2/sites-available/000-default.conf \
-    && apache2-foreground
+# Arranque: limpiamos los MPM AQUÍ (en runtime, no en build) para que el fix sea
+# inmune a la caché de capas de Docker de Railway. Luego ajustamos el puerto y arrancamos.
+CMD a2dismod mpm_event mpm_worker > /dev/null 2>&1 || true; \
+    a2enmod mpm_prefork > /dev/null 2>&1 || true; \
+    sed -i "s/Listen 80/Listen ${PORT:-80}/" /etc/apache2/ports.conf; \
+    sed -i "s/<VirtualHost \*:80>/<VirtualHost *:${PORT:-80}>/" /etc/apache2/sites-available/000-default.conf; \
+    apache2-foreground
