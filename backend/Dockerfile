@@ -12,8 +12,12 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# --- Apache: habilitar rewrite/headers y permitir .htaccess ---
-RUN a2enmod rewrite headers \
+# --- Apache: garantizar un ÚNICO MPM (prefork, requerido por mod_php) ---
+# Evita "AH00534: More than one MPM loaded" desactivando event/worker.
+RUN a2dismod mpm_event mpm_worker 2>/dev/null || true
+
+# --- Apache: habilitar prefork + rewrite/headers y permitir .htaccess ---
+RUN a2enmod mpm_prefork rewrite headers \
     && sed -ri 's!AllowOverride None!AllowOverride All!g' /etc/apache2/apache2.conf
 
 # --- Configuración PHP de producción ---
