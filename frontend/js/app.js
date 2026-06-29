@@ -2,23 +2,33 @@
 //  app.js — Punto de arranque del frontend SPA.
 // =====================================================================
 import { route, startRouter } from "./router.js";
-import { icon } from "./ui.js";
+import { renderNavbar } from "./components/navbar.js";
+import { renderFooter } from "./components/footer.js";
+import { renderHome } from "./views/home.js";
+import { renderServicios } from "./views/servicios.js";
+import { renderNosotros } from "./views/nosotros.js";
+import { renderMedicos } from "./views/medicos.js";
+import { renderContacto } from "./views/contacto.js";
 import { renderReserva } from "./views/reserva.js";
 import { renderPortal } from "./views/portal.js";
 import { renderReprogramar } from "./views/reprogramar.js";
+import { initMotion } from "./motion.js";
 
-// Año en el footer.
-document.getElementById("year").textContent = String(new Date().getFullYear());
+// Layout persistente.
+renderNavbar();
+renderFooter();
 
-// Enlaces de navegación.
-document.getElementById("nav-links").innerHTML = `
-  <li><a href="/" data-link>${icon("calendar", 18)}<span>Reservar cita</span></a></li>
-  <li><a href="/portal" data-link>${icon("user", 18)}<span>Portal del paciente</span></a></li>
-`;
-
-// Rutas.
-route("/", renderReserva);
+// Rutas del sitio.
+route("/", renderHome);
+route("/servicios", renderServicios);
+route("/nosotros", renderNosotros);
+route("/medicos", renderMedicos);
+route("/contacto", renderContacto);
+route("/reservar", renderReserva);
 route("/portal", renderPortal);
 route("/reprogramar/:token", renderReprogramar);
 
 startRouter();
+
+// Capa de animación (scroll suave + reveals). No bloquea si el CDN falla.
+initMotion();

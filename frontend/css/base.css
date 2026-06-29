@@ -54,7 +54,6 @@ button { cursor: pointer; }
 /* Layout principal */
 main {
   flex: 1;
-  padding-block: var(--space-8);
 }
 
 .skip-link {

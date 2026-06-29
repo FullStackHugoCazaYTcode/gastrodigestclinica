@@ -3,9 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GastroDigest · Reserva de citas</title>
-  <meta name="description" content="Clínica Gastroenterológica GastroDigest — reserva de citas en línea, validación de identidad y portal del paciente." />
+  <title>GastroDigest · Clínica Gastroenterológica en Huánuco</title>
+  <meta name="description" content="Clínica Gastroenterológica GastroDigest en Huánuco. Reserva tu cita en línea con especialistas en endoscopía y colonoscopía, y consulta tus resultados en un portal seguro." />
   <meta name="theme-color" content="#1A6B9A" />
+  <meta name="robots" content="index,follow" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="GastroDigest · Clínica Gastroenterológica" />
+  <meta property="og:description" content="Atención digestiva experta en Huánuco. Reserva tu cita en línea y accede a tu portal del paciente." />
+  <meta property="og:locale" content="es_PE" />
 
   <!-- Tipografía Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -16,39 +21,20 @@
   <link rel="stylesheet" href="css/tokens.css" />
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/motion.css" />
+  <link rel="stylesheet" href="css/marketing.css" />
 </head>
 <body>
   <a class="skip-link" href="#app">Saltar al contenido</a>
 
-  <!-- ===== Navbar con espacio para el logo "I.S." ===== -->
-  <header class="navbar">
-    <div class="container navbar__inner">
-      <a class="brand" href="/" data-link aria-label="GastroDigest — inicio">
-        <!-- Espacio reservado para el logotipo oficial de Ingeniería de Sistemas -->
-        <span class="brand__logo" aria-hidden="true">I.S.</span>
-        <span class="brand__text">
-          <span class="brand__name">GastroDigest</span>
-          <span class="brand__sub">Clínica Gastroenterológica</span>
-        </span>
-      </a>
-      <nav aria-label="Navegación principal">
-        <ul class="nav-links" id="nav-links"><!-- inyectado por app.js --></ul>
-      </nav>
-    </div>
-  </header>
+  <!-- ===== Navbar (montado por navbar.js) ===== -->
+  <header id="site-nav"></header>
 
-  <!-- ===== Contenido (vistas montadas aquí) ===== -->
-  <main>
-    <div class="container" id="app" tabindex="-1"></div>
-  </main>
+  <!-- ===== Contenido (vistas montadas aquí, a todo el ancho) ===== -->
+  <main id="app" tabindex="-1"></main>
 
-  <!-- ===== Footer ===== -->
-  <footer class="footer">
-    <div class="container footer__inner">
-      <span>© <span id="year"></span> GastroDigest · Huánuco, Perú</span>
-      <span>Datos protegidos conforme a la Ley N.° 29733 · Escuela Profesional de Ingeniería de Sistemas (I.S.)</span>
-    </div>
-  </footer>
+  <!-- ===== Footer (montado por footer.js) ===== -->
+  <footer id="site-footer"></footer>
 
   <!-- Raíces de feedback (sin alert nativo) -->
   <div class="toast-root" id="toast-root" aria-live="polite" aria-atomic="false"></div>
