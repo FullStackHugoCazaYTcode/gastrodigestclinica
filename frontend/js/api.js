@@ -12,13 +12,17 @@ const API_BASE_URL =
  * @returns {Promise<{ok:boolean,status:number,success:boolean,message:string,data:*,errors:*}>}
  */
 async function request(path, { method = "GET", body, headers = {} } = {}) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 12000);
   try {
     const res = await fetch(`${API_BASE_URL}${path}`, {
       method,
       headers: { "Content-Type": "application/json", ...headers },
       credentials: "include", // cookies de sesión del portal
       body: body !== undefined ? JSON.stringify(body) : undefined,
+      signal: controller.signal,
     });
+    clearTimeout(timer);
 
     let json = null;
     try {
@@ -36,6 +40,7 @@ async function request(path, { method = "GET", body, headers = {} } = {}) {
       errors: json?.errors ?? null,
     };
   } catch (networkError) {
+    clearTimeout(timer);
     return {
       ok: false,
       status: 0,

@@ -209,3 +209,28 @@
 
 @media (max-width: 860px) { .features--3 { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .features--3 { grid-template-columns: 1fr; } }
+
+/* =====================================================================
+   Nosotros (split historia/misión)
+   ===================================================================== */
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); align-items: center; }
+.split__content h2 { font-size: var(--text-2xl); margin: var(--space-2) 0 var(--space-3); }
+.split__content p { margin-bottom: var(--space-3); }
+.mission-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); box-shadow: var(--shadow); padding: var(--space-6); display: grid; gap: var(--space-2); }
+.mission-card h3 { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-lg); color: var(--color-primary); margin-top: var(--space-3); }
+.mission-card h3:first-child { margin-top: 0; }
+.mission-card p { color: var(--color-text-muted); font-size: var(--text-sm); }
+@media (max-width: 860px) { .split { grid-template-columns: 1fr; gap: var(--space-6); } }
+
+/* =====================================================================
+   Contacto
+   ===================================================================== */
+.contact { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-6); align-items: stretch; }
+.contact__info { display: grid; gap: var(--space-4); align-content: start; }
+.contact__item { display: flex; align-items: flex-start; gap: var(--space-3); }
+.contact__item svg { color: var(--color-primary); flex-shrink: 0; margin-top: 2px; }
+.contact__item strong { display: block; }
+.contact__item span { color: var(--color-text-muted); font-size: var(--text-sm); }
+.contact__info .btn { margin-top: var(--space-2); justify-self: start; }
+.contact__map iframe { width: 100%; height: 100%; min-height: 360px; border: 0; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
+@media (max-width: 860px) { .contact { grid-template-columns: 1fr; } }
