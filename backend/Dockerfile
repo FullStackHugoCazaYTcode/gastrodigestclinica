@@ -3,6 +3,7 @@
 #  Base: php:8.2-apache  ·  Extensiones: pdo_mysql, mysqli, mbstring
 # =====================================================================
 FROM php:8.2-apache
+# build-marker: rebuild limpio fix MPM (deploy v3)
 
 # --- Extensiones PHP requeridas ---
 # mbstring necesita libonig-dev; pdo_mysql + mysqli para la capa de datos.
