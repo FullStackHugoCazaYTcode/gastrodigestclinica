@@ -6,6 +6,7 @@ import { icon } from "./ui.js";
 import { renderReserva } from "./views/reserva.js";
 import { renderPortal } from "./views/portal.js";
 import { renderReprogramar } from "./views/reprogramar.js";
+import { initMotion } from "./motion.js";
 
 // Año en el footer.
 document.getElementById("year").textContent = String(new Date().getFullYear());
@@ -22,3 +23,6 @@ route("/portal", renderPortal);
 route("/reprogramar/:token", renderReprogramar);
 
 startRouter();
+
+// Capa de animación (scroll suave + reveals). No bloquea si el CDN falla.
+initMotion();

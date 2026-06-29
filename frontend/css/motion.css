@@ -1,0 +1,46 @@
+/* =====================================================================
+   GastroDigest · Motion — reveals y fondo aurora
+   ===================================================================== */
+[data-reveal] { will-change: transform, opacity; }
+
+/* ---------- Fondo aurora ---------- */
+.aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+.aurora__blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.45;
+}
+.aurora__blob--1 {
+  width: 460px; height: 460px;
+  background: #1A6B9A;
+  top: -140px; left: -80px;
+  animation: aurora-float-1 18s ease-in-out infinite;
+}
+.aurora__blob--2 {
+  width: 380px; height: 380px;
+  background: #2EAD8E;
+  top: 20px; right: -120px;
+  animation: aurora-float-2 22s ease-in-out infinite;
+}
+.aurora__blob--3 {
+  width: 320px; height: 320px;
+  background: #7FC9E8;
+  bottom: -160px; left: 28%;
+  animation: aurora-float-3 20s ease-in-out infinite;
+}
+@keyframes aurora-float-1 { 50% { transform: translate(40px, 60px) scale(1.12); } }
+@keyframes aurora-float-2 { 50% { transform: translate(-50px, 30px) scale(1.06); } }
+@keyframes aurora-float-3 { 50% { transform: translate(30px, -50px) scale(1.1); } }
+
+/* ---------- Movimiento reducido ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .aurora__blob { animation: none; }
+  [data-reveal] { opacity: 1 !important; transform: none !important; }
+}
