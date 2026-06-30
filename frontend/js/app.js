@@ -13,6 +13,7 @@ import { renderReserva } from "./views/reserva.js";
 import { renderPortal } from "./views/portal.js";
 import { renderReprogramar } from "./views/reprogramar.js";
 import { initMotion } from "./motion.js";
+import { hidePreloader } from "./components/preloader.js";
 
 // Layout persistente.
 renderNavbar();
@@ -30,5 +31,8 @@ route("/reprogramar/:token", renderReprogramar);
 
 startRouter();
 
-// Capa de animación (scroll suave + reveals). No bloquea si el CDN falla.
+// Capa de animación (reveals al scroll). No bloquea si el CDN falla.
 initMotion();
+
+// Oculta el preloader cuando todo está montado.
+hidePreloader();

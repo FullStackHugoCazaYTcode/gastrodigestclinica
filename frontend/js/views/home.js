@@ -30,35 +30,35 @@ const TESTIMONIOS = [
 
 export function renderHome() {
   mountFull(`
-    <!-- HERO -->
+    <!-- HERO con acciones rápidas -->
     <section class="home-hero">
       ${auroraHTML()}
-      <div class="container home-hero__inner">
-        <div class="home-hero__content">
-          <span class="eyebrow">${icon("stethoscope", 16)} Atención gastroenterológica en Huánuco</span>
-          <h1 class="home-hero__title">Tu salud digestiva en manos expertas</h1>
-          <p class="home-hero__lead">Reserva tu cita en línea, valida tu identidad con un código y accede a tus resultados en un portal seguro. Sin filas, sin llamadas.</p>
-          <div class="home-hero__cta">
-            <a class="btn btn--cta btn--lg" href="/reservar" data-link>${icon("calendar")} Reservar cita</a>
-            <a class="btn btn--ghost btn--lg" href="/portal" data-link>${icon("user")} Portal del paciente</a>
-          </div>
-          <ul class="home-hero__points">
-            <li>${icon("shieldCheck", 18)} Datos protegidos (Ley 29733)</li>
-            <li>${icon("message", 18)} Confirmación por WhatsApp/correo</li>
-          </ul>
-        </div>
-        <div class="home-hero__visual" aria-hidden="true">
-          <div class="float-card">
-            <div class="float-card__head">
-              <span class="float-card__icon">${icon("calendarCheck", 22)}</span>
-              <div><strong>Cita confirmada</strong><span>Gastroenterología</span></div>
-            </div>
-            <div class="float-card__row"><span>Paciente</span><b>María Elena G.</b></div>
-            <div class="float-card__row"><span>Fecha</span><b>Lun 10:00 a. m.</b></div>
-            <span class="badge badge--confirmada">CONFIRMADA_WSP</span>
-          </div>
-          <div class="float-pill float-pill--1">${icon("users", 18)} +8000 pacientes</div>
-          <div class="float-pill float-pill--2">${icon("star", 18)} 98% satisfacción</div>
+      <div class="container home-hero__centered">
+        <span class="eyebrow eyebrow--center">${icon("stethoscope", 16)} Atención gastroenterológica en Huánuco</span>
+        <h1 class="home-hero__title">Tu salud digestiva en manos expertas</h1>
+        <p class="home-hero__lead">Reserva tu cita, confírmala por WhatsApp y consulta tus resultados en un portal seguro. Sin filas, sin llamadas.</p>
+        <p class="quick__greet">Hola, ¿qué necesitas hacer hoy?</p>
+        <div class="quick-actions">
+          <a class="quick-card" href="/reservar" data-link>
+            <span class="quick-card__icon">${icon("calendarCheck", 24)}</span>
+            <span class="quick-card__title">Agendar una cita</span>
+          </a>
+          <a class="quick-card" href="/portal" data-link>
+            <span class="quick-card__icon">${icon("file", 24)}</span>
+            <span class="quick-card__title">Ver mis resultados</span>
+          </a>
+          <a class="quick-card" href="/medicos" data-link>
+            <span class="quick-card__icon">${icon("users", 24)}</span>
+            <span class="quick-card__title">Buscar un médico</span>
+          </a>
+          <a class="quick-card" href="/servicios" data-link>
+            <span class="quick-card__icon">${icon("stethoscope", 24)}</span>
+            <span class="quick-card__title">Conocer especialidades</span>
+          </a>
+          <a class="quick-card" href="/contacto" data-link>
+            <span class="quick-card__icon">${icon("mapPin", 24)}</span>
+            <span class="quick-card__title">Cómo llegar</span>
+          </a>
         </div>
       </div>
     </section>
