@@ -55,6 +55,32 @@
 .nav-links a:hover { background: var(--color-surface-alt); color: var(--color-text); text-decoration: none; }
 .nav-links a.is-active { background: var(--color-primary-50); color: var(--color-primary-700); }
 
+/* ---------- Topbar utilitaria (contacto / horario) ---------- */
+.topbar {
+  background: var(--color-primary-700);
+  color: #fff;
+  font-size: var(--text-xs);
+}
+.topbar__inner {
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+.topbar__info,
+.topbar__links { display: flex; align-items: center; gap: var(--space-5); }
+.topbar__info span,
+.topbar__links a {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+}
+.topbar__links a { transition: color var(--duration) var(--ease); }
+.topbar__links a:hover { color: #fff; text-decoration: none; }
+.topbar svg { opacity: 0.8; }
+@media (max-width: 860px) { .topbar { display: none; } }
+
 /* ---------- Footer ---------- */
 .footer {
   border-top: 1px solid var(--color-border);
