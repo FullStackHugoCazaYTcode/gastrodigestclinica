@@ -4,7 +4,7 @@
 //  como una app dedicada: Inicio, Mis citas, Documentos, Agendar.
 // =====================================================================
 import { api } from "../api.js";
-import { mountFull, icon, esc, toast } from "../ui.js";
+import { mountFull, icon, esc, toast, clearErrors, applyErrors, setLoading } from "../ui.js";
 import { navigate } from "../router.js";
 import { startBooking } from "./portalBooking.js";
 
@@ -291,12 +291,45 @@ function secAgendar(main) {
 //  Mis datos (perfil)
 // ---------------------------------------------------------------------
 function secPerfil(main) {
+  renderPerfil(main, false);
+}
+
+function renderPerfil(main, editando) {
   const s = sesion;
   const edad = calcEdad(s.fecha_nacimiento);
   const direccion = [s.direccion, s.distrito, s.provincia, s.departamento].filter(Boolean).join(", ");
+
+  const contacto = editando
+    ? `<form id="perfil-form" class="perfil-datos" novalidate>
+         <div class="field" data-field="telefono">
+           <label for="p_tel">Teléfono</label>
+           <input class="input" id="p_tel" name="telefono" inputmode="numeric" value="${esc(s.telefono || "")}" />
+           <div class="field__error"></div>
+         </div>
+         <div class="field" data-field="correo">
+           <label for="p_cor">Correo electrónico</label>
+           <input class="input" type="email" id="p_cor" name="correo" value="${esc(s.correo || "")}" />
+           <div class="field__error"></div>
+         </div>
+         <div class="field" data-field="direccion">
+           <label for="p_dir">Dirección</label>
+           <input class="input" id="p_dir" name="direccion" value="${esc(s.direccion || "")}" />
+           <div class="field__error"></div>
+         </div>
+         <div class="perfil-actions">
+           <button class="btn btn--ghost btn--sm" type="button" id="perfil-cancelar">Cancelar</button>
+           <button class="btn btn--primary btn--sm" type="submit" id="perfil-guardar">${icon("check", 16)} Guardar</button>
+         </div>
+       </form>`
+    : `<div class="perfil-datos">
+         <div class="perfil-field"><label>Teléfono</label><div class="perfil-value">${esc(s.telefono || "—")}</div></div>
+         <div class="perfil-field"><label>Correo electrónico</label><div class="perfil-value">${esc(s.correo || "—")}</div></div>
+         <div class="perfil-field"><label>Dirección</label><div class="perfil-value">${esc(direccion || "—")}</div></div>
+       </div>`;
+
   main.innerHTML = `
-    <h1 class="portal-h1">Mis datos</h1>
-    <div class="perfil-grid">
+    <h1 class="portal-h1">Mi perfil</h1>
+    <div class="perfil-grid3">
       <aside class="perfil-card">
         <div class="perfil-avatar">${icon("user", 44)}</div>
         <h2 class="perfil-name">${esc(s.nombres)} ${esc(s.apellidos)}</h2>
@@ -305,13 +338,67 @@ function secPerfil(main) {
           <li><span>${esc(s.tipo_documento)}</span><strong>${esc(s.numero_documento)}</strong></li>
         </ul>
       </aside>
-      <section class="perfil-datos portal-panel">
-        <h2 class="portal-h2">Datos de contacto</h2>
-        <div class="perfil-field"><label>Teléfono</label><div class="perfil-value">${esc(s.telefono || "—")}</div></div>
-        <div class="perfil-field"><label>Correo electrónico</label><div class="perfil-value">${esc(s.correo || "—")}</div></div>
-        <div class="perfil-field"><label>Dirección</label><div class="perfil-value">${esc(direccion || "—")}</div></div>
+
+      <section class="portal-panel">
+        <div class="perfil-head">
+          <h2 class="portal-h2">Datos de contacto</h2>
+          ${editando ? "" : `<button class="linklike" id="perfil-editar">${icon("user", 14)} Editar</button>`}
+        </div>
+        ${contacto}
       </section>
+
+      <aside class="perfil-side">
+        <div class="portal-panel portal-panel--accent">
+          <h3 class="perfil-side__title">Mis seres queridos</h3>
+          <p class="perfil-side__desc">Agrega familiares y agenda citas para ellos.</p>
+          <button class="btn btn--ghost btn--sm" id="perfil-familiar">${icon("users", 16)} Agregar un familiar</button>
+        </div>
+        <div class="portal-panel">
+          <h3 class="perfil-side__title">Investigación</h3>
+          <p class="perfil-side__desc">¿Quieres formar parte de estudios clínicos en GastroDigest?</p>
+          <div class="perfil-radios">
+            <label class="radio"><input type="radio" name="investigacion" /> Sí</label>
+            <label class="radio"><input type="radio" name="investigacion" checked /> No</label>
+          </div>
+        </div>
+      </aside>
     </div>`;
+
+  if (editando) {
+    main.querySelector("#perfil-cancelar").addEventListener("click", () => renderPerfil(main, false));
+    main.querySelector("#perfil-form").addEventListener("submit", (e) => guardarPerfil(e, main));
+  } else {
+    main.querySelector("#perfil-editar").addEventListener("click", () => renderPerfil(main, true));
+  }
+  main.querySelector("#perfil-familiar").addEventListener("click", () =>
+    toast("La gestión de familiares estará disponible próximamente.", "info")
+  );
+}
+
+async function guardarPerfil(e, main) {
+  e.preventDefault();
+  const form = e.currentTarget;
+  clearErrors(form);
+  const payload = {
+    telefono: form.telefono.value.trim(),
+    correo: form.correo.value.trim(),
+    direccion: form.direccion.value.trim(),
+  };
+  const btn = form.querySelector("#perfil-guardar");
+  setLoading(btn, true);
+  const res = await api.patch("/api/portal/perfil", payload);
+  setLoading(btn, false, `${icon("check", 16)} Guardar`);
+
+  if (res.success) {
+    Object.assign(sesion, res.data);
+    toast("Datos actualizados.", "success");
+    renderPerfil(main, false);
+  } else if (res.status === 400) {
+    applyErrors(form, res.errors);
+    toast(res.message, "warning");
+  } else {
+    toast(res.message || "No se pudo actualizar.", "error");
+  }
 }
 
 function calcEdad(fechaIso) {

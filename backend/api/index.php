@@ -70,6 +70,7 @@ $router->post('/api/portal/login',           fn() => (new PortalController())->l
 $router->post('/api/portal/logout',          fn() => (new PortalController())->logout());
 $router->get('/api/portal/sesion',           fn() => (new PortalController())->sesion());
 $router->get('/api/portal/citas',            fn() => (new PortalController())->citas());
+$router->patch('/api/portal/perfil',         fn() => (new PortalController())->actualizarPerfil());
 $router->get('/api/portal/documentos',       fn() => (new PortalController())->documentos());
 $router->get('/api/portal/documentos/{id}',  fn($p) => (new PortalController())->documento($p));
 

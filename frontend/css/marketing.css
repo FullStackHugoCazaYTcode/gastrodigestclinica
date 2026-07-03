@@ -590,7 +590,18 @@ body.portal-mode .app-page { min-height: 100vh; display: grid; place-items: cent
 .perfil-field { display: grid; gap: 4px; }
 .perfil-field label { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-text-muted); font-weight: var(--weight-semibold); }
 .perfil-value { padding: var(--space-3); background: var(--color-surface-alt); border-radius: var(--radius); font-size: var(--text-sm); }
+.perfil-grid3 { display: grid; grid-template-columns: 280px 1fr 300px; gap: var(--space-5); align-items: start; }
+.perfil-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4); }
+.perfil-head .portal-h2 { margin: 0; }
+.perfil-actions { display: flex; justify-content: flex-end; gap: var(--space-3); margin-top: var(--space-2); }
+.perfil-side { display: grid; gap: var(--space-4); }
+.perfil-side__title { font-size: var(--text-base); margin-bottom: var(--space-2); }
+.perfil-side__desc { font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-3); }
+.perfil-radios { display: flex; gap: var(--space-5); }
 
+@media (max-width: 980px) {
+  .perfil-grid3 { grid-template-columns: 1fr; }
+}
 @media (max-width: 860px) {
   .perfil-grid { grid-template-columns: 1fr; }
 }

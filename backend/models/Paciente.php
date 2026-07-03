@@ -50,6 +50,16 @@ final class Paciente extends BaseModel
         return (bool) $stmt->fetchColumn();
     }
 
+    /** Actualiza los datos de contacto editables desde el portal. */
+    public function actualizarContacto(int $id, array $d): void
+    {
+        $this->run(
+            'UPDATE Pacientes SET telefono = :tel, correo = :correo, direccion = :dir
+             WHERE id_paciente = :id',
+            [':tel' => $d['telefono'], ':correo' => $d['correo'], ':dir' => $d['direccion'], ':id' => $id]
+        );
+    }
+
     /**
      * Crea una cuenta de paciente verificada (registro del portal, Fase 2A):
      * incluye contraseña, dirección y consentimiento de datos (Ley 29733).
