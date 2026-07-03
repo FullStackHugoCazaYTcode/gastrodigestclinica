@@ -4,15 +4,9 @@
 //  como una app dedicada: Inicio, Mis citas, Documentos, Agendar.
 // =====================================================================
 import { api } from "../api.js";
-import { mountFull, icon, esc, toast, clearErrors, setFieldError, setLoading } from "../ui.js";
+import { mountFull, icon, esc, toast } from "../ui.js";
 import { navigate } from "../router.js";
-import { openOtpModal } from "../otpModal.js";
-
-const HOY = new Date().toISOString().slice(0, 10);
-const HORAS = [];
-for (let h = 8; h <= 17; h++) {
-  for (const m of [0, 30]) HORAS.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
-}
+import { startBooking } from "./portalBooking.js";
 
 const NAV = [
   ["inicio", "Inicio", "home"],
@@ -38,11 +32,9 @@ const DOC_CAT = {
   INFORME_COLONOSCOPIA:  { label: "Informes de colonoscopía", icon: "search" },
 };
 
-const SERVICIOS = [
-  ["stethoscope", "Consulta gastroenterológica", "Evaluación integral con un especialista."],
-  ["activity", "Endoscopía digestiva alta", "Diagnóstico de esófago y estómago, con sedación."],
-  ["search", "Colonoscopía", "Prevención y detección temprana del colon."],
-  ["droplet", "Pruebas de laboratorio", "Análisis clínicos con resultados en tu portal."],
+const MODALIDADES = [
+  ["stethoscope", "presencial", "Cita presencial", "Atiéndete en nuestra sede con un especialista."],
+  ["message", "virtual", "Cita virtual", "Consulta por videollamada desde donde estés."],
 ];
 
 let sesion = null;
@@ -272,10 +264,10 @@ async function secDocumentos(main) {
 function secAgendar(main) {
   main.innerHTML = `
     <h1 class="portal-h1">Agendar cita</h1>
-    <p class="portal-sub">Selecciona el servicio que deseas agendar.</p>
+    <p class="portal-sub">Selecciona la modalidad de tu cita.</p>
     <div class="serv-list">
-      ${SERVICIOS.map(([ic, t, d]) => `
-        <button class="serv-row" data-serv="${esc(t)}">
+      ${MODALIDADES.map(([ic, id, t, d]) => `
+        <button class="serv-row" data-mod="${id}">
           <span class="serv-row__icon">${icon(ic, 22)}</span>
           <span class="serv-row__body"><strong>${esc(t)}</strong><small>${esc(d)}</small></span>
           <span class="serv-row__arrow">${icon("arrowRight", 18)}</span>
@@ -283,92 +275,16 @@ function secAgendar(main) {
     </div>`;
 
   main.querySelectorAll(".serv-row").forEach((b) =>
-    b.addEventListener("click", () => renderBooking(main, b.dataset.serv))
+    b.addEventListener("click", () =>
+      startBooking({
+        main,
+        modalidad: b.dataset.mod,
+        sesion,
+        onBack: () => secAgendar(main),
+        onReserved: () => go("citas"),
+      })
+    )
   );
-}
-
-async function renderBooking(main, servicio) {
-  main.innerHTML = `
-    <button class="linklike portal-back" id="volver-serv">${icon("arrowRight", 16)} Volver a servicios</button>
-    <h1 class="portal-h1">${esc(servicio)}</h1>
-    <p class="portal-sub">Elige especialista, fecha y hora. Validaremos tu identidad con un código.</p>
-    <form id="book-form" class="wizard-form" novalidate>
-      <div class="form-grid">
-        <div class="field field--full" data-field="id_medico">
-          <label for="b_med">Médico especialista <span class="req">*</span></label>
-          <select class="select" id="b_med" name="id_medico"><option value="">Cargando…</option></select>
-          <div class="field__error"></div>
-        </div>
-        <div class="field" data-field="fecha">
-          <label for="b_fecha">Fecha <span class="req">*</span></label>
-          <input class="input" type="date" id="b_fecha" name="fecha" min="${HOY}" />
-          <div class="field__error"></div>
-        </div>
-        <div class="field" data-field="hora">
-          <label for="b_hora">Hora <span class="req">*</span></label>
-          <select class="select" id="b_hora" name="hora">
-            <option value="">Selecciona…</option>${HORAS.map((h) => `<option value="${h}">${h}</option>`).join("")}
-          </select>
-          <div class="field__error"></div>
-        </div>
-        <div class="field field--full" data-field="motivo">
-          <label for="b_motivo">Motivo de la consulta</label>
-          <textarea class="textarea" id="b_motivo" name="motivo">${esc(servicio)}</textarea>
-          <div class="field__error"></div>
-        </div>
-      </div>
-      <div class="wizard-actions">
-        <button class="btn btn--cta" type="submit" id="book-btn">${icon("calendar", 18)} Reservar cita</button>
-      </div>
-    </form>`;
-
-  main.querySelector("#volver-serv").addEventListener("click", () => secAgendar(main));
-
-  const sel = main.querySelector("#b_med");
-  const res = await api.get("/api/medicos");
-  if (res.success && Array.isArray(res.data)) {
-    sel.innerHTML = `<option value="">Selecciona un especialista…</option>` +
-      res.data.map((m) => `<option value="${m.id_medico}">Dr(a). ${esc(m.nombres)} ${esc(m.apellidos)} — ${esc(m.especialidad)}</option>`).join("");
-  } else {
-    sel.innerHTML = `<option value="">No se pudieron cargar los médicos</option>`;
-  }
-
-  main.querySelector("#book-form").addEventListener("submit", onReservar);
-}
-
-async function onReservar(e) {
-  e.preventDefault();
-  const form = e.currentTarget;
-  clearErrors(form);
-  const g = (n) => form[n].value.trim();
-
-  const errs = {};
-  if (!g("id_medico")) errs.id_medico = "Selecciona un especialista.";
-  if (!g("fecha")) errs.fecha = "Selecciona la fecha.";
-  if (!g("hora")) errs.hora = "Selecciona la hora.";
-  if (Object.keys(errs).length) {
-    Object.entries(errs).forEach(([k, v]) => setFieldError(form, k, v));
-    return;
-  }
-
-  const btn = form.querySelector("#book-btn");
-  setLoading(btn, true);
-  const res = await api.post("/api/citas", {
-    id_paciente: sesion.id_paciente,
-    id_medico: Number(g("id_medico")),
-    fecha_hora: `${g("fecha")} ${g("hora")}:00`,
-    motivo: g("motivo") || null,
-  });
-  setLoading(btn, false);
-
-  if (!res.success) {
-    toast(res.message || "No se pudo crear la cita.", "error");
-    return;
-  }
-  openOtpModal(res.data.id_cita, {
-    otpEnviado: res.data.otp_enviado,
-    onSuccess: () => { toast("¡Cita reservada!", "success"); go("citas"); },
-  });
 }
 
 // ---------------------------------------------------------------------
