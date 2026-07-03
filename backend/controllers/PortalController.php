@@ -92,6 +92,40 @@ final class PortalController
         Response::success($citas, 'Citas del paciente.');
     }
 
+    /** Actualiza los datos de contacto del paciente autenticado. */
+    public function actualizarPerfil(): void
+    {
+        $idPaciente = SessionGuard::requirePaciente();
+        $d = Request::json();
+
+        $tel = preg_replace('/\D+/', '', (string) ($d['telefono'] ?? ''));
+        $correo = trim((string) ($d['correo'] ?? ''));
+        $direccion = trim((string) ($d['direccion'] ?? ''));
+
+        $campos = [];
+        if (!Validator::telefono((string) $tel)) {
+            $campos['telefono'] = 'El celular debe tener entre 9 y 15 dígitos.';
+        }
+        if (!Validator::email($correo)) {
+            $campos['correo'] = 'Ingresa un correo electrónico válido.';
+        }
+        if ($direccion === '') {
+            $campos['direccion'] = 'Ingresa tu dirección.';
+        }
+        if (!empty($campos)) {
+            Response::error('Revisa los datos ingresados.', 400, $campos);
+        }
+
+        (new Paciente())->actualizarContacto($idPaciente, [
+            'telefono' => $tel, 'correo' => $correo, 'direccion' => $direccion,
+        ]);
+        Response::success([
+            'telefono'  => $tel,
+            'correo'    => $correo,
+            'direccion' => $direccion,
+        ], 'Datos actualizados correctamente.');
+    }
+
     public function documento(array $params): void
     {
         $idPaciente = SessionGuard::requirePaciente();
