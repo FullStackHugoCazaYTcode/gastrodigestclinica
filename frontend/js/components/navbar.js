@@ -1,6 +1,7 @@
 // =====================================================================
-//  navbar.js — Barra de navegación persistente.
-//  Transparente sobre el hero → sólida al hacer scroll. Menú móvil.
+//  navbar.js — Cabecera del sitio.
+//  #site-topbar: barra utilitaria (contacto/horario) que se desplaza.
+//  #site-nav: navbar fija (transparente sobre el hero → sólida al scroll).
 // =====================================================================
 import { icon } from "../ui.js";
 
@@ -13,6 +14,8 @@ const LINKS = [
 ];
 
 export function renderNavbar() {
+  renderTopbar();
+
   const nav = document.getElementById("site-nav");
   nav.className = "navbar";
   nav.innerHTML = `
@@ -51,4 +54,21 @@ export function renderNavbar() {
   const onScroll = () => nav.classList.toggle("is-scrolled", window.scrollY > 40);
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
+}
+
+function renderTopbar() {
+  const bar = document.getElementById("site-topbar");
+  if (!bar) return;
+  bar.className = "topbar";
+  bar.innerHTML = `
+    <div class="container topbar__inner">
+      <div class="topbar__info">
+        <span>${icon("mapPin", 14)} Jr. Dos de Mayo 1234, Huánuco</span>
+        <span>${icon("clock", 14)} Lun – Sáb · 8:00 a. m. – 6:00 p. m.</span>
+      </div>
+      <div class="topbar__links">
+        <a href="tel:+51962000000">${icon("phone", 14)} +51 962 000 000</a>
+        <a href="/portal" data-link>${icon("user", 14)} Portal del paciente</a>
+      </div>
+    </div>`;
 }
