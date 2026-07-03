@@ -43,7 +43,7 @@ export function renderHome() {
             <span class="quick-card__icon">${icon("calendarCheck", 24)}</span>
             <span class="quick-card__title">Agendar una cita</span>
           </a>
-          <a class="quick-card" href="/portal" data-link>
+          <a class="quick-card" href="/portal" target="_blank" rel="noopener">
             <span class="quick-card__icon">${icon("file", 24)}</span>
             <span class="quick-card__title">Ver mis resultados</span>
           </a>

@@ -285,6 +285,23 @@ final class Cita extends BaseModel
         return $stmt->fetch() ?: null;
     }
 
+    /**
+     * Citas del paciente para el portal (con datos del médico).
+     * Excluye PENDIENTE_OTP (reservas sin confirmar).
+     */
+    public function porPaciente(int $idPaciente): array
+    {
+        return $this->run(
+            "SELECT c.id_cita, c.fecha_hora, c.estado_actual, c.motivo,
+                    CONCAT(m.nombres, ' ', m.apellidos) AS medico, m.especialidad
+             FROM Citas c
+             JOIN Medicos m ON m.id_medico = c.id_medico
+             WHERE c.id_paciente = ? AND c.estado_actual <> 'PENDIENTE_OTP'
+             ORDER BY c.fecha_hora DESC",
+            [$idPaciente]
+        )->fetchAll();
+    }
+
     /** Inserta un registro de auditoría. Debe llamarse dentro de la transacción. */
     private function bitacora(int $idCita, ?string $anterior, string $nuevo, string $origen, ?string $detalle): void
     {
