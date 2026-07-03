@@ -4,8 +4,15 @@
 //  como una app dedicada: Inicio, Mis citas, Documentos, Agendar.
 // =====================================================================
 import { api } from "../api.js";
-import { mountFull, icon, esc, toast } from "../ui.js";
+import { mountFull, icon, esc, toast, clearErrors, setFieldError, setLoading } from "../ui.js";
 import { navigate } from "../router.js";
+import { openOtpModal } from "../otpModal.js";
+
+const HOY = new Date().toISOString().slice(0, 10);
+const HORAS = [];
+for (let h = 8; h <= 17; h++) {
+  for (const m of [0, 30]) HORAS.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
+}
 
 const NAV = [
   ["inicio", "Inicio", "home"],
@@ -62,7 +69,17 @@ export function renderDashboard(datos) {
 
       <div class="portal-body">
         <header class="portal-topbar">
-          <span class="portal-chip">${icon("user", 16)} ${nombre}</span>
+          <div class="portal-account">
+            <button class="portal-chip" id="account-btn" aria-haspopup="true" aria-expanded="false">
+              ${icon("user", 16)} ${nombre} ${icon("chevronDown", 16)}
+            </button>
+            <div class="portal-menu" id="account-menu" hidden>
+              <button class="portal-menu__item" data-act="perfil">${icon("user", 16)} Mis datos</button>
+              <button class="portal-menu__item" data-act="familiares">${icon("users", 16)} Mis familiares</button>
+              <button class="portal-menu__item" data-act="pagos">${icon("file", 16)} Medios de pago</button>
+              <button class="portal-menu__item portal-menu__item--danger" data-act="logout">${icon("logout", 16)} Cerrar sesión</button>
+            </div>
+          </div>
         </header>
         <main class="portal-main" id="portal-main" tabindex="-1"></main>
       </div>
@@ -73,7 +90,29 @@ export function renderDashboard(datos) {
     b.addEventListener("click", () => go(b.dataset.sec))
   );
   document.getElementById("portal-logout").addEventListener("click", cerrarSesion);
+  wireAccountMenu();
   go("inicio");
+}
+
+function wireAccountMenu() {
+  const btn = document.getElementById("account-btn");
+  const menu = document.getElementById("account-menu");
+  const toggle = (open) => {
+    const show = open ?? menu.hidden;
+    menu.hidden = !show;
+    btn.setAttribute("aria-expanded", String(show));
+  };
+  btn.addEventListener("click", (e) => { e.stopPropagation(); toggle(); });
+  document.addEventListener("click", () => { if (!menu.hidden) toggle(false); });
+  menu.addEventListener("click", (e) => {
+    const item = e.target.closest(".portal-menu__item");
+    if (!item) return;
+    toggle(false);
+    const act = item.dataset.act;
+    if (act === "perfil") go("perfil");
+    else if (act === "logout") cerrarSesion();
+    else toast("Esta sección estará disponible próximamente.", "info");
+  });
 }
 
 function go(sec) {
@@ -82,7 +121,8 @@ function go(sec) {
   );
   const main = document.getElementById("portal-main");
   main.scrollTo?.({ top: 0 });
-  ({ inicio: secInicio, citas: secCitas, documentos: secDocumentos, agendar: secAgendar }[sec] || secInicio)(main);
+  window.scrollTo({ top: 0 });
+  ({ inicio: secInicio, citas: secCitas, documentos: secDocumentos, agendar: secAgendar, perfil: secPerfil }[sec] || secInicio)(main);
 }
 
 async function cerrarSesion() {
@@ -243,8 +283,130 @@ function secAgendar(main) {
     </div>`;
 
   main.querySelectorAll(".serv-row").forEach((b) =>
-    b.addEventListener("click", () => navigate("/reservar"))
+    b.addEventListener("click", () => renderBooking(main, b.dataset.serv))
   );
+}
+
+async function renderBooking(main, servicio) {
+  main.innerHTML = `
+    <button class="linklike portal-back" id="volver-serv">${icon("arrowRight", 16)} Volver a servicios</button>
+    <h1 class="portal-h1">${esc(servicio)}</h1>
+    <p class="portal-sub">Elige especialista, fecha y hora. Validaremos tu identidad con un código.</p>
+    <form id="book-form" class="wizard-form" novalidate>
+      <div class="form-grid">
+        <div class="field field--full" data-field="id_medico">
+          <label for="b_med">Médico especialista <span class="req">*</span></label>
+          <select class="select" id="b_med" name="id_medico"><option value="">Cargando…</option></select>
+          <div class="field__error"></div>
+        </div>
+        <div class="field" data-field="fecha">
+          <label for="b_fecha">Fecha <span class="req">*</span></label>
+          <input class="input" type="date" id="b_fecha" name="fecha" min="${HOY}" />
+          <div class="field__error"></div>
+        </div>
+        <div class="field" data-field="hora">
+          <label for="b_hora">Hora <span class="req">*</span></label>
+          <select class="select" id="b_hora" name="hora">
+            <option value="">Selecciona…</option>${HORAS.map((h) => `<option value="${h}">${h}</option>`).join("")}
+          </select>
+          <div class="field__error"></div>
+        </div>
+        <div class="field field--full" data-field="motivo">
+          <label for="b_motivo">Motivo de la consulta</label>
+          <textarea class="textarea" id="b_motivo" name="motivo">${esc(servicio)}</textarea>
+          <div class="field__error"></div>
+        </div>
+      </div>
+      <div class="wizard-actions">
+        <button class="btn btn--cta" type="submit" id="book-btn">${icon("calendar", 18)} Reservar cita</button>
+      </div>
+    </form>`;
+
+  main.querySelector("#volver-serv").addEventListener("click", () => secAgendar(main));
+
+  const sel = main.querySelector("#b_med");
+  const res = await api.get("/api/medicos");
+  if (res.success && Array.isArray(res.data)) {
+    sel.innerHTML = `<option value="">Selecciona un especialista…</option>` +
+      res.data.map((m) => `<option value="${m.id_medico}">Dr(a). ${esc(m.nombres)} ${esc(m.apellidos)} — ${esc(m.especialidad)}</option>`).join("");
+  } else {
+    sel.innerHTML = `<option value="">No se pudieron cargar los médicos</option>`;
+  }
+
+  main.querySelector("#book-form").addEventListener("submit", onReservar);
+}
+
+async function onReservar(e) {
+  e.preventDefault();
+  const form = e.currentTarget;
+  clearErrors(form);
+  const g = (n) => form[n].value.trim();
+
+  const errs = {};
+  if (!g("id_medico")) errs.id_medico = "Selecciona un especialista.";
+  if (!g("fecha")) errs.fecha = "Selecciona la fecha.";
+  if (!g("hora")) errs.hora = "Selecciona la hora.";
+  if (Object.keys(errs).length) {
+    Object.entries(errs).forEach(([k, v]) => setFieldError(form, k, v));
+    return;
+  }
+
+  const btn = form.querySelector("#book-btn");
+  setLoading(btn, true);
+  const res = await api.post("/api/citas", {
+    id_paciente: sesion.id_paciente,
+    id_medico: Number(g("id_medico")),
+    fecha_hora: `${g("fecha")} ${g("hora")}:00`,
+    motivo: g("motivo") || null,
+  });
+  setLoading(btn, false);
+
+  if (!res.success) {
+    toast(res.message || "No se pudo crear la cita.", "error");
+    return;
+  }
+  openOtpModal(res.data.id_cita, {
+    otpEnviado: res.data.otp_enviado,
+    onSuccess: () => { toast("¡Cita reservada!", "success"); go("citas"); },
+  });
+}
+
+// ---------------------------------------------------------------------
+//  Mis datos (perfil)
+// ---------------------------------------------------------------------
+function secPerfil(main) {
+  const s = sesion;
+  const edad = calcEdad(s.fecha_nacimiento);
+  const direccion = [s.direccion, s.distrito, s.provincia, s.departamento].filter(Boolean).join(", ");
+  main.innerHTML = `
+    <h1 class="portal-h1">Mis datos</h1>
+    <div class="perfil-grid">
+      <aside class="perfil-card">
+        <div class="perfil-avatar">${icon("user", 44)}</div>
+        <h2 class="perfil-name">${esc(s.nombres)} ${esc(s.apellidos)}</h2>
+        <ul class="perfil-meta">
+          <li><span>Edad</span><strong>${edad >= 0 ? edad + " años" : "—"}</strong></li>
+          <li><span>${esc(s.tipo_documento)}</span><strong>${esc(s.numero_documento)}</strong></li>
+        </ul>
+      </aside>
+      <section class="perfil-datos portal-panel">
+        <h2 class="portal-h2">Datos de contacto</h2>
+        <div class="perfil-field"><label>Teléfono</label><div class="perfil-value">${esc(s.telefono || "—")}</div></div>
+        <div class="perfil-field"><label>Correo electrónico</label><div class="perfil-value">${esc(s.correo || "—")}</div></div>
+        <div class="perfil-field"><label>Dirección</label><div class="perfil-value">${esc(direccion || "—")}</div></div>
+      </section>
+    </div>`;
+}
+
+function calcEdad(fechaIso) {
+  if (!fechaIso) return -1;
+  const nac = new Date(String(fechaIso).replace(" ", "T"));
+  if (isNaN(nac.getTime())) return -1;
+  const hoy = new Date();
+  let edad = hoy.getFullYear() - nac.getFullYear();
+  const m = hoy.getMonth() - nac.getMonth();
+  if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) edad--;
+  return edad;
 }
 
 // ---------------------------------------------------------------------

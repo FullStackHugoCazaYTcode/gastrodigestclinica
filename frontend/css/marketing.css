@@ -553,3 +553,44 @@ body.portal-mode .app-page { min-height: 100vh; display: grid; place-items: cent
   .portal-grid { grid-template-columns: 1fr; }
   .doc-cats, .doc-list { grid-template-columns: 1fr; }
 }
+
+/* Menú de cuenta (chip → dropdown) */
+.portal-account { position: relative; }
+.portal-chip { cursor: pointer; }
+.portal-chip svg:last-child { color: var(--color-text-muted); }
+.portal-menu {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 20; min-width: 220px;
+  background: #fff; border: 1px solid var(--color-border); border-radius: var(--radius);
+  box-shadow: var(--shadow-lg); padding: var(--space-2); display: grid; gap: 2px;
+}
+.portal-menu[hidden] { display: none; }
+.portal-menu__item {
+  display: flex; align-items: center; gap: var(--space-3); width: 100%; padding: var(--space-3);
+  border: none; background: transparent; border-radius: var(--radius-sm); font: inherit;
+  font-size: var(--text-sm); color: var(--color-text); cursor: pointer; text-align: left;
+  transition: background var(--duration) var(--ease);
+}
+.portal-menu__item:hover { background: var(--color-surface-alt); }
+.portal-menu__item svg { color: var(--color-text-muted); }
+.portal-menu__item--danger, .portal-menu__item--danger svg { color: var(--color-error); }
+
+/* Volver (flecha invertida) */
+.portal-back { display: inline-flex; align-items: center; gap: 4px; margin-bottom: var(--space-3); }
+.portal-back svg { transform: rotate(180deg); }
+
+/* Mis datos (perfil) */
+.perfil-grid { display: grid; grid-template-columns: 300px 1fr; gap: var(--space-5); align-items: start; }
+.perfil-card { background: var(--color-primary-50); border-radius: var(--radius-lg); padding: var(--space-6) var(--space-5); display: grid; justify-items: center; gap: var(--space-3); text-align: center; }
+.perfil-avatar { display: grid; place-items: center; width: 96px; height: 96px; border-radius: 50%; background: #fff; color: var(--color-primary); box-shadow: var(--shadow-sm); }
+.perfil-name { font-size: var(--text-lg); color: var(--color-primary-700); }
+.perfil-meta { list-style: none; display: grid; gap: var(--space-2); padding: 0; width: 100%; margin: 0; }
+.perfil-meta li { display: flex; justify-content: space-between; gap: var(--space-3); font-size: var(--text-sm); padding-top: var(--space-2); border-top: 1px dashed rgba(0, 0, 0, 0.08); }
+.perfil-meta span { color: var(--color-text-muted); }
+.perfil-datos { display: grid; gap: var(--space-4); }
+.perfil-field { display: grid; gap: 4px; }
+.perfil-field label { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-text-muted); font-weight: var(--weight-semibold); }
+.perfil-value { padding: var(--space-3); background: var(--color-surface-alt); border-radius: var(--radius); font-size: var(--text-sm); }
+
+@media (max-width: 860px) {
+  .perfil-grid { grid-template-columns: 1fr; }
+}
