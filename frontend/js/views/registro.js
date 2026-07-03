@@ -21,6 +21,8 @@ function fresco() {
 }
 
 export function renderRegistro() {
+  // El registro es parte de la app del portal: sin el chrome de marketing.
+  document.body.classList.add("portal-mode");
   estado = fresco();
   mount(shellHTML());
   irAPaso(1);

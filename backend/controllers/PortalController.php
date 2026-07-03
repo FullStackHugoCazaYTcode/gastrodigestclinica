@@ -71,6 +71,10 @@ final class PortalController
             'telefono'         => $p['telefono'],
             'fecha_nacimiento' => $p['fecha_nacimiento'],
             'sexo'             => $p['sexo'],
+            'departamento'     => $p['departamento'] ?? null,
+            'provincia'        => $p['provincia'] ?? null,
+            'distrito'         => $p['distrito'] ?? null,
+            'direccion'        => $p['direccion'] ?? null,
         ], 'Sesión activa.');
     }
 
