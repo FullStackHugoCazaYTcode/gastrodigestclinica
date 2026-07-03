@@ -18,6 +18,7 @@ use App\Controllers\MedicoController;
 use App\Controllers\OtpController;
 use App\Controllers\PacienteController;
 use App\Controllers\PortalController;
+use App\Controllers\RegistroController;
 use App\Controllers\WebhookController;
 
 // ---------- CORS (frontend en Vercel ⇄ backend en Railway) ----------
@@ -57,9 +58,17 @@ $router->post('/api/citas/reprogramacion', fn() => (new WebhookController())->re
 $router->get('/api/reprogramar/{token}',   fn($p) => (new CitaController())->obtenerPorToken($p));
 $router->patch('/api/reprogramar/{token}', fn($p) => (new CitaController())->reprogramar($p));
 
+// Registro de cuenta de paciente (wizard Fase 2A)
+$router->get('/api/intereses',            fn() => (new RegistroController())->intereses());
+$router->post('/api/registro/iniciar',    fn() => (new RegistroController())->iniciar());
+$router->post('/api/registro/verificar',  fn() => (new RegistroController())->verificar());
+$router->post('/api/registro/reenviar',   fn() => (new RegistroController())->reenviar());
+$router->post('/api/registro/completar',  fn() => (new RegistroController())->completar());
+
 // Portal privado del paciente
 $router->post('/api/portal/login',           fn() => (new PortalController())->login());
 $router->post('/api/portal/logout',          fn() => (new PortalController())->logout());
+$router->get('/api/portal/sesion',           fn() => (new PortalController())->sesion());
 $router->get('/api/portal/documentos',       fn() => (new PortalController())->documentos());
 $router->get('/api/portal/documentos/{id}',  fn($p) => (new PortalController())->documento($p));
 

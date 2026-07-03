@@ -18,7 +18,65 @@ for (let h = 8; h <= 17; h++) {
 const HOY = new Date().toISOString().slice(0, 10);
 const val = (form, name) => form.querySelector(`[name="${name}"]`)?.value.trim() ?? "";
 
-export function renderReserva() {
+let sesion = null;
+
+// La reserva requiere cuenta: si no hay sesión, se muestra la puerta de acceso.
+export async function renderReserva() {
+  mount(`<div class="card"><div class="skeleton" style="height:140px"></div></div>`);
+  const ses = await api.get("/api/portal/sesion");
+  if (!ses.success) {
+    sesion = null;
+    return renderGate();
+  }
+  sesion = ses.data;
+  montarFormulario();
+  prefillDesdeSesion();
+}
+
+function renderGate() {
+  mount(`
+    <section class="hero" style="text-align:center" aria-labelledby="gate-title">
+      <span class="eyebrow eyebrow--center">${icon("lock", 16)} Reserva con tu cuenta</span>
+      <h1 id="gate-title">Necesitas una cuenta para reservar</h1>
+      <p>Crea tu cuenta o inicia sesión para agendar tu cita y llevar el control de tus resultados en el portal.</p>
+    </section>
+    <div class="gate-actions">
+      <a class="btn btn--cta btn--lg" href="/registro" data-link>${icon("user")} Crear una cuenta</a>
+      <a class="btn btn--ghost btn--lg" href="/portal" data-link>${icon("lock")} Ya tengo cuenta</a>
+    </div>
+  `);
+}
+
+function prefillDesdeSesion() {
+  if (!sesion) return;
+  const form = document.getElementById("reserva-form");
+  if (!form) return;
+  const set = (name, v) => {
+    const el = form.querySelector(`[name="${name}"]`);
+    if (el && v != null && v !== "") el.value = v;
+  };
+  set("tipo_documento", sesion.tipo_documento);
+  set("numero_documento", sesion.numero_documento);
+  set("nombres", sesion.nombres);
+  set("apellidos", sesion.apellidos);
+  set("correo", sesion.correo);
+  set("telefono", sesion.telefono);
+  set("fecha_nacimiento", sesion.fecha_nacimiento);
+  set("sexo", sesion.sexo);
+  // La identidad ya está verificada en la cuenta: se bloquea la edición.
+  ["numero_documento", "nombres", "apellidos", "correo", "telefono", "fecha_nacimiento"].forEach((n) => {
+    const el = form.querySelector(`[name="${n}"]`);
+    if (el) { el.readOnly = true; el.setAttribute("aria-readonly", "true"); }
+  });
+  ["tipo_documento", "sexo"].forEach((n) => {
+    const el = form.querySelector(`[name="${n}"]`);
+    if (el) el.disabled = true;
+  });
+  const cons = form.querySelector("#consentimiento");
+  if (cons) cons.checked = true;
+}
+
+function montarFormulario() {
   mount(`
     <section class="hero" aria-labelledby="reserva-title">
       <span class="eyebrow">${icon("stethoscope", 16)} Atención gastroenterológica</span>
@@ -329,24 +387,30 @@ async function onSubmit(e, form) {
     };
   }
 
-  // 1) Registrar paciente.
-  const reg = await api.post("/api/pacientes", pacientePayload);
-  if (!reg.success) {
-    setLoading(btn, false);
-    if (reg.status === 409) {
-      setFieldError(form, "numero_documento", reg.message);
-      toast("Este documento ya está registrado. Usa el portal o un documento distinto.", "warning");
-    } else {
-      applyErrors(form, reg.errors);
-      toast(reg.message || "No se pudo registrar el paciente.", "error");
+  // 1) Paciente: la reserva usa la cuenta en sesión (reserva con cuenta).
+  let idPaciente;
+  if (sesion) {
+    idPaciente = sesion.id_paciente;
+  } else {
+    const reg = await api.post("/api/pacientes", pacientePayload);
+    if (!reg.success) {
+      setLoading(btn, false);
+      if (reg.status === 409) {
+        setFieldError(form, "numero_documento", reg.message);
+        toast("Este documento ya está registrado. Usa el portal o un documento distinto.", "warning");
+      } else {
+        applyErrors(form, reg.errors);
+        toast(reg.message || "No se pudo registrar el paciente.", "error");
+      }
+      return;
     }
-    return;
+    idPaciente = reg.data.id_paciente;
   }
 
   // 2) Crear la cita (PENDIENTE_OTP).
   const selMedico = form.querySelector("#id_medico");
   const citaPayload = {
-    id_paciente: reg.data.id_paciente,
+    id_paciente: idPaciente,
     id_medico: Number(val(form, "id_medico")),
     fecha_hora: `${val(form, "fecha")} ${val(form, "hora")}:00`,
     motivo: val(form, "motivo") || null,

@@ -51,6 +51,28 @@ final class PortalController
         Response::success(null, 'Sesión cerrada.');
     }
 
+    /** Devuelve el paciente autenticado (o 401). Usado para gatear /reservar. */
+    public function sesion(): void
+    {
+        $idPaciente = SessionGuard::requirePaciente();
+        $p = (new Paciente())->porId($idPaciente);
+        if ($p === null) {
+            SessionGuard::destroy();
+            Response::error('Sesión inválida.', 401);
+        }
+        Response::success([
+            'id_paciente'      => (int) $p['id_paciente'],
+            'nombres'          => $p['nombres'],
+            'apellidos'        => $p['apellidos'],
+            'tipo_documento'   => $p['tipo_documento'],
+            'numero_documento' => $p['numero_documento'],
+            'correo'           => $p['correo'],
+            'telefono'         => $p['telefono'],
+            'fecha_nacimiento' => $p['fecha_nacimiento'],
+            'sexo'             => $p['sexo'],
+        ], 'Sesión activa.');
+    }
+
     public function documentos(): void
     {
         $idPaciente = SessionGuard::requirePaciente();
