@@ -455,7 +455,7 @@ function renderExito(r) {
       </div>
       <div class="actions">
         <a class="btn btn--ghost" href="/reservar" data-link>${icon("calendar")} Reservar otra cita</a>
-        <a class="btn btn--primary" href="/portal" data-link>${icon("user")} Ir al portal</a>
+        <a class="btn btn--primary" href="/portal" target="_blank" rel="noopener">${icon("user")} Ir al portal</a>
       </div>
     </div>
   `);

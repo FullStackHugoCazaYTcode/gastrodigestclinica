@@ -2,21 +2,16 @@
 //  views/portal.js — Portal privado del paciente (login + documentos).
 // =====================================================================
 import { api } from "../api.js";
-import { mount, icon, esc, toast, clearErrors, setFieldError, applyErrors, setLoading } from "../ui.js";
+import { mount, icon, toast, clearErrors, setFieldError, applyErrors, setLoading } from "../ui.js";
+import { renderDashboard } from "./portalDashboard.js";
 
-const TIPO_DOC = {
-  RECETA_MEDICA: "Receta médica",
-  INFORME_ENDOSCOPIA: "Informe de endoscopía",
-  INFORME_COLONOSCOPIA: "Informe de colonoscopía",
-  RESULTADO_LABORATORIO: "Resultado de laboratorio",
-};
-
+// El portal funciona como app dedicada: portal-mode oculta el chrome de marketing.
 export async function renderPortal() {
-  // Si ya hay sesión activa, mostramos los documentos directamente.
+  document.body.classList.add("portal-mode");
   mount(`<div class="card"><div class="skeleton" style="height:120px"></div></div>`);
-  const res = await api.get("/api/portal/documentos");
-  if (res.success) {
-    renderDocumentos(res.data || []);
+  const ses = await api.get("/api/portal/sesion");
+  if (ses.success) {
+    renderDashboard(ses.data);
   } else {
     renderLogin();
   }
@@ -101,39 +96,4 @@ function renderLogin() {
       toast(res.message || "No se pudo iniciar sesión.", "error");
     }
   });
-}
-
-function renderDocumentos(docs) {
-  const lista = docs.length
-    ? `<div class="doc-list">${docs.map(docCard).join("")}</div>`
-    : `<div class="state"><div class="state__icon state__icon--info">${icon("file", 32)}</div>
-         <h3>Aún no tienes documentos</h3>
-         <p class="text-muted">Cuando tu médico emita recetas o informes, aparecerán aquí.</p></div>`;
-
-  mount(`
-    <section class="hero" style="display:flex;justify-content:space-between;align-items:flex-end;gap:var(--space-4);flex-wrap:wrap">
-      <div>
-        <span class="eyebrow">${icon("file", 16)} Mis documentos</span>
-        <h1>Documentos clínicos</h1>
-      </div>
-      <button class="btn btn--ghost" id="logout-btn">${icon("logout")} Cerrar sesión</button>
-    </section>
-    ${lista}
-  `);
-
-  document.getElementById("logout-btn").addEventListener("click", async () => {
-    await api.post("/api/portal/logout", {});
-    toast("Sesión cerrada.", "info");
-    renderLogin();
-  });
-}
-
-function docCard(d) {
-  return `
-    <article class="doc-card">
-      <span class="doc-card__type">${icon("file", 16)} ${esc(TIPO_DOC[d.tipo_documento] ?? d.tipo_documento)}</span>
-      <span class="doc-card__title">${esc(d.titulo)}</span>
-      ${d.descripcion ? `<span class="doc-card__meta">${esc(d.descripcion)}</span>` : ""}
-      <span class="doc-card__meta">Emitido el ${esc(d.fecha_emision)}${d.medico_emisor ? ` · ${esc(d.medico_emisor)}` : ""}</span>
-    </article>`;
 }

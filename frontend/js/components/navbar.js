@@ -33,7 +33,7 @@ export function renderNavbar() {
           ${LINKS.map(([h, t]) => `<li><a href="${h}" data-link>${t}</a></li>`).join("")}
         </ul>
         <div class="navbar__cta">
-          <a class="btn btn--ghost btn--sm" href="/portal" data-link>${icon("user", 18)} Portal</a>
+          <a class="btn btn--ghost btn--sm" href="/portal" target="_blank" rel="noopener">${icon("user", 18)} Portal</a>
           <a class="btn btn--cta btn--sm" href="/reservar" data-link>${icon("calendar", 18)} Reservar cita</a>
         </div>
       </nav>
@@ -68,7 +68,7 @@ function renderTopbar() {
       </div>
       <div class="topbar__links">
         <a href="tel:+51962000000">${icon("phone", 14)} +51 962 000 000</a>
-        <a href="/portal" data-link>${icon("user", 14)} Portal del paciente</a>
+        <a href="/portal" target="_blank" rel="noopener">${icon("user", 14)} Portal del paciente</a>
       </div>
     </div>`;
 }

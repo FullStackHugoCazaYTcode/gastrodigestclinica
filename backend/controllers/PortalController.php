@@ -8,6 +8,7 @@ use App\Core\Response;
 use App\Core\Security;
 use App\Core\Validator;
 use App\Middlewares\SessionGuard;
+use App\Models\Cita;
 use App\Models\DocumentoClinico;
 use App\Models\Paciente;
 
@@ -78,6 +79,13 @@ final class PortalController
         $idPaciente = SessionGuard::requirePaciente();
         $docs = (new DocumentoClinico())->porPaciente($idPaciente);
         Response::success($docs, 'Documentos del paciente.');
+    }
+
+    public function citas(): void
+    {
+        $idPaciente = SessionGuard::requirePaciente();
+        $citas = (new Cita())->porPaciente($idPaciente);
+        Response::success($citas, 'Citas del paciente.');
     }
 
     public function documento(array $params): void

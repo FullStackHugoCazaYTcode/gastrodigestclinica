@@ -26,6 +26,9 @@ export function navigate(path) {
 
 function resolve() {
   const path = location.pathname || "/";
+  // El portal activa "portal-mode" (app dedicada). Al navegar a cualquier
+  // otra ruta se restaura el chrome de marketing; renderPortal lo re-activa.
+  document.body.classList.remove("portal-mode");
   for (const r of routes) {
     const match = path.match(r.regex);
     if (match) {

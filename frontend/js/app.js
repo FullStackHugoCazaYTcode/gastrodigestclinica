@@ -16,6 +16,9 @@ import { renderReprogramar } from "./views/reprogramar.js";
 import { initMotion } from "./motion.js";
 import { hidePreloader } from "./components/preloader.js";
 
+// Evita el parpadeo del chrome de marketing si la app arranca en el portal.
+if (location.pathname.startsWith("/portal")) document.body.classList.add("portal-mode");
+
 // Layout persistente.
 renderNavbar();
 renderFooter();
