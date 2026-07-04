@@ -50,7 +50,8 @@ export function renderFooter() {
         <span>© <span id="year"></span> GastroDigest · Huánuco, Perú</span>
         <span class="footer__bottom-links">
           <a href="/medico" target="_blank" rel="noopener">${icon("stethoscope", 14)} Acceso médicos</a>
-          <span>Ley N.° 29733 · Escuela Profesional de Ingeniería de Sistemas (I.S.)</span>
+          <a href="/admin" target="_blank" rel="noopener">${icon("shieldCheck", 14)} Administración</a>
+          <span>Ley N.° 29733 · I.S.</span>
         </span>
       </div>
     </div>`;

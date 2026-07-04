@@ -24,6 +24,21 @@ final class Paciente extends BaseModel
         return $stmt->fetch() ?: null;
     }
 
+    /** Listado de pacientes para el panel de administración. */
+    public function todos(): array
+    {
+        return $this->run(
+            "SELECT id_paciente, CONCAT(nombres, ' ', apellidos) AS nombre,
+                    tipo_documento, numero_documento, correo, telefono, created_at
+             FROM Pacientes ORDER BY created_at DESC"
+        )->fetchAll();
+    }
+
+    public function total(): int
+    {
+        return (int) $this->run('SELECT COUNT(*) FROM Pacientes')->fetchColumn();
+    }
+
     /** Datos mínimos para login del portal privado. */
     public function credencialPorDocumento(string $tipo, string $numero): ?array
     {

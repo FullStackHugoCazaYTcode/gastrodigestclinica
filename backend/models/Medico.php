@@ -68,4 +68,49 @@ final class Medico extends BaseModel
         );
         return $stmt->fetchColumn() !== false;
     }
+
+    // ---- Gestión desde el panel de administración ----
+
+    /** Todos los médicos (activos e inactivos) para el admin. */
+    public function todos(): array
+    {
+        return $this->run(
+            'SELECT id_medico, cmp, nombres, apellidos, especialidad, correo, telefono, estado_activo
+             FROM Medicos ORDER BY estado_activo DESC, apellidos, nombres'
+        )->fetchAll();
+    }
+
+    public function cmpExiste(string $cmp): bool
+    {
+        return $this->run('SELECT 1 FROM Medicos WHERE cmp = ? LIMIT 1', [$cmp])->fetchColumn() !== false;
+    }
+
+    public function correoExiste(string $correo): bool
+    {
+        return $this->run('SELECT 1 FROM Medicos WHERE correo = ? LIMIT 1', [$correo])->fetchColumn() !== false;
+    }
+
+    /** @param array<string,mixed> $d */
+    public function crear(array $d): int
+    {
+        $this->run(
+            'INSERT INTO Medicos (cmp, nombres, apellidos, especialidad, correo, telefono, password_hash, estado_activo)
+             VALUES (:cmp, :nom, :ape, :esp, :correo, :tel, :hash, 1)',
+            [
+                ':cmp'    => $d['cmp'],
+                ':nom'    => $d['nombres'],
+                ':ape'    => $d['apellidos'],
+                ':esp'    => $d['especialidad'],
+                ':correo' => $d['correo'],
+                ':tel'    => $d['telefono'] ?? null,
+                ':hash'   => $d['password_hash'],
+            ]
+        );
+        return (int) $this->db->lastInsertId();
+    }
+
+    public function cambiarEstado(int $id, bool $activo): void
+    {
+        $this->run('UPDATE Medicos SET estado_activo = ? WHERE id_medico = ?', [$activo ? 1 : 0, $id]);
+    }
 }
