@@ -302,6 +302,21 @@ final class Cita extends BaseModel
         )->fetchAll();
     }
 
+    /** Agenda del médico: sus citas con el nombre del paciente. */
+    public function porMedico(int $idMedico): array
+    {
+        return $this->run(
+            "SELECT c.id_cita, c.fecha_hora, c.estado_actual, c.motivo,
+                    c.id_paciente, CONCAT(p.nombres, ' ', p.apellidos) AS paciente,
+                    p.tipo_documento, p.numero_documento
+             FROM Citas c
+             JOIN Pacientes p ON p.id_paciente = c.id_paciente
+             WHERE c.id_medico = ? AND c.estado_actual <> 'PENDIENTE_OTP'
+             ORDER BY c.fecha_hora DESC",
+            [$idMedico]
+        )->fetchAll();
+    }
+
     /** Inserta un registro de auditoría. Debe llamarse dentro de la transacción. */
     private function bitacora(int $idCita, ?string $anterior, string $nuevo, string $origen, ?string $detalle): void
     {

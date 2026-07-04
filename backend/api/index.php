@@ -15,6 +15,7 @@ use App\Core\Router;
 use App\Controllers\AseguradoraController;
 use App\Controllers\CitaController;
 use App\Controllers\MedicoController;
+use App\Controllers\MedicoPortalController;
 use App\Controllers\OtpController;
 use App\Controllers\PacienteController;
 use App\Controllers\PortalController;
@@ -64,6 +65,14 @@ $router->post('/api/registro/iniciar',    fn() => (new RegistroController())->in
 $router->post('/api/registro/verificar',  fn() => (new RegistroController())->verificar());
 $router->post('/api/registro/reenviar',   fn() => (new RegistroController())->reenviar());
 $router->post('/api/registro/completar',  fn() => (new RegistroController())->completar());
+
+// Área privada del médico
+$router->post('/api/medico/login',      fn() => (new MedicoPortalController())->login());
+$router->post('/api/medico/logout',     fn() => (new MedicoPortalController())->logout());
+$router->get('/api/medico/sesion',      fn() => (new MedicoPortalController())->sesion());
+$router->get('/api/medico/agenda',      fn() => (new MedicoPortalController())->agenda());
+$router->get('/api/medico/pacientes',   fn() => (new MedicoPortalController())->pacientes());
+$router->post('/api/medico/documentos', fn() => (new MedicoPortalController())->emitirDocumento());
 
 // Portal privado del paciente
 $router->post('/api/portal/login',           fn() => (new PortalController())->login());

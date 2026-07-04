@@ -40,6 +40,32 @@ final class SessionGuard
         $_SESSION['last_activity'] = time();
     }
 
+    /** Devuelve el id_medico autenticado o corta la ejecución con 401. */
+    public static function requireMedico(): int
+    {
+        Security::startSession();
+        $idMedico = $_SESSION['id_medico'] ?? null;
+        $last     = (int) ($_SESSION['med_last'] ?? 0);
+
+        if ($idMedico === null) {
+            Response::error('No autenticado. Inicie sesión como médico.', 401);
+        }
+        if ((time() - $last) > self::TIMEOUT_SEGUNDOS) {
+            self::destroy();
+            Response::error('Sesión expirada. Inicie sesión nuevamente.', 401);
+        }
+        $_SESSION['med_last'] = time();
+        return (int) $idMedico;
+    }
+
+    public static function loginMedico(int $idMedico): void
+    {
+        Security::startSession();
+        session_regenerate_id(true);
+        $_SESSION['id_medico'] = $idMedico;
+        $_SESSION['med_last']  = time();
+    }
+
     public static function destroy(): void
     {
         Security::startSession();

@@ -12,12 +12,13 @@ import { renderContacto } from "./views/contacto.js";
 import { renderReserva } from "./views/reserva.js";
 import { renderRegistro } from "./views/registro.js";
 import { renderPortal } from "./views/portal.js";
+import { renderMedicoPortal } from "./views/medicoPortal.js";
 import { renderReprogramar } from "./views/reprogramar.js";
 import { initMotion } from "./motion.js";
 import { hidePreloader } from "./components/preloader.js";
 
-// Evita el parpadeo del chrome de marketing si la app arranca en el portal.
-if (location.pathname.startsWith("/portal")) document.body.classList.add("portal-mode");
+// Evita el parpadeo del chrome de marketing si la app arranca en una vista de app.
+if (/^\/(portal|medico|registro)/.test(location.pathname)) document.body.classList.add("portal-mode");
 
 // Layout persistente.
 renderNavbar();
@@ -32,6 +33,7 @@ route("/contacto", renderContacto);
 route("/reservar", renderReserva);
 route("/registro", renderRegistro);
 route("/portal", renderPortal);
+route("/medico", renderMedicoPortal);
 route("/reprogramar/:token", renderReprogramar);
 
 startRouter();

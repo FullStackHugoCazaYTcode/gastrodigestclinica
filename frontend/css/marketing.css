@@ -690,3 +690,9 @@ body.portal-mode .app-page { min-height: 100vh; display: grid; place-items: cent
   .med-grid { grid-template-columns: 1fr; }
   .book-row2 { grid-template-columns: 1fr; }
 }
+
+/* Área médica: distingue el promo del login y el acceso del footer */
+.portal-split__promo--medico { background: linear-gradient(150deg, var(--color-secondary), var(--color-primary-700)); }
+.footer__bottom-links { display: inline-flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; }
+.footer__bottom-links a { display: inline-flex; align-items: center; gap: 6px; color: #cbd5e1; }
+.footer__bottom-links a:hover { color: #fff; text-decoration: none; }
