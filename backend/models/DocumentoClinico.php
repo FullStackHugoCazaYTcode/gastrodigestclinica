@@ -36,4 +36,28 @@ final class DocumentoClinico extends BaseModel
         );
         return $stmt->fetch() ?: null;
     }
+
+    /**
+     * Emite un documento clínico (área médica). Devuelve el id creado.
+     * @param array<string,mixed> $d
+     */
+    public function crear(array $d): int
+    {
+        $this->run(
+            'INSERT INTO Documentos_Clinicos
+                (id_paciente, id_medico, id_cita, tipo_documento, titulo, descripcion, ruta_archivo, fecha_emision)
+             VALUES (:p, :m, :c, :tipo, :tit, :desc, :ruta, :fecha)',
+            [
+                ':p'     => $d['id_paciente'],
+                ':m'     => $d['id_medico'],
+                ':c'     => $d['id_cita'] ?? null,
+                ':tipo'  => $d['tipo_documento'],
+                ':tit'   => $d['titulo'],
+                ':desc'  => $d['descripcion'] ?? null,
+                ':ruta'  => $d['ruta_archivo'] ?? 'documento-digital',
+                ':fecha' => $d['fecha_emision'],
+            ]
+        );
+        return (int) $this->db->lastInsertId();
+    }
 }

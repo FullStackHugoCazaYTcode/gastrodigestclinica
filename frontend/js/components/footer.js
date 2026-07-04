@@ -48,7 +48,10 @@ export function renderFooter() {
     <div class="footer__bottom">
       <div class="container">
         <span>© <span id="year"></span> GastroDigest · Huánuco, Perú</span>
-        <span>Datos protegidos · Ley N.° 29733 · Escuela Profesional de Ingeniería de Sistemas (I.S.)</span>
+        <span class="footer__bottom-links">
+          <a href="/medico" target="_blank" rel="noopener">${icon("stethoscope", 14)} Acceso médicos</a>
+          <span>Ley N.° 29733 · Escuela Profesional de Ingeniería de Sistemas (I.S.)</span>
+        </span>
       </div>
     </div>`;
   const y = f.querySelector("#year");
