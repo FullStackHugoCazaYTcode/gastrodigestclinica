@@ -317,6 +317,31 @@ final class Cita extends BaseModel
         )->fetchAll();
     }
 
+    /** Agenda global de la clínica (panel de administración). */
+    public function todas(): array
+    {
+        return $this->run(
+            "SELECT c.id_cita, c.fecha_hora, c.estado_actual, c.motivo,
+                    CONCAT(p.nombres, ' ', p.apellidos) AS paciente,
+                    CONCAT(m.nombres, ' ', m.apellidos) AS medico, m.especialidad
+             FROM Citas c
+             JOIN Pacientes p ON p.id_paciente = c.id_paciente
+             JOIN Medicos   m ON m.id_medico   = c.id_medico
+             WHERE c.estado_actual <> 'PENDIENTE_OTP'
+             ORDER BY c.fecha_hora DESC"
+        )->fetchAll();
+    }
+
+    /** Conteo de citas por estado (para el resumen del admin). */
+    public function conteoPorEstado(): array
+    {
+        return $this->run(
+            "SELECT estado_actual, COUNT(*) AS n
+             FROM Citas WHERE estado_actual <> 'PENDIENTE_OTP'
+             GROUP BY estado_actual"
+        )->fetchAll();
+    }
+
     /** Inserta un registro de auditoría. Debe llamarse dentro de la transacción. */
     private function bitacora(int $idCita, ?string $anterior, string $nuevo, string $origen, ?string $detalle): void
     {

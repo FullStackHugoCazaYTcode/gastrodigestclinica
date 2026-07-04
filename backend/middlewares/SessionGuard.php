@@ -66,6 +66,32 @@ final class SessionGuard
         $_SESSION['med_last']  = time();
     }
 
+    /** Devuelve el id_admin autenticado o corta la ejecución con 401. */
+    public static function requireAdmin(): int
+    {
+        Security::startSession();
+        $idAdmin = $_SESSION['id_admin'] ?? null;
+        $last    = (int) ($_SESSION['adm_last'] ?? 0);
+
+        if ($idAdmin === null) {
+            Response::error('No autenticado. Inicie sesión como administrador.', 401);
+        }
+        if ((time() - $last) > self::TIMEOUT_SEGUNDOS) {
+            self::destroy();
+            Response::error('Sesión expirada. Inicie sesión nuevamente.', 401);
+        }
+        $_SESSION['adm_last'] = time();
+        return (int) $idAdmin;
+    }
+
+    public static function loginAdmin(int $idAdmin): void
+    {
+        Security::startSession();
+        session_regenerate_id(true);
+        $_SESSION['id_admin'] = $idAdmin;
+        $_SESSION['adm_last'] = time();
+    }
+
     public static function destroy(): void
     {
         Security::startSession();

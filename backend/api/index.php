@@ -12,6 +12,7 @@ use App\Core\Env;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Router;
+use App\Controllers\AdminController;
 use App\Controllers\AseguradoraController;
 use App\Controllers\CitaController;
 use App\Controllers\MedicoController;
@@ -65,6 +66,17 @@ $router->post('/api/registro/iniciar',    fn() => (new RegistroController())->in
 $router->post('/api/registro/verificar',  fn() => (new RegistroController())->verificar());
 $router->post('/api/registro/reenviar',   fn() => (new RegistroController())->reenviar());
 $router->post('/api/registro/completar',  fn() => (new RegistroController())->completar());
+
+// Panel de administración / dueño
+$router->post('/api/admin/login',              fn() => (new AdminController())->login());
+$router->post('/api/admin/logout',             fn() => (new AdminController())->logout());
+$router->get('/api/admin/sesion',              fn() => (new AdminController())->sesion());
+$router->get('/api/admin/resumen',             fn() => (new AdminController())->resumen());
+$router->get('/api/admin/medicos',             fn() => (new AdminController())->medicos());
+$router->post('/api/admin/medicos',            fn() => (new AdminController())->crearMedico());
+$router->patch('/api/admin/medicos/{id}',      fn($p) => (new AdminController())->cambiarEstadoMedico($p));
+$router->get('/api/admin/citas',               fn() => (new AdminController())->citas());
+$router->get('/api/admin/pacientes',           fn() => (new AdminController())->pacientes());
 
 // Área privada del médico
 $router->post('/api/medico/login',      fn() => (new MedicoPortalController())->login());
