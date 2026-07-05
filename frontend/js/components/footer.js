@@ -18,7 +18,7 @@ export function renderFooter() {
     <div class="container footer__grid">
       <div class="footer__brand">
         <a class="brand" href="/" data-link aria-label="GastroDigest inicio">
-          <span class="brand__logo" aria-hidden="true">I.S.</span>
+          <span class="brand__logo" aria-hidden="true">G</span>
           <span class="brand__text">
             <span class="brand__name">GastroDigest</span>
             <span class="brand__sub">Clínica Gastroenterológica</span>

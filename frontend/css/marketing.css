@@ -3,6 +3,11 @@
    ===================================================================== */
 
 /* ---------- Layout ---------- */
+/* Títulos sobre paneles oscuros: blanco (base.css los pinta en Pino). */
+.cta-band h2,
+.portal-split__promo-title,
+.registro__promo-title { color: #fff; }
+
 .app-page { padding-block: var(--space-8); }
 .section { position: relative; padding-block: var(--space-10); }
 .section__title { font-size: var(--text-2xl); text-align: center; margin-bottom: var(--space-2); }
@@ -253,12 +258,12 @@
 .preloader__badge {
   display: grid; place-items: center; width: 60px; height: 60px;
   border-radius: var(--radius-lg);
-  background: linear-gradient(140deg, var(--color-primary), var(--color-secondary));
-  color: #fff; font-weight: var(--weight-bold); font-size: var(--text-lg);
+  background: var(--color-primary);
+  color: #fff; font-family: var(--font-display); font-weight: 600; font-size: var(--text-2xl);
   box-shadow: var(--shadow); animation: preload-float 1.6s ease-in-out infinite;
 }
 .preloader__text { display: flex; flex-direction: column; }
-.preloader__name { font-weight: var(--weight-bold); font-size: var(--text-xl); color: var(--color-text); }
+.preloader__name { font-family: var(--font-display); font-weight: 600; font-size: var(--text-xl); color: var(--color-primary); }
 .preloader__sub { font-size: var(--text-sm); color: var(--color-text-muted); }
 .preloader__bar { width: 180px; height: 4px; border-radius: var(--radius-full); background: var(--color-surface-alt); overflow: hidden; }
 .preloader__bar span {
@@ -693,7 +698,7 @@ body.portal-mode .app-page { min-height: 100vh; display: grid; place-items: cent
 
 /* Área médica: distingue el promo del login y el acceso del footer */
 .portal-split__promo--medico { background: linear-gradient(150deg, var(--color-secondary), var(--color-primary-700)); }
-.portal-split__promo--admin { background: linear-gradient(150deg, #1e293b, var(--color-primary-700)); }
+.portal-split__promo--admin { background: linear-gradient(150deg, var(--color-text), var(--color-primary-700)); }
 .footer__bottom-links { display: inline-flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; }
 .footer__bottom-links a { display: inline-flex; align-items: center; gap: 6px; color: #cbd5e1; }
 .footer__bottom-links a:hover { color: #fff; text-decoration: none; }

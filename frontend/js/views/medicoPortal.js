@@ -123,7 +123,7 @@ function renderDashboard(datos) {
     <div class="portal-app">
       <aside class="portal-sidebar">
         <div class="portal-brand">
-          <span class="brand__logo" aria-hidden="true">I.S.</span>
+          <span class="brand__logo" aria-hidden="true">G</span>
           <span class="portal-brand__name">GastroDigest</span>
         </div>
         <nav class="portal-nav" aria-label="Área médica">
