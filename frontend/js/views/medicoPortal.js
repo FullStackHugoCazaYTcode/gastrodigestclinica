@@ -8,6 +8,7 @@ import {
   mount, mountFull, icon, esc, toast, clearErrors, setFieldError, applyErrors, setLoading,
 } from "../ui.js";
 import { navigate } from "../router.js";
+import { logoMark } from "../components/logo.js";
 
 const NAV = [
   ["agenda", "Mi agenda", "calendarCheck"],
@@ -123,8 +124,8 @@ function renderDashboard(datos) {
     <div class="portal-app">
       <aside class="portal-sidebar">
         <div class="portal-brand">
-          <span class="brand__logo" aria-hidden="true">G</span>
-          <span class="portal-brand__name">GastroDigest</span>
+          <span class="brand__mark" aria-hidden="true">${logoMark(38)}</span>
+          <span class="portal-brand__name">Gastro<span class="brand__name-alt">Digest</span></span>
         </div>
         <nav class="portal-nav" aria-label="Área médica">
           ${NAV.map(([id, label, ic]) => `

@@ -7,6 +7,7 @@ import {
   mount, mountFull, icon, esc, toast, clearErrors, setFieldError, applyErrors, setLoading,
 } from "../ui.js";
 import { navigate } from "../router.js";
+import { logoMark } from "../components/logo.js";
 
 const NAV = [
   ["resumen", "Resumen", "activity"],
@@ -110,7 +111,7 @@ function renderDashboard(datos) {
     <div class="portal-app">
       <aside class="portal-sidebar">
         <div class="portal-brand">
-          <span class="brand__logo" aria-hidden="true">G</span>
+          <span class="brand__mark" aria-hidden="true">${logoMark(38)}</span>
           <span class="portal-brand__name">Admin</span>
         </div>
         <nav class="portal-nav" aria-label="Administración">

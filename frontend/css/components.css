@@ -22,7 +22,8 @@
 .brand { display: flex; align-items: center; gap: var(--space-3); }
 .brand:hover { text-decoration: none; }
 
-/* Espacio reservado para el logo oficial "I.S." */
+/* Emblema SVG (logo.js). .brand__logo se mantiene por compatibilidad. */
+.brand__mark { display: inline-flex; flex-shrink: 0; }
 .brand__logo {
   display: grid;
   place-items: center;
@@ -38,7 +39,8 @@
   box-shadow: var(--shadow-sm);
 }
 .brand__text { display: flex; flex-direction: column; line-height: 1.1; }
-.brand__name { font-family: var(--font-display); font-weight: 600; font-size: var(--text-lg); color: var(--color-primary); }
+.brand__name { font-family: var(--font-display); font-weight: 600; font-size: var(--text-lg); color: var(--color-primary); letter-spacing: 0.01em; }
+.brand__name-alt { color: var(--color-secondary); }
 .brand__sub  { font-size: var(--text-xs); color: var(--color-text-muted); }
 
 .nav-links { display: flex; align-items: center; gap: var(--space-2); list-style: none; padding: 0; }
@@ -55,6 +57,62 @@
 }
 .nav-links a:hover { background: var(--color-surface-alt); color: var(--color-text); text-decoration: none; }
 .nav-links a.is-active { background: var(--color-primary-50); color: var(--color-primary-700); }
+
+/* ---------- Desplegable de Especialidades (mega-menú) ---------- */
+.nav-dd { position: relative; list-style: none; }
+.nav-dd__btn {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border: none; background: transparent; border-radius: var(--radius-full);
+  color: var(--color-text-muted); font: inherit; font-weight: var(--weight-medium);
+  font-size: var(--text-sm); cursor: pointer;
+  transition: background var(--duration) var(--ease), color var(--duration) var(--ease);
+}
+.nav-dd__btn:hover { background: var(--color-surface-alt); color: var(--color-text); }
+.nav-dd__btn svg { transition: transform var(--duration) var(--ease); }
+.nav-dd__btn.is-open { background: var(--color-primary-50); color: var(--color-primary-700); }
+.nav-dd__btn.is-open svg { transform: rotate(180deg); }
+.nav-dd__panel {
+  position: absolute; top: calc(100% + 14px); left: 50%; transform: translateX(-38%);
+  display: grid; grid-template-columns: 1fr 220px; gap: var(--space-5);
+  width: min(640px, calc(100vw - 2rem)); padding: var(--space-5);
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); z-index: 60;
+}
+.nav-dd__panel[hidden] { display: none; }
+.nav-dd__grid { display: grid; gap: var(--space-2); }
+.nav-dd__item {
+  display: flex; align-items: flex-start; gap: var(--space-3);
+  padding: var(--space-3); border-radius: var(--radius);
+  color: var(--color-text); transition: background var(--duration) var(--ease);
+}
+.nav-dd__item:hover { background: var(--color-primary-50); text-decoration: none; }
+.nav-dd__item strong { display: block; font-size: var(--text-sm); }
+.nav-dd__item small { color: var(--color-text-muted); font-size: var(--text-xs); }
+.nav-dd__icon {
+  display: grid; place-items: center; width: 38px; height: 38px; flex: 0 0 auto;
+  border-radius: var(--radius-sm); background: var(--color-primary-50); color: var(--color-primary);
+}
+.nav-dd__aside { display: grid; align-content: start; gap: var(--space-2); padding-left: var(--space-5); border-left: 1px solid var(--color-border); }
+.nav-dd__aside-title { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-muted); font-weight: var(--weight-semibold); margin-bottom: var(--space-1); }
+.nav-dd__aside a { display: inline-flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); color: var(--color-text); padding: var(--space-1) 0; }
+.nav-dd__aside a:hover { color: var(--color-primary); text-decoration: none; }
+
+/* ---------- Teléfono, portal y CTA pill ---------- */
+.navbar__phone {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--color-text);
+  white-space: nowrap;
+}
+.navbar__phone:hover { color: var(--color-primary); text-decoration: none; }
+.navbar__portal {
+  display: grid; place-items: center; width: 40px; height: 40px;
+  border: 1px solid var(--color-border); border-radius: 50%;
+  color: var(--color-primary); background: var(--color-surface);
+  transition: background var(--duration) var(--ease), border-color var(--duration) var(--ease);
+}
+.navbar__portal:hover { background: var(--color-primary-50); border-color: var(--color-primary); text-decoration: none; }
+.btn.btn--pill { border-radius: var(--radius-full); }
 
 /* ---------- Topbar utilitaria (contacto / horario) ---------- */
 .topbar {
