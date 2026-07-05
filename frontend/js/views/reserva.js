@@ -35,15 +35,17 @@ export async function renderReserva() {
 
 function renderGate() {
   mount(`
-    <section class="hero" style="text-align:center" aria-labelledby="gate-title">
-      <span class="eyebrow eyebrow--center">${icon("lock", 16)} Reserva con tu cuenta</span>
+    <section class="gate" aria-labelledby="gate-title">
+      <span class="gate__icon">${icon("lock", 30)}</span>
+      <span class="eyebrow">${icon("shieldCheck", 16)} Reserva con tu cuenta</span>
       <h1 id="gate-title">Necesitas una cuenta para reservar</h1>
-      <p>Crea tu cuenta o inicia sesión para agendar tu cita y llevar el control de tus resultados en el portal.</p>
+      <p class="gate__lead">Crea tu cuenta o inicia sesión para agendar tu cita y llevar el control de tus resultados clínicos en el portal.</p>
+      <div class="gate-actions">
+        <a class="btn btn--cta btn--lg" href="/registro" data-link>${icon("user")} Crear una cuenta</a>
+        <a class="btn btn--ghost btn--lg" href="/portal" data-link>${icon("lock")} Ya tengo cuenta</a>
+      </div>
+      <p class="gate__note">${icon("clock", 14)} Toma menos de 2 minutos · Tus datos están protegidos (Ley N.° 29733)</p>
     </section>
-    <div class="gate-actions">
-      <a class="btn btn--cta btn--lg" href="/registro" data-link>${icon("user")} Crear una cuenta</a>
-      <a class="btn btn--ghost btn--lg" href="/portal" data-link>${icon("lock")} Ya tengo cuenta</a>
-    </div>
   `);
 }
 
