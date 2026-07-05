@@ -49,7 +49,8 @@
   padding-block: var(--space-8);
 }
 .footer .brand__name { color: #fff; }
-.footer .brand__sub { color: #94A3B8; }
+.footer .brand__name-alt { color: #7FC0B0; }
+.footer .brand__sub { color: #A8B5B0; }
 .footer__tag { margin-top: var(--space-3); font-size: var(--text-sm); color: #94A3B8; max-width: 34ch; }
 .footer__title {
   font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.06em;
@@ -81,6 +82,16 @@
   .navbar.is-open .navbar__menu { transform: translateY(0); opacity: 1; visibility: visible; pointer-events: auto; transition-delay: 0s; }
   .nav-links { flex-direction: column; align-items: stretch; gap: var(--space-1); }
   .navbar__cta { flex-direction: column; align-items: stretch; }
+  .navbar__phone { justify-content: center; padding: var(--space-2); }
+  .navbar__portal { width: 100%; border-radius: var(--radius); height: 44px; }
+  /* Desplegable como acordeón dentro del menú móvil */
+  .nav-dd__btn { width: 100%; justify-content: space-between; }
+  .nav-dd__panel {
+    position: static; transform: none; width: 100%;
+    grid-template-columns: 1fr; gap: var(--space-3);
+    border: none; box-shadow: none; padding: var(--space-2) var(--space-2) var(--space-3);
+  }
+  .nav-dd__aside { padding-left: var(--space-3); border-left: none; border-top: 1px solid var(--color-border); padding-top: var(--space-3); }
   .footer__grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 560px) { .footer__grid { grid-template-columns: 1fr; } }
@@ -256,12 +267,10 @@
 .preloader.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 .preloader__logo { display: flex; align-items: center; gap: var(--space-3); animation: preload-pop 0.6s var(--ease); }
 .preloader__badge {
-  display: grid; place-items: center; width: 60px; height: 60px;
-  border-radius: var(--radius-lg);
-  background: var(--color-primary);
-  color: #fff; font-family: var(--font-display); font-weight: 600; font-size: var(--text-2xl);
-  box-shadow: var(--shadow); animation: preload-float 1.6s ease-in-out infinite;
+  display: grid; place-items: center;
+  animation: preload-float 1.6s ease-in-out infinite;
 }
+.preloader__name-alt { color: var(--color-secondary); }
 .preloader__text { display: flex; flex-direction: column; }
 .preloader__name { font-family: var(--font-display); font-weight: 600; font-size: var(--text-xl); color: var(--color-primary); }
 .preloader__sub { font-size: var(--text-sm); color: var(--color-text-muted); }

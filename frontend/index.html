@@ -28,10 +28,17 @@
   <!-- Preloader: se oculta cuando la app está montada (preloader.js) -->
   <div id="preloader" class="preloader">
     <div class="preloader__logo">
-      <span class="preloader__badge">G</span>
+      <span class="preloader__badge" aria-hidden="true">
+        <svg width="64" height="64" viewBox="0 0 48 48" fill="none">
+          <path d="M23.5 3.6 A20.4 20.4 0 1 1 5.9 13.8" stroke="#0E4B42" stroke-width="3" stroke-linecap="round"/>
+          <path d="M12.6 4.9 C 8.6 6.3 6.6 9.3 6.8 13 C 10.9 12.4 13.1 9.6 12.6 4.9 Z" fill="#2E7D6C"/>
+          <text x="24" y="32.5" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="600" font-size="27" fill="#0E4B42">G</text>
+          <path d="M16 36.5 Q 24 40.5 32 36.5" stroke="#2E7D6C" stroke-width="2.6" stroke-linecap="round"/>
+        </svg>
+      </span>
       <div class="preloader__text">
-        <span class="preloader__name">GastroDigest</span>
-        <span class="preloader__sub">Clínica Gastroenterológica</span>
+        <span class="preloader__name">Gastro<span class="preloader__name-alt">Digest</span></span>
+        <span class="preloader__sub">Clínica de Gastroenterología</span>
       </div>
     </div>
     <div class="preloader__bar"><span></span></div>

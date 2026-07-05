@@ -7,6 +7,7 @@ import { api } from "../api.js";
 import { mountFull, icon, esc, toast, clearErrors, applyErrors, setLoading } from "../ui.js";
 import { navigate } from "../router.js";
 import { startBooking } from "./portalBooking.js";
+import { logoMark } from "../components/logo.js";
 
 const NAV = [
   ["inicio", "Inicio", "home"],
@@ -46,8 +47,8 @@ export function renderDashboard(datos) {
     <div class="portal-app">
       <aside class="portal-sidebar">
         <a class="portal-brand" href="/" data-link aria-label="GastroDigest inicio">
-          <span class="brand__logo" aria-hidden="true">G</span>
-          <span class="portal-brand__name">GastroDigest</span>
+          <span class="brand__mark" aria-hidden="true">${logoMark(38)}</span>
+          <span class="portal-brand__name">Gastro<span class="brand__name-alt">Digest</span></span>
         </a>
         <nav class="portal-nav" aria-label="Portal del paciente">
           ${NAV.map(([id, label, ic]) => `
