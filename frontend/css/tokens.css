@@ -76,6 +76,6 @@
   --ease:          cubic-bezier(0.16, 1, 0.3, 1);
 
   /* ---- Layout ---- */
-  --container: 1120px;
+  --container: 1160px;
   --header-h:  68px;
 }
