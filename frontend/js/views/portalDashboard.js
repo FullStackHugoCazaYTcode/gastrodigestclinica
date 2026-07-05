@@ -46,7 +46,7 @@ export function renderDashboard(datos) {
     <div class="portal-app">
       <aside class="portal-sidebar">
         <a class="portal-brand" href="/" data-link aria-label="GastroDigest inicio">
-          <span class="brand__logo" aria-hidden="true">I.S.</span>
+          <span class="brand__logo" aria-hidden="true">G</span>
           <span class="portal-brand__name">GastroDigest</span>
         </a>
         <nav class="portal-nav" aria-label="Portal del paciente">

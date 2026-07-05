@@ -17,21 +17,25 @@
   filter: blur(70px);
   opacity: 0.45;
 }
+/* Bruma cálida de la nueva paleta: salvia + pino + arena dorada, muy sutil. */
 .aurora__blob--1 {
   width: 460px; height: 460px;
-  background: #1A6B9A;
+  background: var(--color-secondary);
+  opacity: 0.28;
   top: -140px; left: -80px;
   animation: aurora-float-1 18s ease-in-out infinite;
 }
 .aurora__blob--2 {
   width: 380px; height: 380px;
-  background: #2EAD8E;
+  background: var(--color-primary);
+  opacity: 0.18;
   top: 20px; right: -120px;
   animation: aurora-float-2 22s ease-in-out infinite;
 }
 .aurora__blob--3 {
   width: 320px; height: 320px;
-  background: #7FC9E8;
+  background: #D9C79A;
+  opacity: 0.30;
   bottom: -160px; left: 28%;
   animation: aurora-float-3 20s ease-in-out infinite;
 }

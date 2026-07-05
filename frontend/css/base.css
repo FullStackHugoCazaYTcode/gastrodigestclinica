@@ -25,10 +25,19 @@ body {
 img, svg { display: block; max-width: 100%; }
 svg { flex-shrink: 0; }
 
-h1, h2, h3 { line-height: var(--leading-tight); font-weight: var(--weight-bold); letter-spacing: -0.01em; }
+/* Títulos en Fraunces: voz propia, cálida y seria (cuerpo sigue en Inter). */
+h1, h2, h3 {
+  font-family: var(--font-display);
+  line-height: var(--leading-tight);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--color-primary);
+}
 h1 { font-size: var(--text-3xl); }
 h2 { font-size: var(--text-2xl); }
 h3 { font-size: var(--text-xl); }
+/* h4+ y UI compacta permanecen en Inter para máxima legibilidad. */
+h4, h5, h6 { line-height: var(--leading-tight); font-weight: var(--weight-semibold); }
 
 a { color: var(--color-primary); text-decoration: none; }
 a:hover { text-decoration: underline; }
