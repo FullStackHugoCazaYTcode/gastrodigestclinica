@@ -28,8 +28,12 @@
   border-bottom-color: var(--color-border);
   box-shadow: var(--shadow-sm);
 }
-.navbar__menu { display: flex; align-items: center; gap: var(--space-5); }
-.navbar__cta { display: flex; align-items: center; gap: var(--space-3); }
+.navbar__menu { display: flex; align-items: center; gap: var(--space-4); }
+.navbar__cta { display: flex; align-items: center; gap: var(--space-2); }
+/* En el navbar solo el nombre (el subtítulo vive en footer/preloader). */
+.navbar .brand__sub { display: none; }
+/* En la banda desktop ajustada (1121–1200), el número se oculta y queda el icono. */
+@media (min-width: 1121px) and (max-width: 1200px) { .navbar__phone span { display: none; } }
 .navbar__toggle {
   display: none;
   place-items: center;
@@ -68,7 +72,7 @@
 }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 860px) {
+@media (max-width: 1120px) {
   .navbar__toggle { display: grid; }
   .navbar__menu {
     position: fixed; inset: var(--header-h) 0 auto 0;
@@ -84,16 +88,22 @@
   .navbar__cta { flex-direction: column; align-items: stretch; }
   .navbar__phone { justify-content: center; padding: var(--space-2); }
   .navbar__portal { width: 100%; border-radius: var(--radius); height: 44px; }
-  /* Desplegable como acordeón dentro del menú móvil */
+  /* Mega-menús como acordeón dentro del menú móvil */
+  .nav-dd { width: 100%; }
   .nav-dd__btn { width: 100%; justify-content: space-between; }
   .nav-dd__panel {
-    position: static; transform: none; width: 100%;
-    grid-template-columns: 1fr; gap: var(--space-3);
-    border: none; box-shadow: none; padding: var(--space-2) var(--space-2) var(--space-3);
+    position: static; width: 100%;
+    grid-template-columns: 1fr; gap: var(--space-2);
+    border: none; box-shadow: none; padding: var(--space-1) 0 var(--space-3);
   }
-  .nav-dd__aside { padding-left: var(--space-3); border-left: none; border-top: 1px solid var(--color-border); padding-top: var(--space-3); }
-  .footer__grid { grid-template-columns: 1fr 1fr; }
+  .nav-dd__head, .nav-dd__grid, .nav-dd__aside { grid-column: 1; grid-row: auto; }
+  .nav-dd__head { border-bottom: none; padding-bottom: var(--space-1); }
+  .nav-dd__aside {
+    padding-left: var(--space-3); border-left: none;
+    border-top: 1px solid var(--color-border); padding-top: var(--space-3); margin-top: var(--space-1);
+  }
 }
+@media (max-width: 860px) { .footer__grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 560px) { .footer__grid { grid-template-columns: 1fr; } }
 
 /* =====================================================================
