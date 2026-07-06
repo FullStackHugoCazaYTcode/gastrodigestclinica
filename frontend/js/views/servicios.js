@@ -37,7 +37,7 @@ export function renderServicios() {
             </article>`).join("")}
         </div>
         <div class="section__action">
-          <a class="btn btn--cta btn--lg" href="/reservar" data-link>${icon("calendar")} Reservar una cita</a>
+          <a class="btn btn--cta btn--lg" href="/reservar" target="_blank" rel="noopener">${icon("calendar")} Reservar una cita</a>
         </div>
       </div>
     </section>

@@ -38,7 +38,7 @@ export function renderFooter() {
       </div>
       <div class="footer__col footer__cta">
         <h3 class="footer__title">¿Listo para tu cita?</h3>
-        <a class="btn btn--cta btn--block" href="/reservar" data-link>${icon("calendar", 18)} Reservar cita</a>
+        <a class="btn btn--cta btn--block" href="/reservar" target="_blank" rel="noopener">${icon("calendar", 18)} Reservar cita</a>
         <a class="btn btn--ghost btn--block" href="/portal" target="_blank" rel="noopener">${icon("user", 18)} Portal del paciente</a>
       </div>
     </div>

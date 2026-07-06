@@ -26,7 +26,7 @@ export function medicoCard(m) {
       <p class="medico-card__esp">${esc(m.especialidad)}</p>
       <p class="medico-card__cmp">${icon("award", 14)} CMP ${esc(m.cmp)}</p>
       <p class="medico-card__bio">${bioFor(m.especialidad)}</p>
-      <a class="btn btn--ghost btn--sm" href="/reservar" data-link>Reservar <span class="visually-hidden">cita con Dr(a). ${nombre}</span>${icon("arrowRight", 16)}</a>
+      <a class="btn btn--ghost btn--sm" href="/reservar" target="_blank" rel="noopener">Reservar <span class="visually-hidden">cita con Dr(a). ${nombre}</span>${icon("arrowRight", 16)}</a>
     </div>
   </article>`;
 }
