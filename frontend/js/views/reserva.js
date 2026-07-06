@@ -41,8 +41,8 @@ function renderGate() {
       <h1 id="gate-title">Necesitas una cuenta para reservar</h1>
       <p class="gate__lead">Crea tu cuenta o inicia sesión para agendar tu cita y llevar el control de tus resultados clínicos en el portal.</p>
       <div class="gate-actions">
-        <a class="btn btn--cta btn--lg" href="/registro" data-link>${icon("user")} Crear una cuenta</a>
-        <a class="btn btn--ghost btn--lg" href="/portal" data-link>${icon("lock")} Ya tengo cuenta</a>
+        <a class="btn btn--cta btn--lg" href="/registro" target="_blank" rel="noopener">${icon("user")} Crear una cuenta</a>
+        <a class="btn btn--ghost btn--lg" href="/portal" target="_blank" rel="noopener">${icon("lock")} Ya tengo cuenta</a>
       </div>
       <p class="gate__note">${icon("clock", 14)} Toma menos de 2 minutos · Tus datos están protegidos (Ley N.° 29733)</p>
     </section>
