@@ -4,6 +4,7 @@
 import { route, startRouter } from "./router.js";
 import { renderNavbar } from "./components/navbar.js";
 import { renderFooter } from "./components/footer.js";
+import { renderChatbot } from "./components/chatbot.js";
 import { renderHome } from "./views/home.js";
 import { renderServicios } from "./views/servicios.js";
 import { renderNosotros } from "./views/nosotros.js";
@@ -25,6 +26,7 @@ if (/^\/(portal|medico|admin|registro)/.test(location.pathname)) document.body.c
 // Layout persistente.
 renderNavbar();
 renderFooter();
+renderChatbot();
 
 // Rutas del sitio.
 route("/", renderHome);
