@@ -63,7 +63,7 @@ function renderLogin() {
             ${icon("lock")} Ingresar
           </button>
         </form>
-        <p class="wizard-alt">¿No tienes cuenta? <a href="/registro" data-link>Crear una cuenta</a></p>
+        <p class="wizard-alt">¿No tienes cuenta? <a href="/registro" target="_blank" rel="noopener">Crear una cuenta</a></p>
       </div>
     </section>
   `);

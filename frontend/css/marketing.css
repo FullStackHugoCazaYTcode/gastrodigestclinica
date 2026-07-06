@@ -147,16 +147,47 @@
 
 .eyebrow--center { display: flex; justify-content: center; }
 
-/* ---- Trust strip ---- */
-.trust { padding-block: var(--space-6); border-block: 1px solid var(--color-border); background: var(--color-surface); }
-.trust__label { text-align: center; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-muted); margin-bottom: var(--space-4); }
-.trust__logos { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: var(--space-4) var(--space-6); }
-.trust__logo { font-weight: var(--weight-bold); color: var(--color-text); font-size: var(--text-sm); filter: grayscale(1); opacity: 0.5; transition: opacity var(--duration) var(--ease); }
-.trust__logo:hover { opacity: 0.9; }
+/* ---- Franja de hechos verificables ---- */
+.facts { padding-block: var(--space-6); border-block: 1px solid var(--color-border); background: var(--color-surface); }
+.facts__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4) var(--space-5); }
+.fact { display: flex; align-items: center; gap: var(--space-3); }
+.fact__icon { display: grid; place-items: center; width: 44px; height: 44px; flex: 0 0 auto; border-radius: 50%; background: var(--color-secondary-50); color: var(--color-secondary); }
+.fact__body { display: grid; line-height: 1.25; }
+.fact__body strong { font-size: var(--text-sm); }
+.fact__body small { color: var(--color-text-muted); font-size: var(--text-xs); }
+@media (max-width: 860px) { .facts__grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 460px) { .facts__grid { grid-template-columns: 1fr; } }
 
 /* ---- Sections helpers ---- */
 .section--alt { background: var(--color-surface-alt); }
 .section__action { display: flex; justify-content: center; margin-top: var(--space-6); }
+/* Cabecera de sección asimétrica (título izq. / bajada der.) */
+.section-head { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--space-6); margin-bottom: var(--space-6); flex-wrap: wrap; }
+.section-head__title { font-size: var(--text-2xl); }
+.section-head__lead { color: var(--color-text-muted); max-width: 42ch; }
+@media (max-width: 720px) { .section-head { flex-direction: column; align-items: flex-start; gap: var(--space-3); } }
+
+/* ---- Bento de servicios (1 protagonista + apoyo) ---- */
+.bento { display: grid; grid-template-columns: 1.3fr 1fr 1fr; grid-auto-rows: 1fr; gap: var(--space-4); }
+.bento > :nth-child(1) { grid-column: 1; grid-row: 1 / 3; }
+.bento > :nth-child(2) { grid-column: 2; grid-row: 1; }
+.bento > :nth-child(3) { grid-column: 3; grid-row: 1; }
+.bento > :nth-child(4) { grid-column: 2 / 4; grid-row: 2; }
+.bento__hero {
+  display: flex; flex-direction: column; gap: var(--space-3);
+  padding: var(--space-6); border-radius: var(--radius-lg); color: #fff;
+  background: linear-gradient(155deg, var(--color-primary), var(--color-primary-700));
+  box-shadow: var(--shadow);
+}
+.bento__hero h3 { color: #fff; font-size: var(--text-xl); }
+.bento__hero p { color: rgba(255, 255, 255, 0.88); font-size: var(--text-sm); }
+.bento__hero-icon { display: grid; place-items: center; width: 52px; height: 52px; border-radius: var(--radius); background: rgba(255, 255, 255, 0.15); color: #fff; }
+.bento__hero-cta { margin-top: auto; width: max-content; background: #fff; color: var(--color-primary-700); }
+.bento__hero-cta:hover { background: rgba(255, 255, 255, 0.9); text-decoration: none; }
+@media (max-width: 760px) {
+  .bento { grid-template-columns: 1fr; }
+  .bento > :nth-child(n) { grid-column: 1 !important; grid-row: auto !important; }
+}
 
 /* ---- Stats ---- */
 .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-5); }
@@ -190,7 +221,9 @@
 .testimonial { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius); padding: var(--space-5); box-shadow: var(--shadow-sm); display: grid; gap: var(--space-3); }
 .testimonial__stars { display: flex; gap: 2px; color: var(--color-warning); }
 .testimonial blockquote { font-size: var(--text-base); }
-.testimonial figcaption { font-weight: var(--weight-semibold); color: var(--color-text-muted); font-size: var(--text-sm); }
+.testimonial figcaption { display: grid; gap: 1px; margin-top: var(--space-1); }
+.testimonial figcaption strong { font-size: var(--text-sm); color: var(--color-text); }
+.testimonial figcaption span { font-size: var(--text-xs); color: var(--color-text-muted); }
 
 /* ---- CTA band ---- */
 .cta-band { background: linear-gradient(135deg, var(--color-primary), var(--color-primary-700)); color: #fff; padding-block: var(--space-8); }

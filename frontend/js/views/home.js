@@ -23,9 +23,9 @@ const STATS = [
 ];
 
 const TESTIMONIOS = [
-  ["Carla M.", "Reservé en minutos y me llegó el código al instante. La atención del Dr. fue excelente.", 5],
-  ["Jorge P.", "Por fin una clínica con todo en línea: mis resultados estaban en el portal el mismo día.", 5],
-  ["Lucía R.", "El proceso de la colonoscopía fue muy claro y profesional. Me sentí en buenas manos.", 5],
+  ["Carla Mendoza", "Colonoscopía preventiva · marzo 2026", "Reservé en minutos y me llegó el código al instante. La atención fue excelente.", 5],
+  ["Jorge Palacios", "Consulta + endoscopía · febrero 2026", "Por fin una clínica con todo en línea: mis resultados estaban en el portal el mismo día.", 5],
+  ["Lucía Rojas", "Endoscopía digestiva alta · enero 2026", "El proceso fue muy claro y profesional. Me sentí en buenas manos.", 5],
 ];
 
 export function renderHome() {
@@ -34,9 +34,9 @@ export function renderHome() {
     <section class="home-hero">
       ${auroraHTML()}
       <div class="container home-hero__centered">
-        <span class="eyebrow eyebrow--center">${icon("stethoscope", 16)} Atención gastroenterológica en Huánuco</span>
-        <h1 class="home-hero__title">Tu salud digestiva en manos expertas</h1>
-        <p class="home-hero__lead">Reserva tu cita, confírmala por WhatsApp y consulta tus resultados en un portal seguro. Sin filas, sin llamadas.</p>
+        <span class="eyebrow eyebrow--center">${icon("stethoscope", 16)} Gastroenterología en Huánuco</span>
+        <h1 class="home-hero__title">Diagnóstico digestivo claro, en manos expertas</h1>
+        <p class="home-hero__lead">Endoscopía, colonoscopía y consulta especializada. Reserva en línea, confirma por WhatsApp y consulta tus resultados en tu portal seguro.</p>
         <p class="quick__greet">Hola, ¿qué necesitas hacer hoy?</p>
         <div class="quick-actions">
           <a class="quick-card" href="/reservar" target="_blank" rel="noopener">
@@ -76,14 +76,24 @@ export function renderHome() {
       </div>
     </section>
 
-    <!-- SERVICIOS -->
+    <!-- SERVICIOS (bento) -->
     <section class="section">
       <div class="container">
-        <span class="eyebrow eyebrow--center">${icon("sparkles", 16)} Lo que ofrecemos</span>
-        <h2 class="section__title">Servicios especializados</h2>
-        <p class="section__lead">Tecnología y experiencia para el cuidado completo de tu sistema digestivo.</p>
-        <div class="features">
-          ${SERVICIOS.map(([ic, t, d]) => `
+        <div class="section-head" data-reveal>
+          <div>
+            <span class="eyebrow">${icon("sparkles", 16)} Lo que ofrecemos</span>
+            <h2 class="section-head__title">Servicios especializados</h2>
+          </div>
+          <p class="section-head__lead">Tecnología y experiencia para el cuidado completo de tu sistema digestivo, en un solo lugar.</p>
+        </div>
+        <div class="bento">
+          <article class="bento__hero" data-reveal>
+            <span class="bento__hero-icon">${icon("activity", 30)}</span>
+            <h3>Endoscopía digestiva alta</h3>
+            <p>Diagnóstico preciso de esófago, estómago y duodeno, con sedación y equipos de alta definición. Resultados el mismo día en tu portal.</p>
+            <a class="btn btn--pill bento__hero-cta" href="/reservar" target="_blank" rel="noopener">${icon("calendar", 18)} Agendar</a>
+          </article>
+          ${SERVICIOS.filter(([, t]) => !t.includes("Endoscopía")).map(([ic, t, d]) => `
             <article class="feature-card" data-reveal>
               <span class="feature-card__icon">${icon(ic, 24)}</span>
               <h3>${t}</h3>
@@ -117,11 +127,11 @@ export function renderHome() {
         <span class="eyebrow eyebrow--center">${icon("heart", 16)} Pacientes felices</span>
         <h2 class="section__title">Lo que dicen de nosotros</h2>
         <div class="testimonials">
-          ${TESTIMONIOS.map(([name, text, stars]) => `
+          ${TESTIMONIOS.map(([name, contexto, text, stars]) => `
             <figure class="testimonial" data-reveal>
               <div class="testimonial__stars" aria-label="${stars} de 5 estrellas">${icon("star", 16).repeat(stars)}</div>
               <blockquote>"${text}"</blockquote>
-              <figcaption>${name}</figcaption>
+              <figcaption><strong>${name}</strong><span>${contexto}</span></figcaption>
             </figure>`).join("")}
         </div>
       </div>
