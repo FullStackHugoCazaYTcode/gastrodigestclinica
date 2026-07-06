@@ -15,6 +15,7 @@ import { renderPortal } from "./views/portal.js";
 import { renderMedicoPortal } from "./views/medicoPortal.js";
 import { renderAdminPortal } from "./views/adminPortal.js";
 import { renderReprogramar } from "./views/reprogramar.js";
+import { renderLibroReclamaciones, renderPrivacidad } from "./views/legal.js";
 import { initMotion } from "./motion.js";
 import { hidePreloader } from "./components/preloader.js";
 
@@ -37,6 +38,8 @@ route("/portal", renderPortal);
 route("/medico", renderMedicoPortal);
 route("/admin", renderAdminPortal);
 route("/reprogramar/:token", renderReprogramar);
+route("/libro-reclamaciones", renderLibroReclamaciones);
+route("/privacidad", renderPrivacidad);
 
 startRouter();
 
