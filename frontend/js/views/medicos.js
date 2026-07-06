@@ -36,7 +36,7 @@ export async function renderMedicos() {
       <div class="state__icon state__icon--info">${icon("users", 28)}</div>
       <h3>No pudimos cargar el equipo ahora</h3>
       <p class="text-muted">Inténtalo de nuevo en unos minutos o agenda tu cita directamente.</p>
-      <a class="btn btn--cta" href="/reservar" data-link>${icon("calendar")} Reservar cita</a>
+      <a class="btn btn--cta" href="/reservar" target="_blank" rel="noopener">${icon("calendar")} Reservar cita</a>
     </div>`;
   }
   motionReady.then(() => revealOnScroll());

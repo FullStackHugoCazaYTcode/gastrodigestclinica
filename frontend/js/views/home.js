@@ -39,7 +39,7 @@ export function renderHome() {
         <p class="home-hero__lead">Reserva tu cita, confírmala por WhatsApp y consulta tus resultados en un portal seguro. Sin filas, sin llamadas.</p>
         <p class="quick__greet">Hola, ¿qué necesitas hacer hoy?</p>
         <div class="quick-actions">
-          <a class="quick-card" href="/reservar" data-link>
+          <a class="quick-card" href="/reservar" target="_blank" rel="noopener">
             <span class="quick-card__icon">${icon("calendarCheck", 24)}</span>
             <span class="quick-card__title">Agendar una cita</span>
           </a>
@@ -134,7 +134,7 @@ export function renderHome() {
           <h2>¿Listo para cuidar tu salud digestiva?</h2>
           <p>Agenda tu cita hoy y recibe la confirmación al instante.</p>
         </div>
-        <a class="btn btn--cta btn--lg" href="/reservar" data-link>${icon("calendar")} Reservar mi cita</a>
+        <a class="btn btn--cta btn--lg" href="/reservar" target="_blank" rel="noopener">${icon("calendar")} Reservar mi cita</a>
       </div>
     </section>
   `);
@@ -158,7 +158,7 @@ async function cargarMedicos() {
     grid.innerHTML = `<div class="state" style="grid-column:1/-1">
       <div class="state__icon state__icon--info">${icon("users", 28)}</div>
       <p class="text-muted">Nuestro equipo te espera. Agenda tu cita y elige especialista.</p>
-      <a class="btn btn--cta" href="/reservar" data-link>${icon("calendar")} Reservar cita</a>
+      <a class="btn btn--cta" href="/reservar" target="_blank" rel="noopener">${icon("calendar")} Reservar cita</a>
     </div>`;
   }
 }
