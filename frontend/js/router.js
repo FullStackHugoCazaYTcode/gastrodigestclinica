@@ -6,7 +6,11 @@
 
 const routes = [];
 
-export function route(pattern, handler) {
+const BASE_TITLE = "GastroDigest · Clínica Gastroenterológica en Huánuco";
+const BASE_DESC = "Clínica gastroenterológica en Huánuco: endoscopía, colonoscopía y consulta especializada. Reserva en línea y accede a tu portal del paciente.";
+
+// meta opcional: { title, desc } → actualiza <title> y meta description por página.
+export function route(pattern, handler, meta = null) {
   const keys = [];
   const regex = new RegExp(
     "^" +
@@ -16,7 +20,13 @@ export function route(pattern, handler) {
       }) +
       "/?$"
   );
-  routes.push({ regex, keys, handler });
+  routes.push({ regex, keys, handler, meta });
+}
+
+function applyMeta(meta) {
+  document.title = meta?.title ? `${meta.title} · GastroDigest` : BASE_TITLE;
+  const el = document.querySelector('meta[name="description"]');
+  if (el) el.setAttribute("content", meta?.desc || BASE_DESC);
 }
 
 export function navigate(path) {
@@ -34,6 +44,7 @@ function resolve() {
     if (match) {
       const params = {};
       r.keys.forEach((k, i) => (params[k] = decodeURIComponent(match[i + 1])));
+      applyMeta(r.meta);
       r.handler(params);
       updateActiveLinks(path);
       return;

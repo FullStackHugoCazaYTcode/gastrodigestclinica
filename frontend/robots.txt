@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /portal
+Disallow: /medico
+Disallow: /admin
+Disallow: /reprogramar
+
+Sitemap: https://gastrodigestclinica.vercel.app/sitemap.xml

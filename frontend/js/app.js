@@ -28,20 +28,43 @@ renderNavbar();
 renderFooter();
 renderChatbot();
 
-// Rutas del sitio.
-route("/", renderHome);
-route("/servicios", renderServicios);
-route("/nosotros", renderNosotros);
-route("/medicos", renderMedicos);
-route("/contacto", renderContacto);
-route("/reservar", renderReserva);
-route("/registro", renderRegistro);
-route("/portal", renderPortal);
-route("/medico", renderMedicoPortal);
-route("/admin", renderAdminPortal);
-route("/reprogramar/:token", renderReprogramar);
-route("/libro-reclamaciones", renderLibroReclamaciones);
-route("/privacidad", renderPrivacidad);
+// Rutas del sitio (con título y descripción por página para SEO).
+route("/", renderHome, {
+  desc: "Clínica gastroenterológica en Huánuco: endoscopía, colonoscopía y consulta especializada. Reserva en línea y accede a tu portal del paciente.",
+});
+route("/servicios", renderServicios, {
+  title: "Servicios",
+  desc: "Consulta gastroenterológica, endoscopía digestiva alta, colonoscopía y pruebas de laboratorio en Huánuco. Resultados en tu portal.",
+});
+route("/nosotros", renderNosotros, {
+  title: "Nosotros",
+  desc: "Conoce a GastroDigest: clínica de gastroenterología en Huánuco con médicos colegiados, tecnología moderna y trato humano.",
+});
+route("/medicos", renderMedicos, {
+  title: "Médicos",
+  desc: "Nuestro equipo de especialistas en gastroenterología, colegiados (CMP) y con amplia trayectoria. Agenda con tu médico de confianza.",
+});
+route("/contacto", renderContacto, {
+  title: "Contacto",
+  desc: "Estamos en Jr. Dos de Mayo 1234, Huánuco. Lun–Sáb 8:00 a. m. – 6:00 p. m. Teléfono y WhatsApp: +51 962 000 000.",
+});
+route("/reservar", renderReserva, {
+  title: "Agendar cita",
+  desc: "Reserva tu cita gastroenterológica en línea, confírmala por WhatsApp y recibe tus resultados en tu portal.",
+});
+route("/registro", renderRegistro, { title: "Crear cuenta" });
+route("/portal", renderPortal, { title: "Portal del paciente" });
+route("/medico", renderMedicoPortal, { title: "Acceso médicos" });
+route("/admin", renderAdminPortal, { title: "Administración" });
+route("/reprogramar/:token", renderReprogramar, { title: "Reprogramar cita" });
+route("/libro-reclamaciones", renderLibroReclamaciones, {
+  title: "Libro de Reclamaciones",
+  desc: "Registra tu reclamo o queja conforme a la Ley N.° 29571 (INDECOPI). Respuesta en 15 días hábiles.",
+});
+route("/privacidad", renderPrivacidad, {
+  title: "Política de Privacidad",
+  desc: "Cómo GastroDigest protege y trata tus datos personales conforme a la Ley N.° 29733.",
+});
 
 startRouter();
 
