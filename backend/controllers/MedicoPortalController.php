@@ -75,6 +75,19 @@ final class MedicoPortalController
         Response::success((new Cita())->porMedico($idMedico), 'Agenda del médico.');
     }
 
+    /** Marca una cita de su agenda como atendida. */
+    public function atenderCita(array $params): void
+    {
+        $idMedico = SessionGuard::requireMedico();
+        $resultado = (new Cita())->atenderPorMedico((int) $params['id'], $idMedico);
+        match ($resultado) {
+            'OK'                     => Response::success(['estado' => 'ATENDIDA'], 'Cita marcada como atendida.'),
+            'NO_AUTORIZADO'          => Response::error('Esta cita no pertenece a tu agenda.', 403),
+            'TRANSICION_NO_PERMITIDA'=> Response::error('La cita no puede marcarse como atendida en su estado actual.', 409),
+            default                  => Response::error('Cita no encontrada.', 404),
+        };
+    }
+
     public function pacientes(): void
     {
         $idMedico = SessionGuard::requireMedico();

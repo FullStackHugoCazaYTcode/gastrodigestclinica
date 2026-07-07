@@ -87,6 +87,7 @@ $router->post('/api/medico/login',      fn() => (new MedicoPortalController())->
 $router->post('/api/medico/logout',     fn() => (new MedicoPortalController())->logout());
 $router->get('/api/medico/sesion',      fn() => (new MedicoPortalController())->sesion());
 $router->get('/api/medico/agenda',      fn() => (new MedicoPortalController())->agenda());
+$router->patch('/api/medico/citas/{id}/atender', fn($p) => (new MedicoPortalController())->atenderCita($p));
 $router->get('/api/medico/pacientes',   fn() => (new MedicoPortalController())->pacientes());
 $router->post('/api/medico/documentos', fn() => (new MedicoPortalController())->emitirDocumento());
 
