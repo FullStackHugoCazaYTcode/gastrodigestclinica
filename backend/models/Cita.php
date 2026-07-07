@@ -26,8 +26,9 @@ final class Cita extends BaseModel
     /** Estados desde los que NO se permite ninguna transición (terminales). */
     private const TRANSICIONES = [
         'PENDIENTE_OTP'         => ['RESERVADA_WEB', 'CANCELADA_PACIENTE'],
-        'RESERVADA_WEB'         => ['CONFIRMADA_WSP', 'CONFIRMADA_RECEPCION', 'ATENCION_CONDICIONADA', 'CANCELADA_PACIENTE', 'NO_ASISTIO'],
-        'CONFIRMADA_WSP'        => ['CONFIRMADA_RECEPCION', 'ATENCION_CONDICIONADA', 'CANCELADA_PACIENTE', 'NO_ASISTIO'],
+        // El médico puede atender directamente una cita reservada o confirmada.
+        'RESERVADA_WEB'         => ['CONFIRMADA_WSP', 'CONFIRMADA_RECEPCION', 'ATENCION_CONDICIONADA', 'ATENDIDA', 'CANCELADA_PACIENTE', 'NO_ASISTIO'],
+        'CONFIRMADA_WSP'        => ['CONFIRMADA_RECEPCION', 'ATENCION_CONDICIONADA', 'ATENDIDA', 'CANCELADA_PACIENTE', 'NO_ASISTIO'],
         'CONFIRMADA_RECEPCION'  => ['ATENCION_CONDICIONADA', 'ATENDIDA', 'NO_ASISTIO'],
         'ATENCION_CONDICIONADA' => ['ATENDIDA', 'NO_ASISTIO'],
         'NO_ASISTIO'            => [],
@@ -300,6 +301,23 @@ final class Cita extends BaseModel
              ORDER BY c.fecha_hora DESC",
             [$idPaciente]
         )->fetchAll();
+    }
+
+    /**
+     * Marca una cita como ATENDIDA validando que pertenezca al médico.
+     * @return string OK|NO_EXISTE|NO_AUTORIZADO|TRANSICION_NO_PERMITIDA
+     */
+    public function atenderPorMedico(int $idCita, int $idMedico): string
+    {
+        $stmt = $this->run('SELECT id_medico FROM Citas WHERE id_cita = ? LIMIT 1', [$idCita]);
+        $cita = $stmt->fetch();
+        if ($cita === false) {
+            return 'NO_EXISTE';
+        }
+        if ((int) $cita['id_medico'] !== $idMedico) {
+            return 'NO_AUTORIZADO';
+        }
+        return $this->transicionar($idCita, 'ATENDIDA', 'RECEPCION', 'Atendida por el médico');
     }
 
     /** Agenda del médico: sus citas con el nombre del paciente. */

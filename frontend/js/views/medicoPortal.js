@@ -190,10 +190,16 @@ async function secAgenda(main) {
       go("emitir");
     })
   );
+  cont.querySelectorAll("[data-atender]").forEach((b) =>
+    b.addEventListener("click", () => atenderCita(b.dataset.atender, main))
+  );
 }
+
+const TERMINALES = ["ATENDIDA", "NO_ASISTIO", "CANCELADA_PACIENTE"];
 
 function agendaCard(c) {
   const [label, cls] = ESTADO[c.estado_actual] || [c.estado_actual, "muted"];
+  const atendible = !TERMINALES.includes(c.estado_actual);
   return `
     <article class="cita-item">
       <span class="cita-item__date">${icon("calendar", 16)} ${fmtFecha(c.fecha_hora)}</span>
@@ -203,8 +209,19 @@ function agendaCard(c) {
         ${c.motivo ? `<small class="cita-item__motivo">${esc(c.motivo)}</small>` : ""}
       </div>
       <span class="badge badge--${cls}">${esc(label)}</span>
+      ${atendible ? `<button class="btn btn--primary btn--sm" data-atender="${c.id_cita}">${icon("check", 16)} Atender</button>` : ""}
       <button class="btn btn--ghost btn--sm" data-emitir="${c.id_paciente}" data-nombre="${esc(c.paciente)}">${icon("file", 16)} Emitir</button>
     </article>`;
+}
+
+async function atenderCita(idCita, main) {
+  const res = await api.patch(`/api/medico/citas/${idCita}/atender`, {});
+  if (res.success) {
+    toast("Cita marcada como atendida.", "success");
+    secAgenda(main);
+  } else {
+    toast(res.message || "No se pudo actualizar la cita.", "error");
+  }
 }
 
 // ---------------------------------------------------------------------
