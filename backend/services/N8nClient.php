@@ -30,6 +30,18 @@ final class N8nClient
         return self::post('/webhook/recordatorio', $payload);
     }
 
+    /** Avisa al paciente que un documento clínico ya está disponible en su portal. */
+    public static function notificarDocumento(array $payload): bool
+    {
+        return self::post('/webhook/documento-listo', $payload);
+    }
+
+    /** Alerta inmediata al equipo cuando ingresa una reclamación (INDECOPI). */
+    public static function alertaReclamacion(array $payload): bool
+    {
+        return self::post('/webhook/reclamacion', $payload);
+    }
+
     /**
      * POST JSON firmado al webhook de n8n. Devuelve false (sin lanzar) ante
      * fallos de red para no bloquear la transacción principal; el error queda

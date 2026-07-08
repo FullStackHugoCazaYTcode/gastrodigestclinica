@@ -11,6 +11,8 @@ use App\Middlewares\SessionGuard;
 use App\Models\Cita;
 use App\Models\DocumentoClinico;
 use App\Models\Medico;
+use App\Models\Paciente;
+use App\Services\N8nClient;
 
 /**
  * MedicoPortalController — Área privada del médico: login, agenda,
@@ -20,6 +22,14 @@ final class MedicoPortalController
 {
     private const TIPOS_DOC = [
         'RECETA_MEDICA', 'INFORME_ENDOSCOPIA', 'INFORME_COLONOSCOPIA', 'RESULTADO_LABORATORIO',
+    ];
+
+    /** Etiquetas legibles para las notificaciones al paciente. */
+    private const TIPO_LABEL = [
+        'RECETA_MEDICA'         => 'Receta médica',
+        'INFORME_ENDOSCOPIA'    => 'Informe de endoscopía',
+        'INFORME_COLONOSCOPIA'  => 'Informe de colonoscopía',
+        'RESULTADO_LABORATORIO' => 'Resultado de laboratorio',
     ];
 
     public function login(): void
@@ -133,6 +143,19 @@ final class MedicoPortalController
             'descripcion'    => isset($d['descripcion']) ? trim((string) $d['descripcion']) : null,
             'fecha_emision'  => (string) $d['fecha_emision'],
         ]);
+
+        // Automatización: avisa al paciente que su documento ya está en el portal.
+        // Fire-and-forget: si n8n no responde, no bloquea la emisión (queda en log).
+        $paciente = (new Paciente())->porId((int) $d['id_paciente']);
+        if ($paciente !== null) {
+            N8nClient::notificarDocumento([
+                'telefono'  => (string) ($paciente['telefono'] ?? ''),
+                'correo'    => (string) ($paciente['correo'] ?? ''),
+                'paciente'  => trim(($paciente['nombres'] ?? '') . ' ' . ($paciente['apellidos'] ?? '')),
+                'documento' => self::TIPO_LABEL[$d['tipo_documento']] ?? (string) $d['tipo_documento'],
+                'titulo'    => trim((string) $d['titulo']),
+            ]);
+        }
 
         Response::created(['id_documento' => $id], 'Documento emitido. Ya está disponible en el portal del paciente.');
     }
