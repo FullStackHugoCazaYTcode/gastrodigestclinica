@@ -8,10 +8,12 @@ use App\Core\Response;
 use App\Core\Security;
 use App\Core\Validator;
 use App\Middlewares\SessionGuard;
+use App\Middlewares\WebhookGuard;
 use App\Models\Administrador;
 use App\Models\Cita;
 use App\Models\Medico;
 use App\Models\Paciente;
+use App\Models\Reclamacion;
 
 /**
  * AdminController — Panel de administración/dueño: métricas, gestión de
@@ -78,6 +80,24 @@ final class AdminController
             'medicos_activos'  => $activos,
             'citas_por_estado' => $porEstado,
         ], 'Resumen.');
+    }
+
+    /**
+     * Digest diario para el cron de n8n (sin sesión: lo llama una máquina).
+     * Protegido por el secreto compartido de webhook.
+     */
+    public function resumenDiario(): void
+    {
+        WebhookGuard::verify();
+        $hoy = date('Y-m-d');
+        $agenda = (new Cita())->agendaDelDia($hoy);
+        Response::success([
+            'fecha'                => $hoy,
+            'citas_hoy'            => count($agenda),
+            'agenda'               => $agenda,
+            'pacientes_nuevos_hoy' => (new Paciente())->nuevosDesde($hoy),
+            'reclamaciones_nuevas' => (new Reclamacion())->conteoDelDia($hoy),
+        ], 'Resumen diario.');
     }
 
     public function medicos(): void
