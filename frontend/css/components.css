@@ -273,6 +273,16 @@
 .btn--ghost:hover:not(:disabled) { background: var(--color-surface-alt); }
 .btn--block { width: 100%; }
 .btn--lg { padding: var(--space-4) var(--space-6); font-size: var(--text-lg); }
+.btn--xs { padding: 6px 12px; font-size: var(--text-xs); gap: 5px; }
+.btn--danger { background: #DC2626; color: #fff; }
+.btn--danger:hover:not(:disabled) { background: #B91C1C; }
+
+/* Fila de acciones al pie de un modal (confirmar / cancelar). */
+.modal__actions {
+  display: flex; flex-wrap: wrap; gap: var(--space-3);
+  justify-content: flex-end; margin-top: var(--space-6);
+}
+.modal__actions .btn { flex: 0 1 auto; }
 
 /* Spinner dentro del botón */
 .btn .spinner {
