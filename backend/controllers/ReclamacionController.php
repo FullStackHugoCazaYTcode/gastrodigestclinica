@@ -7,6 +7,7 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Core\Validator;
 use App\Models\Reclamacion;
+use App\Services\N8nClient;
 
 /**
  * ReclamacionController — Registro público del Libro de Reclamaciones.
@@ -62,6 +63,17 @@ final class ReclamacionController
             'monto_reclamado'  => $monto,
             'detalle'          => trim((string) $d['detalle']),
             'pedido'           => trim((string) $d['pedido']),
+        ]);
+
+        // Automatización: alerta inmediata al equipo de la clínica (INDECOPI exige
+        // respuesta en 15 días hábiles). Fire-and-forget para no bloquear el registro.
+        N8nClient::alertaReclamacion([
+            'numero_hoja' => $numeroHoja,
+            'tipo'        => $d['tipo'],
+            'nombres'     => trim((string) $d['nombres']),
+            'correo'      => trim((string) $d['correo']),
+            'telefono'    => isset($d['telefono']) ? preg_replace('/\D+/', '', (string) $d['telefono']) : '',
+            'detalle'     => mb_substr(trim((string) $d['detalle']), 0, 500),
         ]);
 
         Response::created(['numero_hoja' => $numeroHoja], 'Reclamación registrada correctamente.');

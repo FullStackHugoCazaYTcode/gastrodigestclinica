@@ -1,0 +1,67 @@
+{
+  "name": "GastroDigest · 04 · Documento listo (aviso al paciente via Brevo)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "documento-listo",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "node-webhook-doc",
+      "name": "Recibir documento (PHP)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 320],
+      "webhookId": "gastrodigest-documento-listo"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.brevo.com/v3/smtp/email",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "accept", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"sender\": { \"email\": \"hr177153@gmail.com\", \"name\": \"GastroDigest\" }, \"to\": [ { \"email\": \"{{ $('Recibir documento (PHP)').item.json.body.correo }}\" } ], \"subject\": \"Tu {{ $('Recibir documento (PHP)').item.json.body.documento }} ya esta disponible\", \"htmlContent\": \"<div style='font-family:Arial,Helvetica,sans-serif;background:#FAF9F6;padding:32px 0'><div style='max-width:520px;margin:0 auto;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #E6E2DA'><div style='background:#0E4B42;padding:24px;text-align:center'><span style='display:inline-block;background:#2E7D6C;color:#ffffff;font-weight:bold;border-radius:9px;padding:6px 12px;font-size:18px'>G</span><div style='color:#ffffff;font-size:20px;font-weight:bold;margin-top:8px'>GastroDigest</div><div style='color:#bcd6ce;font-size:12px'>Clinica de Gastroenterologia</div></div><div style='padding:32px 28px'><p style='color:#1F2B28;font-size:16px;margin:0 0 6px 0'>Hola {{ $('Recibir documento (PHP)').item.json.body.paciente }},</p><p style='color:#5C6B66;font-size:14px;margin:0 0 18px 0'>Tu medico acaba de emitir un documento y ya puedes consultarlo en tu portal del paciente:</p><div style='background:#F1F5F3;border-left:4px solid #2E7D6C;border-radius:8px;padding:14px 16px;margin:0 0 22px 0'><div style='color:#0E4B42;font-size:13px;font-weight:bold;text-transform:uppercase;letter-spacing:1px'>{{ $('Recibir documento (PHP)').item.json.body.documento }}</div><div style='color:#1F2B28;font-size:15px;margin-top:4px'>{{ $('Recibir documento (PHP)').item.json.body.titulo }}</div></div><div style='text-align:center'><a href='https://gastrodigestclinica.vercel.app/portal' style='display:inline-block;background:#C2410C;color:#ffffff;text-decoration:none;font-weight:bold;font-size:15px;border-radius:10px;padding:13px 28px'>Ver en mi portal</a></div><p style='color:#94A3B8;font-size:12px;margin:22px 0 0 0'>Si no reconoces esta actividad, comunicate con nosotros.</p></div><div style='background:#F1F5F3;padding:16px;text-align:center;color:#94A3B8;font-size:11px'>GastroDigest &middot; Huanuco, Peru &middot; Datos protegidos (Ley N. 29733)</div></div></div>\", \"textContent\": \"Hola {{ $('Recibir documento (PHP)').item.json.body.paciente }}. Tu {{ $('Recibir documento (PHP)').item.json.body.documento }} ({{ $('Recibir documento (PHP)').item.json.body.titulo }}) ya esta disponible en tu portal: https://gastrodigestclinica.vercel.app/portal\" }",
+        "options": {}
+      },
+      "id": "node-brevo-doc",
+      "name": "Enviar Email (Brevo)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [540, 320]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"success\": true, \"message\": \"Aviso de documento enviado\", \"canal\": \"email\" }",
+        "options": {}
+      },
+      "id": "node-respond-doc",
+      "name": "Responder OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [840, 320]
+    }
+  ],
+  "connections": {
+    "Recibir documento (PHP)": {
+      "main": [[{ "node": "Enviar Email (Brevo)", "type": "main", "index": 0 }]]
+    },
+    "Enviar Email (Brevo)": {
+      "main": [[{ "node": "Responder OK", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "pinData": {},
+  "tags": [{ "name": "gastrodigest" }]
+}
