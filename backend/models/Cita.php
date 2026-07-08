@@ -320,6 +320,84 @@ final class Cita extends BaseModel
         return $this->transicionar($idCita, 'ATENDIDA', 'RECEPCION', 'Atendida por el médico');
     }
 
+    /**
+     * Cancela una cita validando que pertenezca al paciente.
+     * @return string OK|NO_EXISTE|NO_AUTORIZADO|TRANSICION_NO_PERMITIDA
+     */
+    public function cancelarPorPaciente(int $idCita, int $idPaciente): string
+    {
+        $stmt = $this->run('SELECT id_paciente FROM Citas WHERE id_cita = ? LIMIT 1', [$idCita]);
+        $cita = $stmt->fetch();
+        if ($cita === false) {
+            return 'NO_EXISTE';
+        }
+        if ((int) $cita['id_paciente'] !== $idPaciente) {
+            return 'NO_AUTORIZADO';
+        }
+        return $this->transicionar($idCita, 'CANCELADA_PACIENTE', 'PORTAL', 'Cancelada por el paciente desde el portal.');
+    }
+
+    /**
+     * Reprograma una cita del paciente a un nuevo horario, validando propiedad,
+     * estado no terminal y colisión de agenda del médico (SELECT ... FOR UPDATE).
+     * @return string OK|NO_EXISTE|NO_AUTORIZADO|NO_APLICABLE|CONFLICTO_HORARIO
+     */
+    public function reprogramarPorPaciente(int $idCita, int $idPaciente, string $nuevaFechaHora): string
+    {
+        $this->db->beginTransaction();
+        try {
+            $stmt = $this->db->prepare(
+                'SELECT id_paciente, id_medico, estado_actual FROM Citas WHERE id_cita = ? FOR UPDATE'
+            );
+            $stmt->execute([$idCita]);
+            $cita = $stmt->fetch();
+            if ($cita === false) {
+                $this->db->rollBack();
+                return 'NO_EXISTE';
+            }
+            if ((int) $cita['id_paciente'] !== $idPaciente) {
+                $this->db->rollBack();
+                return 'NO_AUTORIZADO';
+            }
+            if (in_array((string) $cita['estado_actual'], ['ATENDIDA', 'CANCELADA_PACIENTE', 'NO_ASISTIO'], true)) {
+                $this->db->rollBack();
+                return 'NO_APLICABLE';
+            }
+
+            $lock = $this->db->prepare(
+                "SELECT id_cita FROM Citas
+                 WHERE id_medico = :m AND fecha_hora = :f AND id_cita <> :self
+                   AND estado_actual NOT IN ('CANCELADA_PACIENTE','NO_ASISTIO')
+                 FOR UPDATE"
+            );
+            $lock->execute([':m' => $cita['id_medico'], ':f' => $nuevaFechaHora, ':self' => $idCita]);
+            if ($lock->fetch() !== false) {
+                $this->db->rollBack();
+                return 'CONFLICTO_HORARIO';
+            }
+
+            $this->db->prepare('UPDATE Citas SET fecha_hora = :f WHERE id_cita = :id')
+                     ->execute([':f' => $nuevaFechaHora, ':id' => $idCita]);
+            $this->bitacora(
+                $idCita,
+                (string) $cita['estado_actual'],
+                (string) $cita['estado_actual'],
+                'PORTAL',
+                'Reprogramación por el paciente a ' . $nuevaFechaHora
+            );
+            $this->db->commit();
+            return 'OK';
+        } catch (PDOException $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            if ($e->getCode() === '23000') {
+                return 'CONFLICTO_HORARIO';
+            }
+            throw $e;
+        }
+    }
+
     /** Agenda del médico: sus citas con el nombre del paciente. */
     public function porMedico(int $idMedico): array
     {

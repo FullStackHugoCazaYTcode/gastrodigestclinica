@@ -92,6 +92,43 @@ final class PortalController
         Response::success($citas, 'Citas del paciente.');
     }
 
+    /** El paciente cancela una de sus citas. */
+    public function cancelarCita(array $params): void
+    {
+        $idPaciente = SessionGuard::requirePaciente();
+        $res = (new Cita())->cancelarPorPaciente((int) $params['id'], $idPaciente);
+        match ($res) {
+            'OK'                      => Response::success(['estado' => 'CANCELADA_PACIENTE'], 'Tu cita fue cancelada.'),
+            'NO_AUTORIZADO'           => Response::error('Esta cita no te pertenece.', 403),
+            'TRANSICION_NO_PERMITIDA' => Response::error('Esta cita ya no se puede cancelar.', 409),
+            default                   => Response::error('Cita no encontrada.', 404),
+        };
+    }
+
+    /** El paciente reprograma una de sus citas a un nuevo horario. */
+    public function reprogramarCita(array $params): void
+    {
+        $idPaciente = SessionGuard::requirePaciente();
+        $d = Request::json();
+        $fechaHora = trim((string) ($d['fecha_hora'] ?? ''));
+
+        if (!preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $fechaHora)) {
+            Response::error('Selecciona una fecha y hora válidas.', 400, ['fecha_hora' => 'Formato inválido.']);
+        }
+        if (strtotime($fechaHora) < time()) {
+            Response::error('Debes elegir un horario futuro.', 400, ['fecha_hora' => 'La fecha y hora ya pasaron.']);
+        }
+
+        $res = (new Cita())->reprogramarPorPaciente((int) $params['id'], $idPaciente, $fechaHora);
+        match ($res) {
+            'OK'                => Response::success(['fecha_hora' => $fechaHora], 'Tu cita fue reprogramada.'),
+            'NO_AUTORIZADO'     => Response::error('Esta cita no te pertenece.', 403),
+            'NO_APLICABLE'      => Response::error('Esta cita ya no se puede reprogramar.', 409),
+            'CONFLICTO_HORARIO' => Response::error('Ese horario ya está ocupado. Elige otro.', 409),
+            default             => Response::error('Cita no encontrada.', 404),
+        };
+    }
+
     /** Actualiza los datos de contacto del paciente autenticado. */
     public function actualizarPerfil(): void
     {

@@ -8,6 +8,7 @@ import { mountFull, icon, esc, toast, clearErrors, applyErrors, setLoading } fro
 import { navigate } from "../router.js";
 import { startBooking } from "./portalBooking.js";
 import { logoMark } from "../components/logo.js";
+import { openCancelarModal, openReprogramarModal } from "../components/gestionCita.js";
 
 const NAV = [
   ["inicio", "Inicio", "home"],
@@ -193,6 +194,8 @@ async function secCitas(main) {
   const citas = res.success && Array.isArray(res.data) ? res.data : [];
   const proximas = citas.filter(esProxima).sort((a, b) => a.fecha_hora.localeCompare(b.fecha_hora));
   const historial = citas.filter((c) => !esProxima(c));
+  const byId = new Map(citas.map((c) => [String(c.id_cita), c]));
+  const refrescar = () => secCitas(main);
 
   const pintar = (tab) => {
     const lista = tab === "proximas" ? proximas : historial;
@@ -206,7 +209,7 @@ async function secCitas(main) {
         </div>`;
       cont.querySelector("[data-go]")?.addEventListener("click", () => go("agendar"));
     } else {
-      cont.innerHTML = `<div class="cita-list">${lista.map(citaCard).join("")}</div>`;
+      cont.innerHTML = `<div class="cita-list">${lista.map((c) => citaCard(c, true)).join("")}</div>`;
     }
   };
 
@@ -217,6 +220,19 @@ async function secCitas(main) {
     })
   );
   pintar("proximas");
+
+  // Gestión de citas (delegación sobre el contenedor, sobrevive al re-pintado de tabs).
+  document.getElementById("citas-list").addEventListener("click", (e) => {
+    const reprog = e.target.closest("[data-reprog]");
+    const cancel = e.target.closest("[data-cancel]");
+    if (reprog) {
+      const c = byId.get(reprog.dataset.reprog);
+      if (c) openReprogramarModal(c, refrescar);
+    } else if (cancel) {
+      const c = byId.get(cancel.dataset.cancel);
+      if (c) openCancelarModal(c, refrescar);
+    }
+  });
 }
 
 // ---------------------------------------------------------------------
@@ -427,8 +443,14 @@ function fmtFecha(f) {
   return d.toLocaleString("es-PE", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
-function citaCard(c) {
+function citaCard(c, conAcciones = false) {
   const [label, cls] = ESTADO[c.estado_actual] || [c.estado_actual, "muted"];
+  const acciones = conAcciones && esProxima(c)
+    ? `<div class="cita-item__actions">
+         <button class="btn btn--ghost btn--xs" type="button" data-reprog="${c.id_cita}">${icon("calendar", 14)} Reprogramar</button>
+         <button class="btn btn--ghost btn--xs" type="button" data-cancel="${c.id_cita}">${icon("x", 14)} Cancelar</button>
+       </div>`
+    : "";
   return `
     <article class="cita-item">
       <span class="cita-item__date">${icon("calendar", 16)} ${fmtFecha(c.fecha_hora)}</span>
@@ -438,6 +460,7 @@ function citaCard(c) {
         ${c.motivo ? `<small class="cita-item__motivo">${esc(c.motivo)}</small>` : ""}
       </div>
       <span class="badge badge--${cls}">${esc(label)}</span>
+      ${acciones}
     </article>`;
 }
 
