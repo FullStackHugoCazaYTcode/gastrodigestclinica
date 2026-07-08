@@ -39,6 +39,15 @@ final class Paciente extends BaseModel
         return (int) $this->run('SELECT COUNT(*) FROM Pacientes')->fetchColumn();
     }
 
+    /** Pacientes registrados desde una fecha (para el digest diario). */
+    public function nuevosDesde(string $fecha): int
+    {
+        return (int) $this->run(
+            'SELECT COUNT(*) FROM Pacientes WHERE created_at >= ?',
+            [$fecha . ' 00:00:00']
+        )->fetchColumn();
+    }
+
     /** Datos mínimos para login del portal privado. */
     public function credencialPorDocumento(string $tipo, string $numero): ?array
     {

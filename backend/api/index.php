@@ -76,6 +76,8 @@ $router->post('/api/admin/login',              fn() => (new AdminController())->
 $router->post('/api/admin/logout',             fn() => (new AdminController())->logout());
 $router->get('/api/admin/sesion',              fn() => (new AdminController())->sesion());
 $router->get('/api/admin/resumen',             fn() => (new AdminController())->resumen());
+// Digest diario para el cron de n8n (protegido por X-Webhook-Secret, sin sesión).
+$router->get('/api/admin/resumen-diario',      fn() => (new AdminController())->resumenDiario());
 $router->get('/api/admin/medicos',             fn() => (new AdminController())->medicos());
 $router->post('/api/admin/medicos',            fn() => (new AdminController())->crearMedico());
 $router->patch('/api/admin/medicos/{id}',      fn($p) => (new AdminController())->cambiarEstadoMedico($p));

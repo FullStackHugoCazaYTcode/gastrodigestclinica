@@ -39,4 +39,13 @@ final class Reclamacion extends BaseModel
         );
         return $numeroHoja;
     }
+
+    /** Reclamaciones registradas en un día (para el digest diario). */
+    public function conteoDelDia(string $fecha): int
+    {
+        return (int) $this->run(
+            'SELECT COUNT(*) FROM Libro_Reclamaciones WHERE DATE(created_at) = ?',
+            [$fecha]
+        )->fetchColumn();
+    }
 }
