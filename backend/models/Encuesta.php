@@ -61,6 +61,33 @@ final class Encuesta extends BaseModel
         return 'OK';
     }
 
+    /** Encuestas respondidas (con paciente/especialidad) para moderación del admin. */
+    public function paraModeracion(int $limite = 60): array
+    {
+        $limite = max(1, min(200, $limite));
+        return $this->run(
+            "SELECT e.id_encuesta, e.puntaje, e.comentario, e.autoriza_publicar,
+                    e.aprobado, e.respondida_at,
+                    CONCAT(p.nombres, ' ', p.apellidos) AS paciente, m.especialidad
+             FROM Encuestas e
+             JOIN Pacientes p ON p.id_paciente = e.id_paciente
+             JOIN Citas     c ON c.id_cita     = e.id_cita
+             JOIN Medicos   m ON m.id_medico   = c.id_medico
+             WHERE e.estado = 'RESPONDIDA'
+             ORDER BY e.respondida_at DESC
+             LIMIT {$limite}"
+        )->fetchAll();
+    }
+
+    /** Aprueba u oculta un testimonio (moderación del admin). */
+    public function moderar(int $idEncuesta, bool $aprobado): void
+    {
+        $this->run(
+            'UPDATE Encuestas SET aprobado = :a WHERE id_encuesta = :id',
+            [':a' => $aprobado ? 1 : 0, ':id' => $idEncuesta]
+        );
+    }
+
     /** Testimonios publicables: puntaje alto + consentimiento + aprobados. */
     public function testimonios(int $limite = 6): array
     {
