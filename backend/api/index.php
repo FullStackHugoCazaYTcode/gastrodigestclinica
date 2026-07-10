@@ -15,6 +15,7 @@ use App\Core\Router;
 use App\Controllers\AdminController;
 use App\Controllers\AseguradoraController;
 use App\Controllers\CitaController;
+use App\Controllers\EncuestaController;
 use App\Controllers\MedicoController;
 use App\Controllers\MedicoPortalController;
 use App\Controllers\OtpController;
@@ -47,6 +48,11 @@ $router->get('/api/pacientes/verificar', fn() => (new PacienteController())->ver
 
 // Libro de Reclamaciones (público)
 $router->post('/api/reclamaciones', fn() => (new ReclamacionController())->registrar());
+
+// Encuesta de satisfacción (NPS) + testimonios (público)
+$router->get('/api/testimonios',        fn() => (new EncuestaController())->testimonios());
+$router->get('/api/encuestas/{token}',  fn($p) => (new EncuestaController())->mostrar($p));
+$router->post('/api/encuestas/{token}', fn($p) => (new EncuestaController())->responder($p));
 
 // Médicos y aseguradoras (catálogos)
 $router->get('/api/medicos',      fn() => (new MedicoController())->listar());

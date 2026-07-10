@@ -42,6 +42,12 @@ final class N8nClient
         return self::post('/webhook/reclamacion', $payload);
     }
 
+    /** Envía al paciente la encuesta de satisfacción tras ser atendido. */
+    public static function enviarEncuesta(array $payload): bool
+    {
+        return self::post('/webhook/encuesta', $payload);
+    }
+
     /**
      * POST JSON firmado al webhook de n8n. Devuelve false (sin lanzar) ante
      * fallos de red para no bloquear la transacción principal; el error queda

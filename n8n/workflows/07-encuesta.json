@@ -1,0 +1,67 @@
+{
+  "name": "GastroDigest · 07 · Encuesta de satisfaccion (aviso al paciente via Brevo)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "encuesta",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "node-webhook-enc",
+      "name": "Recibir encuesta (PHP)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 320],
+      "webhookId": "gastrodigest-encuesta"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.brevo.com/v3/smtp/email",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "accept", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"sender\": { \"email\": \"hr177153@gmail.com\", \"name\": \"GastroDigest\" }, \"to\": [ { \"email\": \"{{ $('Recibir encuesta (PHP)').item.json.body.correo }}\" } ], \"subject\": \"Cuentanos como fue tu atencion en GastroDigest\", \"htmlContent\": \"<div style='font-family:Arial,Helvetica,sans-serif;background:#FAF9F6;padding:32px 0'><div style='max-width:520px;margin:0 auto;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #E6E2DA'><div style='background:#0E4B42;padding:24px;text-align:center'><span style='display:inline-block;background:#2E7D6C;color:#ffffff;font-weight:bold;border-radius:9px;padding:6px 12px;font-size:18px'>G</span><div style='color:#ffffff;font-size:20px;font-weight:bold;margin-top:8px'>GastroDigest</div><div style='color:#bcd6ce;font-size:12px'>Clinica de Gastroenterologia</div></div><div style='padding:32px 28px;text-align:center'><p style='color:#1F2B28;font-size:16px;margin:0 0 6px 0'>Hola {{ $('Recibir encuesta (PHP)').item.json.body.paciente }},</p><p style='color:#5C6B66;font-size:14px;margin:0 0 20px 0'>Gracias por tu visita con {{ $('Recibir encuesta (PHP)').item.json.body.medico }}. Nos encantaria conocer tu opinion sobre la atencion que recibiste.</p><div style='font-size:30px;letter-spacing:6px;color:#E0A93E;margin:0 0 20px 0'>&#9733; &#9733; &#9733; &#9733; &#9733;</div><a href='{{ $('Recibir encuesta (PHP)').item.json.body.link }}' style='display:inline-block;background:#C2410C;color:#ffffff;text-decoration:none;font-weight:bold;font-size:15px;border-radius:10px;padding:13px 30px'>Responder encuesta</a><p style='color:#94A3B8;font-size:12px;margin:22px 0 0 0'>Solo te tomara un minuto. Tu opinion nos ayuda a mejorar.</p></div><div style='background:#F1F5F3;padding:16px;text-align:center;color:#94A3B8;font-size:11px'>GastroDigest &middot; Huanuco, Peru &middot; Datos protegidos (Ley N. 29733)</div></div></div>\", \"textContent\": \"Hola {{ $('Recibir encuesta (PHP)').item.json.body.paciente }}. Gracias por tu visita con {{ $('Recibir encuesta (PHP)').item.json.body.medico }}. Cuentanos como fue tu atencion: {{ $('Recibir encuesta (PHP)').item.json.body.link }}\" }",
+        "options": {}
+      },
+      "id": "node-brevo-enc",
+      "name": "Enviar Email (Brevo)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [540, 320]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"success\": true, \"message\": \"Encuesta enviada\", \"canal\": \"email\" }",
+        "options": {}
+      },
+      "id": "node-respond-enc",
+      "name": "Responder OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [840, 320]
+    }
+  ],
+  "connections": {
+    "Recibir encuesta (PHP)": {
+      "main": [[{ "node": "Enviar Email (Brevo)", "type": "main", "index": 0 }]]
+    },
+    "Enviar Email (Brevo)": {
+      "main": [[{ "node": "Responder OK", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "pinData": {},
+  "tags": [{ "name": "gastrodigest" }]
+}

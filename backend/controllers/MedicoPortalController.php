@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Core\Env;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Security;
@@ -10,6 +11,7 @@ use App\Core\Validator;
 use App\Middlewares\SessionGuard;
 use App\Models\Cita;
 use App\Models\DocumentoClinico;
+use App\Models\Encuesta;
 use App\Models\Medico;
 use App\Models\Paciente;
 use App\Services\N8nClient;
@@ -89,13 +91,57 @@ final class MedicoPortalController
     public function atenderCita(array $params): void
     {
         $idMedico = SessionGuard::requireMedico();
-        $resultado = (new Cita())->atenderPorMedico((int) $params['id'], $idMedico);
+        $idCita = (int) $params['id'];
+        $resultado = (new Cita())->atenderPorMedico($idCita, $idMedico);
         match ($resultado) {
-            'OK'                     => Response::success(['estado' => 'ATENDIDA'], 'Cita marcada como atendida.'),
+            'OK'                     => $this->atendida($idCita, $idMedico),
             'NO_AUTORIZADO'          => Response::error('Esta cita no pertenece a tu agenda.', 403),
             'TRANSICION_NO_PERMITIDA'=> Response::error('La cita no puede marcarse como atendida en su estado actual.', 409),
             default                  => Response::error('Cita no encontrada.', 404),
         };
+    }
+
+    /** Post-atención: dispara la encuesta de satisfacción y responde. */
+    private function atendida(int $idCita, int $idMedico): never
+    {
+        $this->dispararEncuesta($idCita, $idMedico);
+        Response::success(['estado' => 'ATENDIDA'], 'Cita marcada como atendida.');
+    }
+
+    /**
+     * Crea la encuesta NPS y la emite a n8n (fire-and-forget). Nunca rompe la
+     * respuesta principal: cualquier fallo queda en el log.
+     */
+    private function dispararEncuesta(int $idCita, int $idMedico): void
+    {
+        try {
+            $cita = (new Cita())->porId($idCita);
+            if ($cita === null) {
+                return;
+            }
+            $paciente = (new Paciente())->porId((int) $cita['id_paciente']);
+            $medico   = (new Medico())->porId($idMedico);
+            if ($paciente === null || $medico === null) {
+                return;
+            }
+
+            $token = Security::uuid();
+            // Idempotente: si ya existía encuesta para la cita, no reenvía.
+            if (!(new Encuesta())->crearParaCita($idCita, (int) $cita['id_paciente'], $token)) {
+                return;
+            }
+
+            $base = (string) (Env::get('APP_FRONTEND_URL') ?? Env::get('APP_URL', ''));
+            N8nClient::enviarEncuesta([
+                'telefono' => (string) ($paciente['telefono'] ?? ''),
+                'correo'   => (string) ($paciente['correo'] ?? ''),
+                'paciente' => trim(($paciente['nombres'] ?? '') . ' ' . ($paciente['apellidos'] ?? '')),
+                'medico'   => 'Dr(a). ' . trim(($medico['nombres'] ?? '') . ' ' . ($medico['apellidos'] ?? '')),
+                'link'     => rtrim($base, '/') . '/encuesta/' . $token,
+            ]);
+        } catch (\Throwable $e) {
+            error_log('[encuesta] no se pudo disparar: ' . $e->getMessage());
+        }
     }
 
     public function pacientes(): void
