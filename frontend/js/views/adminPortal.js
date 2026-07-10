@@ -14,6 +14,7 @@ const NAV = [
   ["medicos", "Médicos", "stethoscope"],
   ["citas", "Citas", "calendarCheck"],
   ["pacientes", "Pacientes", "users"],
+  ["opiniones", "Opiniones", "heart"],
 ];
 
 const ESTADO = {
@@ -144,13 +145,65 @@ function go(sec) {
   );
   const main = document.getElementById("admin-main");
   window.scrollTo({ top: 0 });
-  ({ resumen: secResumen, medicos: secMedicos, citas: secCitas, pacientes: secPacientes }[sec] || secResumen)(main);
+  ({ resumen: secResumen, medicos: secMedicos, citas: secCitas, pacientes: secPacientes, opiniones: secOpiniones }[sec] || secResumen)(main);
 }
 
 async function cerrarSesion() {
   await api.post("/api/admin/logout", {});
   toast("Sesión cerrada.", "info");
   navigate("/admin");
+}
+
+// ---------------------------------------------------------------------
+//  Opiniones (moderación de testimonios NPS)
+// ---------------------------------------------------------------------
+async function secOpiniones(main) {
+  main.innerHTML = `
+    <h1 class="portal-h1">Opiniones de pacientes</h1>
+    <p class="portal-sub">Aprueba cuáles se publican como testimonios en el sitio. Solo se pueden publicar las que tienen el consentimiento del paciente.</p>
+    <div id="op-cont"><div class="skeleton" style="height:120px"></div></div>`;
+  await cargarOpiniones(main);
+}
+
+async function cargarOpiniones(main) {
+  const res = await api.get("/api/admin/encuestas");
+  const lista = res.success && Array.isArray(res.data) ? res.data : [];
+  const cont = main.querySelector("#op-cont");
+  if (!lista.length) {
+    cont.innerHTML = `<div class="portal-empty"><span class="portal-empty__icon">${icon("heart", 30)}</span><p>Aún no hay opiniones respondidas.</p></div>`;
+    return;
+  }
+  cont.innerHTML = `<div class="cita-list">${lista.map(opinionRow).join("")}</div>`;
+  cont.querySelectorAll("[data-aprobar]").forEach((b) =>
+    b.addEventListener("click", async () => {
+      const id = b.dataset.aprobar;
+      const aprobar = b.dataset.aprobado === "0";
+      setLoading(b, true);
+      const r = await api.patch(`/api/admin/encuestas/${id}`, { aprobado: aprobar });
+      if (r.success) { toast(aprobar ? "Testimonio publicado." : "Testimonio ocultado.", "success"); cargarOpiniones(main); }
+      else { setLoading(b, false); toast(r.message || "No se pudo actualizar.", "error"); }
+    })
+  );
+}
+
+function opinionRow(e) {
+  const stars = Math.max(0, Math.min(5, Number(e.puntaje) || 0));
+  const aprobado = Number(e.aprobado) === 1;
+  const consiente = Number(e.autoriza_publicar) === 1;
+  const acciones = consiente
+    ? `<button class="btn btn--ghost btn--sm" data-aprobar="${e.id_encuesta}" data-aprobado="${aprobado ? 1 : 0}">${aprobado ? "Ocultar" : "Publicar"}</button>`
+    : `<span class="badge badge--muted">Sin consentimiento</span>`;
+  return `
+    <article class="cita-item">
+      <span class="cita-item__date" aria-label="${stars} de 5 estrellas">${"★".repeat(stars)}${"☆".repeat(5 - stars)}</span>
+      <div class="cita-item__body">
+        <strong>${esc(e.paciente)}</strong>
+        <small>${esc(e.especialidad || "")}${e.respondida_at ? " · " + esc(String(e.respondida_at).slice(0, 10)) : ""}</small>
+        ${e.comentario ? `<small class="cita-item__motivo">"${esc(e.comentario)}"</small>` : `<small class="text-muted">Sin comentario</small>`}
+      </div>
+      <span class="badge badge--${aprobado ? "atendida" : "pendiente"}">${aprobado ? "Publicado" : "Oculto"}</span>
+      ${acciones}
+    </article>`;
 }
 
 // ---------------------------------------------------------------------

@@ -89,6 +89,8 @@ $router->post('/api/admin/medicos',            fn() => (new AdminController())->
 $router->patch('/api/admin/medicos/{id}',      fn($p) => (new AdminController())->cambiarEstadoMedico($p));
 $router->get('/api/admin/citas',               fn() => (new AdminController())->citas());
 $router->get('/api/admin/pacientes',           fn() => (new AdminController())->pacientes());
+$router->get('/api/admin/encuestas',           fn() => (new AdminController())->encuestas());
+$router->patch('/api/admin/encuestas/{id}',    fn($p) => (new AdminController())->moderarEncuesta($p));
 
 // Área privada del médico
 $router->post('/api/medico/login',      fn() => (new MedicoPortalController())->login());

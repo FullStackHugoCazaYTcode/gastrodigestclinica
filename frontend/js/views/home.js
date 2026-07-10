@@ -1,7 +1,7 @@
 // =====================================================================
 //  views/home.js — Página de inicio (landing) de GastroDigest.
 // =====================================================================
-import { mountFull, icon } from "../ui.js";
+import { mountFull, icon, esc } from "../ui.js";
 import { auroraHTML } from "../components/aurora.js";
 import { trustStripHTML } from "../components/trustStrip.js";
 import { revealOnScroll, countUp, motionReady } from "../motion.js";
@@ -155,6 +155,35 @@ export function renderHome() {
     revealOnScroll();
   });
   cargarMedicos();
+  hidratarTestimonios();
+}
+
+// Reemplaza los testimonios curados por opiniones reales aprobadas (si existen).
+async function hidratarTestimonios() {
+  const cont = document.querySelector(".testimonials");
+  if (!cont) return;
+  const res = await api.get("/api/testimonios");
+  if (!res.success || !Array.isArray(res.data) || res.data.length === 0) return; // deja los curados
+  cont.innerHTML = res.data
+    .map((t) =>
+      testimonialFigure({
+        name: t.autor,
+        contexto: t.especialidad || "Paciente atendido",
+        text: t.comentario,
+        stars: Math.max(1, Math.min(5, Number(t.puntaje) || 5)),
+      })
+    )
+    .join("");
+  motionReady.then(() => revealOnScroll(cont));
+}
+
+function testimonialFigure({ name, contexto, text, stars }) {
+  return `
+    <figure class="testimonial" data-reveal>
+      <div class="testimonial__stars" aria-label="${stars} de 5 estrellas">${icon("star", 16).repeat(stars)}</div>
+      <blockquote>"${esc(text)}"</blockquote>
+      <figcaption><strong>${esc(name)}</strong><span>${esc(contexto)}</span></figcaption>
+    </figure>`;
 }
 
 async function cargarMedicos() {

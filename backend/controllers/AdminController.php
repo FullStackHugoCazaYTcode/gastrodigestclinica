@@ -11,6 +11,7 @@ use App\Middlewares\SessionGuard;
 use App\Middlewares\WebhookGuard;
 use App\Models\Administrador;
 use App\Models\Cita;
+use App\Models\Encuesta;
 use App\Models\Medico;
 use App\Models\Paciente;
 use App\Models\Reclamacion;
@@ -165,6 +166,23 @@ final class AdminController
     {
         SessionGuard::requireAdmin();
         Response::success((new Cita())->todas(), 'Agenda global.');
+    }
+
+    /** Encuestas respondidas para moderar cuáles se publican como testimonios. */
+    public function encuestas(): void
+    {
+        SessionGuard::requireAdmin();
+        Response::success((new Encuesta())->paraModeracion(), 'Opiniones de pacientes.');
+    }
+
+    /** Aprueba u oculta un testimonio. */
+    public function moderarEncuesta(array $params): void
+    {
+        SessionGuard::requireAdmin();
+        $d = Request::json();
+        $aprobado = !empty($d['aprobado']);
+        (new Encuesta())->moderar((int) $params['id'], $aprobado);
+        Response::success(['aprobado' => $aprobado], 'Testimonio actualizado.');
     }
 
     public function pacientes(): void
