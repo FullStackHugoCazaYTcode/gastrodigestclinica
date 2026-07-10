@@ -16,6 +16,7 @@ import { renderPortal } from "./views/portal.js";
 import { renderMedicoPortal } from "./views/medicoPortal.js";
 import { renderAdminPortal } from "./views/adminPortal.js";
 import { renderReprogramar } from "./views/reprogramar.js";
+import { renderEncuesta } from "./views/encuesta.js";
 import { renderLibroReclamaciones, renderPrivacidad } from "./views/legal.js";
 import { initMotion } from "./motion.js";
 import { hidePreloader } from "./components/preloader.js";
@@ -57,6 +58,7 @@ route("/portal", renderPortal, { title: "Portal del paciente" });
 route("/medico", renderMedicoPortal, { title: "Acceso médicos" });
 route("/admin", renderAdminPortal, { title: "Administración" });
 route("/reprogramar/:token", renderReprogramar, { title: "Reprogramar cita" });
+route("/encuesta/:token", renderEncuesta, { title: "Encuesta de satisfacción" });
 route("/libro-reclamaciones", renderLibroReclamaciones, {
   title: "Libro de Reclamaciones",
   desc: "Registra tu reclamo o queja conforme a la Ley N.° 29571 (INDECOPI). Respuesta en 15 días hábiles.",

@@ -284,6 +284,19 @@
 }
 .modal__actions .btn { flex: 0 1 auto; }
 
+/* Encuesta de satisfacción (rating de estrellas) */
+.encuesta-stars { display: flex; gap: var(--space-2); margin-top: var(--space-2); }
+.enc-star {
+  background: none; border: none; cursor: pointer; padding: 2px;
+  font-size: 2.4rem; line-height: 1; color: var(--color-border);
+  transition: color var(--duration) var(--ease), transform var(--duration) var(--ease);
+}
+.enc-star:hover { transform: scale(1.12); }
+.enc-star.is-on { color: #E0A93E; }
+.enc-star:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: var(--radius-sm); }
+.enc-consent { display: flex; gap: var(--space-3); align-items: flex-start; font-size: var(--text-sm); color: var(--color-text-muted); cursor: pointer; }
+.enc-consent input { margin-top: 3px; flex: 0 0 auto; }
+
 /* Spinner dentro del botón */
 .btn .spinner {
   width: 18px; height: 18px;
