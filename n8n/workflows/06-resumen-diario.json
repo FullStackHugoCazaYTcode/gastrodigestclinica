@@ -18,11 +18,11 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "https://TU-BACKEND.up.railway.app/api/admin/resumen-diario",
+        "url": "https://gastrodigestclinica-production.up.railway.app/api/admin/resumen-diario",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "X-Webhook-Secret", "value": "REEMPLAZA_CON_N8N_WEBHOOK_SECRET" }
+            { "name": "X-Webhook-Secret", "value": "={{ $env.N8N_WEBHOOK_SECRET }}" }
           ]
         },
         "options": {}
