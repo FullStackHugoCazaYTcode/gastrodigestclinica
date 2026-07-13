@@ -226,12 +226,23 @@ function paso2() {
   const cont = ctx.main.querySelector("#b-cont2");
   const horas = ctx.main.querySelector("#b-horas");
 
-  const pintarHoras = () => {
+  const pintarHoras = async () => {
     st.fecha = fecha.value; st.hora = ""; st.horaLabel = ""; cont.disabled = true; refrescarResumen();
     if (!st.fecha) { horas.innerHTML = `<p class="text-muted">Elige una fecha para ver los horarios.</p>`; return; }
+
+    // Disponibilidad real del médico para esa fecha (horario − bloqueos − citas tomadas).
+    horas.innerHTML = `<div class="skeleton" style="height:80px"></div>`;
+    const res = await api.get(`/api/medicos/${st.medico.id_medico}/disponibilidad?fecha=${encodeURIComponent(st.fecha)}`);
+    const libres = new Set(res.success && Array.isArray(res.data?.slots) ? res.data.slots : []);
+    if (!libres.size) {
+      horas.innerHTML = `<p class="text-muted">No hay cupos disponibles ese día. Prueba con otra fecha.</p>`;
+      return;
+    }
+
     const grupos = ["Mañana", "Tarde", "Noche"];
     horas.innerHTML = grupos.map((g) => {
-      const slots = SLOTS.filter((s) => franja(s) === g);
+      const slots = SLOTS.filter((s) => franja(s) === g && libres.has(toHHMM(s)));
+      if (!slots.length) return "";
       return `<div class="book-hgroup"><span class="book-hgroup__t">${g}</span>
         <div class="book-hchips">${slots.map((s) => `<button class="hchip" data-hhmm="${toHHMM(s)}" data-lbl="${fmtHora(s)}">${fmtHora(s)}</button>`).join("")}</div></div>`;
     }).join("");

@@ -293,7 +293,7 @@ final class Cita extends BaseModel
     public function porPaciente(int $idPaciente): array
     {
         return $this->run(
-            "SELECT c.id_cita, c.fecha_hora, c.estado_actual, c.motivo,
+            "SELECT c.id_cita, c.fecha_hora, c.estado_actual, c.motivo, c.id_medico,
                     CONCAT(m.nombres, ' ', m.apellidos) AS medico, m.especialidad
              FROM Citas c
              JOIN Medicos m ON m.id_medico = c.id_medico

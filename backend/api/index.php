@@ -56,6 +56,7 @@ $router->post('/api/encuestas/{token}', fn($p) => (new EncuestaController())->re
 
 // Médicos y aseguradoras (catálogos)
 $router->get('/api/medicos',      fn() => (new MedicoController())->listar());
+$router->get('/api/medicos/{id}/disponibilidad', fn($p) => (new MedicoController())->disponibilidad($p));
 $router->get('/api/aseguradoras', fn() => (new AseguradoraController())->listar());
 
 // Citas + OTP
