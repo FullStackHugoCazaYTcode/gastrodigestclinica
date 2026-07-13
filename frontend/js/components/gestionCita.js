@@ -121,17 +121,32 @@ export function openReprogramarModal(cita, onDone) {
   const confirm = backdrop.querySelector("#gc-confirm");
   let hhmm = "";
 
-  const pintar = () => {
+  const pintar = async () => {
     hhmm = "";
     confirm.disabled = true;
     if (!fecha.value) {
       horas.innerHTML = `<p class="text-muted">Elige una fecha para ver los horarios.</p>`;
       return;
     }
+
+    // Disponibilidad real del médico (si la cita la trae). Si no, muestra todo.
+    let libres = null;
+    if (cita.id_medico) {
+      horas.innerHTML = `<div class="skeleton" style="height:70px"></div>`;
+      const res = await api.get(`/api/medicos/${cita.id_medico}/disponibilidad?fecha=${encodeURIComponent(fecha.value)}`);
+      libres = new Set(res.success && Array.isArray(res.data?.slots) ? res.data.slots : []);
+      if (!libres.size) {
+        horas.innerHTML = `<p class="text-muted">No hay cupos disponibles ese día. Prueba con otra fecha.</p>`;
+        return;
+      }
+    }
+    const disponible = (s) => (libres ? libres.has(toHHMM(s)) : true);
+
     horas.innerHTML = GRUPOS.map(([label, test]) => {
-      const chips = SLOTS.filter((s) => test(s))
+      const chips = SLOTS.filter((s) => test(s) && disponible(s))
         .map((s) => `<button class="hchip" type="button" data-hhmm="${toHHMM(s)}">${fmtHora(s)}</button>`)
         .join("");
+      if (!chips) return "";
       return `<div class="book-hgroup"><span class="book-hgroup__t">${label}</span><div class="book-hchips">${chips}</div></div>`;
     }).join("");
     horas.querySelectorAll(".hchip").forEach((b) =>

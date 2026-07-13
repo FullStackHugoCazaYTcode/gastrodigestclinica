@@ -92,6 +92,12 @@ $router->get('/api/admin/citas',               fn() => (new AdminController())->
 $router->get('/api/admin/pacientes',           fn() => (new AdminController())->pacientes());
 $router->get('/api/admin/encuestas',           fn() => (new AdminController())->encuestas());
 $router->patch('/api/admin/encuestas/{id}',    fn($p) => (new AdminController())->moderarEncuesta($p));
+// Disponibilidad: horarios semanales + bloqueos por médico
+$router->get('/api/admin/medicos/{id}/horarios',              fn($p) => (new AdminController())->horariosMedico($p));
+$router->post('/api/admin/medicos/{id}/horarios',             fn($p) => (new AdminController())->agregarHorario($p));
+$router->post('/api/admin/medicos/{idm}/horarios/{id}/eliminar', fn($p) => (new AdminController())->eliminarHorario($p));
+$router->post('/api/admin/medicos/{id}/bloqueos',             fn($p) => (new AdminController())->agregarBloqueo($p));
+$router->post('/api/admin/medicos/{idm}/bloqueos/{id}/eliminar', fn($p) => (new AdminController())->eliminarBloqueo($p));
 
 // Área privada del médico
 $router->post('/api/medico/login',      fn() => (new MedicoPortalController())->login());
