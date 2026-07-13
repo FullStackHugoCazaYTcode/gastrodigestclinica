@@ -104,6 +104,7 @@ function wireAccountMenu() {
     toggle(false);
     const act = item.dataset.act;
     if (act === "perfil") go("perfil");
+    else if (act === "familiares") go("familiares");
     else if (act === "logout") cerrarSesion();
     else toast("Esta sección estará disponible próximamente.", "info");
   });
@@ -116,7 +117,7 @@ function go(sec) {
   const main = document.getElementById("portal-main");
   main.scrollTo?.({ top: 0 });
   window.scrollTo({ top: 0 });
-  ({ inicio: secInicio, citas: secCitas, documentos: secDocumentos, agendar: secAgendar, perfil: secPerfil }[sec] || secInicio)(main);
+  ({ inicio: secInicio, citas: secCitas, documentos: secDocumentos, agendar: secAgendar, perfil: secPerfil, familiares: secFamiliares }[sec] || secInicio)(main);
 }
 
 async function cerrarSesion() {
@@ -415,6 +416,97 @@ async function guardarPerfil(e, main) {
     toast(res.message, "warning");
   } else {
     toast(res.message || "No se pudo actualizar.", "error");
+  }
+}
+
+// ---------------------------------------------------------------------
+//  Mis familiares (dependientes / apoderado)
+// ---------------------------------------------------------------------
+async function secFamiliares(main) {
+  main.innerHTML = `
+    <div class="admin-head">
+      <h1 class="portal-h1">Mis familiares</h1>
+      <button class="btn btn--cta btn--sm" id="nuevo-fam">${icon("users", 16)} Agregar familiar</button>
+    </div>
+    <p class="portal-sub">Registra a las personas a tu cargo (hijos, dependientes) para agendar y gestionar sus citas.</p>
+    <div id="fam-form"></div>
+    <div id="fam-cont"><div class="skeleton" style="height:120px"></div></div>`;
+  main.querySelector("#nuevo-fam").addEventListener("click", () => toggleFamForm(main));
+  await cargarFamiliares(main);
+}
+
+async function cargarFamiliares(main) {
+  const res = await api.get("/api/portal/familiares");
+  const fams = res.success && Array.isArray(res.data) ? res.data : [];
+  const cont = main.querySelector("#fam-cont");
+  if (!fams.length) {
+    cont.innerHTML = `<div class="portal-empty"><span class="portal-empty__icon">${icon("users", 30)}</span><p>Aún no tienes familiares registrados.</p></div>`;
+    return;
+  }
+  cont.innerHTML = `<div class="cita-list">${fams.map(famCard).join("")}</div>`;
+}
+
+function famCard(f) {
+  const edad = calcEdad(f.fecha_nacimiento);
+  const menor = edad >= 0 && edad < 18;
+  return `
+    <article class="cita-item">
+      <span class="quick2__icon">${icon("user", 20)}</span>
+      <div class="cita-item__body">
+        <strong>${esc(f.nombres)} ${esc(f.apellidos)}</strong>
+        <small>${esc(f.tipo_documento)} ${esc(f.numero_documento)}${edad >= 0 ? ` · ${edad} años` : ""}</small>
+      </div>
+      ${menor ? `<span class="badge badge--pendiente">Menor de edad</span>` : ""}
+    </article>`;
+}
+
+function toggleFamForm(main) {
+  const host = main.querySelector("#fam-form");
+  if (host.innerHTML.trim()) { host.innerHTML = ""; return; }
+  const hoy = new Date().toISOString().slice(0, 10);
+  host.innerHTML = `
+    <form id="familiar-form" class="portal-panel wizard-form" novalidate style="margin-bottom:var(--space-4)">
+      <h2 class="portal-h2">Nuevo familiar</h2>
+      <div class="form-grid">
+        <div class="field" data-field="nombres"><label for="f_nom">Nombres <span class="req">*</span></label><input class="input" id="f_nom" name="nombres" autocomplete="off"/><div class="field__error"></div></div>
+        <div class="field" data-field="apellidos"><label for="f_ape">Apellidos <span class="req">*</span></label><input class="input" id="f_ape" name="apellidos" autocomplete="off"/><div class="field__error"></div></div>
+        <div class="field" data-field="tipo_documento"><label for="f_tdoc">Tipo de documento <span class="req">*</span></label><select class="select" id="f_tdoc" name="tipo_documento"><option value="DNI">DNI</option><option value="CE">Carné de extranjería</option><option value="PAS">Pasaporte</option></select><div class="field__error"></div></div>
+        <div class="field" data-field="numero_documento"><label for="f_ndoc">Número de documento <span class="req">*</span></label><input class="input" id="f_ndoc" name="numero_documento" inputmode="numeric"/><div class="field__error"></div></div>
+        <div class="field" data-field="fecha_nacimiento"><label for="f_fnac">Fecha de nacimiento <span class="req">*</span></label><input class="input" type="date" id="f_fnac" name="fecha_nacimiento" max="${hoy}"/><div class="field__error"></div></div>
+        <div class="field" data-field="sexo"><label for="f_sexo">Sexo <span class="req">*</span></label><select class="select" id="f_sexo" name="sexo"><option value="M">Masculino</option><option value="F">Femenino</option><option value="X">Prefiero no decir</option></select><div class="field__error"></div></div>
+      </div>
+      <div class="wizard-actions">
+        <button class="btn btn--ghost btn--sm" type="button" id="fam-cancelar">Cancelar</button>
+        <button class="btn btn--cta btn--sm" type="submit" id="fam-guardar">${icon("check", 16)} Agregar familiar</button>
+      </div>
+    </form>`;
+  host.querySelector("#fam-cancelar").addEventListener("click", () => { host.innerHTML = ""; });
+  host.querySelector("#familiar-form").addEventListener("submit", (e) => guardarFamiliar(e, main));
+}
+
+async function guardarFamiliar(e, main) {
+  e.preventDefault();
+  const form = e.target;
+  clearErrors(form);
+  const btn = form.querySelector("#fam-guardar");
+  setLoading(btn, true);
+  const res = await api.post("/api/portal/familiares", {
+    nombres: form.nombres.value.trim(),
+    apellidos: form.apellidos.value.trim(),
+    tipo_documento: form.tipo_documento.value,
+    numero_documento: form.numero_documento.value.trim(),
+    fecha_nacimiento: form.fecha_nacimiento.value,
+    sexo: form.sexo.value,
+  });
+  setLoading(btn, false);
+  if (res.success) {
+    toast("Familiar agregado.", "success");
+    main.querySelector("#fam-form").innerHTML = "";
+    cargarFamiliares(main);
+  } else if (res.errors) {
+    applyErrors(form, res.errors);
+  } else {
+    toast(res.message || "No se pudo agregar el familiar.", "error");
   }
 }
 

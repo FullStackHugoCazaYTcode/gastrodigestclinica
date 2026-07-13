@@ -116,6 +116,8 @@ $router->get('/api/portal/citas',            fn() => (new PortalController())->c
 $router->patch('/api/portal/citas/{id}/cancelar',    fn($p) => (new PortalController())->cancelarCita($p));
 $router->patch('/api/portal/citas/{id}/reprogramar', fn($p) => (new PortalController())->reprogramarCita($p));
 $router->patch('/api/portal/perfil',         fn() => (new PortalController())->actualizarPerfil());
+$router->get('/api/portal/familiares',        fn() => (new PortalController())->familiares());
+$router->post('/api/portal/familiares',       fn() => (new PortalController())->agregarFamiliar());
 $router->get('/api/portal/documentos',       fn() => (new PortalController())->documentos());
 $router->get('/api/portal/documentos/{id}',  fn($p) => (new PortalController())->documento($p));
 
