@@ -41,7 +41,9 @@ export function startBooking(context) {
   st = {
     via: null, medico: null, especialidad: null, sede: SEDES[0],
     fecha: "", hora: "", horaLabel: "", seguro: false, financiamiento: "particular",
-    precio: 0, medicos: [],
+    precio: 0, medicos: [], familiares: [],
+    paraPaciente: context.sesion.id_paciente,
+    paraNombre: `${context.sesion.nombres} ${context.sesion.apellidos}`,
   };
   preStep();
 }
@@ -49,7 +51,16 @@ export function startBooking(context) {
 // ---------------------------------------------------------------------
 //  Pre-paso: ¿para quién? + ¿cómo agendar?
 // ---------------------------------------------------------------------
-function preStep() {
+async function preStep() {
+  if (!st.familiares.length) {
+    const res = await api.get("/api/portal/familiares");
+    st.familiares = res.success && Array.isArray(res.data) ? res.data : [];
+  }
+  const opciones = [
+    { id: ctx.sesion.id_paciente, nombre: `${ctx.sesion.nombres} ${ctx.sesion.apellidos}`, titular: true },
+    ...st.familiares.map((f) => ({ id: Number(f.id_paciente), nombre: `${f.nombres} ${f.apellidos}`, titular: false })),
+  ];
+
   ctx.main.innerHTML = `
     <button class="linklike portal-back" id="b-volver-serv">${icon("arrowRight", 16)} Volver</button>
     <h1 class="portal-h1">Agendar cita — ${MODALIDAD[ctx.modalidad]}</h1>
@@ -57,7 +68,9 @@ function preStep() {
 
     <div class="book-block">
       <h2 class="book-label">¿Para quién es la cita?</h2>
-      <div class="book-titular">${icon("user", 18)} (Titular) ${esc(ctx.sesion.nombres)} ${esc(ctx.sesion.apellidos)}</div>
+      <div class="book-esp" id="b-para">
+        ${opciones.map((o) => `<button type="button" class="esp-chip${o.id === st.paraPaciente ? " is-active" : ""}" data-id="${o.id}" data-nombre="${esc(o.nombre)}">${esc(o.nombre)}${o.titular ? " (titular)" : ""}</button>`).join("")}
+      </div>
     </div>
 
     <div class="book-block">
@@ -75,6 +88,13 @@ function preStep() {
     </div>`;
 
   ctx.main.querySelector("#b-volver-serv").addEventListener("click", () => ctx.onBack());
+  ctx.main.querySelectorAll("#b-para .esp-chip").forEach((b) =>
+    b.addEventListener("click", () => {
+      ctx.main.querySelectorAll("#b-para .esp-chip").forEach((x) => x.classList.toggle("is-active", x === b));
+      st.paraPaciente = Number(b.dataset.id);
+      st.paraNombre = b.dataset.nombre;
+    })
+  );
   ctx.main.querySelectorAll(".book-choice").forEach((b) =>
     b.addEventListener("click", () => { st.via = b.dataset.via; irPaso(1); })
   );
@@ -110,7 +130,7 @@ function resumen(fechaHora, financiamiento) {
     <aside class="book-summary">
       <h3>Resumen de la cita</h3>
       <dl>
-        ${row("Paciente", `${esc(ctx.sesion.nombres)} ${esc(ctx.sesion.apellidos)}`)}
+        ${row("Paciente", esc(st.paraNombre))}
         ${row("Médico", m ? `Dr(a). ${esc(m.nombres)} ${esc(m.apellidos)}` : "—")}
         ${row("Especialidad", esc(st.especialidad || "—"))}
         ${row("Modalidad", MODALIDAD[ctx.modalidad])}
@@ -320,7 +340,7 @@ async function confirmar() {
   setLoading(btn, true);
   const motivo = `${MODALIDAD[ctx.modalidad]} · ${st.especialidad} · ${st.financiamiento === "particular" ? "Particular" : "Convenio"}`;
   const res = await api.post("/api/citas", {
-    id_paciente: ctx.sesion.id_paciente,
+    id_paciente: st.paraPaciente,
     id_medico: st.medico.id_medico,
     fecha_hora: `${st.fecha} ${st.hora}:00`,
     motivo,

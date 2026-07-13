@@ -6,6 +6,7 @@ namespace App\Controllers;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Validator;
+use App\Middlewares\SessionGuard;
 use App\Models\Cita;
 use App\Models\Medico;
 use App\Models\Paciente;
@@ -19,6 +20,9 @@ final class CitaController
 {
     public function reservar(): void
     {
+        // Solo un paciente autenticado puede reservar (para sí o para un familiar).
+        $idSesion = SessionGuard::requirePaciente();
+
         $d = Request::json();
         $errores = Validator::faltantes($d, ['id_paciente', 'id_medico', 'fecha_hora']);
         if (!empty($d['fecha_hora']) && !Validator::fechaValida((string) $d['fecha_hora'], 'Y-m-d H:i:s')) {
@@ -28,10 +32,17 @@ final class CitaController
             Response::error('Datos inválidos.', 400, $errores);
         }
 
+        $idPaciente = (int) $d['id_paciente'];
+        $modeloPaciente = new Paciente();
+        // Autorización: el titular solo puede reservar para sí o para un familiar a su cargo.
+        if ($idPaciente !== $idSesion && !$modeloPaciente->esFamiliarDe($idPaciente, $idSesion)) {
+            Response::error('No puedes reservar para este paciente.', 403);
+        }
+
         if (!(new Medico())->estaActivo((int) $d['id_medico'])) {
             Response::error('El médico seleccionado no admite reservas online.', 409);
         }
-        $paciente = (new Paciente())->porId((int) $d['id_paciente']);
+        $paciente = $modeloPaciente->porId($idPaciente);
         if ($paciente === null) {
             Response::error('Paciente no encontrado.', 404);
         }
