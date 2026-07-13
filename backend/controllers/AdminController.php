@@ -12,6 +12,7 @@ use App\Middlewares\WebhookGuard;
 use App\Models\Administrador;
 use App\Models\Cita;
 use App\Models\Encuesta;
+use App\Models\HorarioMedico;
 use App\Models\Medico;
 use App\Models\Paciente;
 use App\Models\Reclamacion;
@@ -189,5 +190,101 @@ final class AdminController
     {
         SessionGuard::requireAdmin();
         Response::success((new Paciente())->todos(), 'Pacientes.');
+    }
+
+    // ---- Disponibilidad: horarios y bloqueos por médico -----------------
+
+    /** GET /api/admin/medicos/{id}/horarios — horario semanal + bloqueos. */
+    public function horariosMedico(array $params): void
+    {
+        SessionGuard::requireAdmin();
+        $idm = (int) $params['id'];
+        $hm = new HorarioMedico();
+        Response::success([
+            'horarios' => $hm->horariosDe($idm),
+            'bloqueos' => $hm->bloqueosDe($idm),
+        ], 'Horarios del médico.');
+    }
+
+    /** POST /api/admin/medicos/{id}/horarios — agrega un bloque semanal. */
+    public function agregarHorario(array $params): void
+    {
+        SessionGuard::requireAdmin();
+        $d = Request::json();
+        $dia = (int) ($d['dia_semana'] ?? 0);
+        $ini = trim((string) ($d['hora_inicio'] ?? ''));
+        $fin = trim((string) ($d['hora_fin'] ?? ''));
+
+        $campos = [];
+        if ($dia < 1 || $dia > 7) {
+            $campos['dia_semana'] = 'Selecciona un día válido.';
+        }
+        if (!$this->horaValida($ini)) {
+            $campos['hora_inicio'] = 'Hora de inicio inválida.';
+        }
+        if (!$this->horaValida($fin)) {
+            $campos['hora_fin'] = 'Hora de fin inválida.';
+        }
+        if (empty($campos) && $fin <= $ini) {
+            $campos['hora_fin'] = 'La hora de fin debe ser mayor que la de inicio.';
+        }
+        if (!empty($campos)) {
+            Response::error('Revisa los datos ingresados.', 400, $campos);
+        }
+
+        $id = (new HorarioMedico())->agregarHorario((int) $params['id'], $dia, $ini . ':00', $fin . ':00');
+        Response::created(['id_horario' => $id], 'Horario agregado.');
+    }
+
+    /** POST /api/admin/medicos/{idm}/horarios/{id}/eliminar */
+    public function eliminarHorario(array $params): void
+    {
+        SessionGuard::requireAdmin();
+        (new HorarioMedico())->eliminarHorario((int) $params['id'], (int) $params['idm']);
+        Response::success(null, 'Horario eliminado.');
+    }
+
+    /** POST /api/admin/medicos/{id}/bloqueos — agrega una ausencia por fecha. */
+    public function agregarBloqueo(array $params): void
+    {
+        SessionGuard::requireAdmin();
+        $d = Request::json();
+        $fecha = trim((string) ($d['fecha'] ?? ''));
+        if (!Validator::fechaValida($fecha)) {
+            Response::error('Fecha inválida.', 400, ['fecha' => 'Usa el formato AAAA-MM-DD.']);
+        }
+
+        $ini = trim((string) ($d['hora_inicio'] ?? ''));
+        $fin = trim((string) ($d['hora_fin'] ?? ''));
+        $hi = $hf = null;
+        // Ambos vacíos = día completo; si viene uno, ambos deben ser válidos.
+        if ($ini !== '' || $fin !== '') {
+            if (!$this->horaValida($ini) || !$this->horaValida($fin) || $fin <= $ini) {
+                Response::error('Rango horario inválido.', 400, [
+                    'hora_inicio' => 'Indica inicio y fin válidos, o déjalos vacíos para bloquear todo el día.',
+                ]);
+            }
+            $hi = $ini . ':00';
+            $hf = $fin . ':00';
+        }
+
+        $motivo = isset($d['motivo']) ? mb_substr(trim((string) $d['motivo']), 0, 160) : '';
+        $motivo = $motivo === '' ? null : $motivo;
+
+        $id = (new HorarioMedico())->agregarBloqueo((int) $params['id'], $fecha, $hi, $hf, $motivo);
+        Response::created(['id_bloqueo' => $id], 'Bloqueo agregado.');
+    }
+
+    /** POST /api/admin/medicos/{idm}/bloqueos/{id}/eliminar */
+    public function eliminarBloqueo(array $params): void
+    {
+        SessionGuard::requireAdmin();
+        (new HorarioMedico())->eliminarBloqueo((int) $params['id'], (int) $params['idm']);
+        Response::success(null, 'Bloqueo eliminado.');
+    }
+
+    private function horaValida(string $h): bool
+    {
+        return (bool) preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', $h);
     }
 }

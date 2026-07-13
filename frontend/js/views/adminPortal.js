@@ -8,6 +8,7 @@ import {
 } from "../ui.js";
 import { navigate } from "../router.js";
 import { logoMark } from "../components/logo.js";
+import { openHorariosModal } from "../components/horariosModal.js";
 
 const NAV = [
   ["resumen", "Resumen", "activity"],
@@ -273,6 +274,12 @@ async function cargarMedicos(main) {
       else { setLoading(b, false); toast(r.message || "No se pudo actualizar.", "error"); }
     })
   );
+  cont.querySelectorAll("[data-horarios]").forEach((b) =>
+    b.addEventListener("click", () => {
+      const m = medicos.find((x) => String(x.id_medico) === b.dataset.horarios);
+      if (m) openHorariosModal(m);
+    })
+  );
 }
 
 function medicoRow(m) {
@@ -285,6 +292,7 @@ function medicoRow(m) {
         <small>${esc(m.especialidad)} · CMP ${esc(m.cmp)} · ${esc(m.correo)}</small>
       </div>
       <span class="badge badge--${activo ? "atendida" : "cancelada"}">${activo ? "Activo" : "Inactivo"}</span>
+      <button class="btn btn--ghost btn--sm" data-horarios="${m.id_medico}">${icon("calendar", 14)} Horarios</button>
       <button class="btn btn--ghost btn--sm" data-toggle="${m.id_medico}" data-activo="${activo ? 1 : 0}">
         ${activo ? "Desactivar" : "Activar"}
       </button>
