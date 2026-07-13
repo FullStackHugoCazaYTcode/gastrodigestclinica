@@ -39,6 +39,27 @@ final class Paciente extends BaseModel
         return (int) $this->run('SELECT COUNT(*) FROM Pacientes')->fetchColumn();
     }
 
+    /** Familiares (dependientes) a cargo de un apoderado. */
+    public function familiaresDe(int $idApoderado): array
+    {
+        return $this->run(
+            'SELECT id_paciente, nombres, apellidos, tipo_documento, numero_documento,
+                    fecha_nacimiento, sexo
+             FROM Pacientes WHERE id_apoderado = ? ORDER BY nombres, apellidos',
+            [$idApoderado]
+        )->fetchAll();
+    }
+
+    /** ¿El paciente es un familiar/dependiente a cargo del apoderado? */
+    public function esFamiliarDe(int $idPaciente, int $idApoderado): bool
+    {
+        $stmt = $this->run(
+            'SELECT 1 FROM Pacientes WHERE id_paciente = ? AND id_apoderado = ? LIMIT 1',
+            [$idPaciente, $idApoderado]
+        );
+        return $stmt->fetchColumn() !== false;
+    }
+
     /** Pacientes registrados desde una fecha (para el digest diario). */
     public function nuevosDesde(string $fecha): int
     {

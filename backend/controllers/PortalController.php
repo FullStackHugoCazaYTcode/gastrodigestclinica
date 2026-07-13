@@ -163,6 +163,61 @@ final class PortalController
         ], 'Datos actualizados correctamente.');
     }
 
+    /** Familiares (dependientes) del paciente autenticado. */
+    public function familiares(): void
+    {
+        $idPaciente = SessionGuard::requirePaciente();
+        Response::success((new Paciente())->familiaresDe($idPaciente), 'Familiares a tu cargo.');
+    }
+
+    /** Agrega un familiar/dependiente a cargo del paciente autenticado (apoderado). */
+    public function agregarFamiliar(): void
+    {
+        $idApoderado = SessionGuard::requirePaciente();
+        $d = Request::json();
+
+        $req = ['nombres', 'apellidos', 'tipo_documento', 'numero_documento', 'fecha_nacimiento', 'sexo'];
+        if (!empty($errores = Validator::faltantes($d, $req))) {
+            Response::error('Completa los campos obligatorios.', 400, $errores);
+        }
+
+        $campos = [];
+        if ($msg = Validator::documento((string) $d['tipo_documento'], trim((string) $d['numero_documento']))) {
+            $campos['numero_documento'] = $msg;
+        }
+        if (!Validator::fechaValida((string) $d['fecha_nacimiento'])) {
+            $campos['fecha_nacimiento'] = 'Fecha de nacimiento inválida (AAAA-MM-DD).';
+        }
+        if (!in_array($d['sexo'], ['M', 'F', 'X'], true)) {
+            $campos['sexo'] = 'Selecciona el sexo.';
+        }
+        if (!empty($campos)) {
+            Response::error('Revisa los datos ingresados.', 400, $campos);
+        }
+
+        $paciente = new Paciente();
+        if ($paciente->existePorDocumento((string) $d['tipo_documento'], trim((string) $d['numero_documento']))) {
+            Response::error('Ya existe un paciente registrado con ese documento.', 409);
+        }
+
+        // El familiar hereda el contacto del apoderado (ahí llegan sus avisos).
+        $apo = $paciente->porId($idApoderado);
+        $id = $paciente->crear([
+            'tipo_documento'       => $d['tipo_documento'],
+            'numero_documento'     => trim((string) $d['numero_documento']),
+            'nombres'              => trim((string) $d['nombres']),
+            'apellidos'            => trim((string) $d['apellidos']),
+            'fecha_nacimiento'     => (string) $d['fecha_nacimiento'],
+            'sexo'                 => $d['sexo'],
+            'telefono'             => $apo['telefono'] ?? null,
+            'correo'               => $apo['correo'] ?? null,
+            'id_apoderado'         => $idApoderado,
+            'consentimiento_datos' => true, // el apoderado otorga el consentimiento
+        ]);
+
+        Response::created(['id_paciente' => $id], 'Familiar agregado correctamente.');
+    }
+
     public function documento(array $params): void
     {
         $idPaciente = SessionGuard::requirePaciente();
