@@ -167,7 +167,10 @@ async function paso1() {
 
   if (!st.medicos.length) {
     const res = await api.get("/api/medicos");
-    st.medicos = res.success && Array.isArray(res.data) ? res.data : [];
+    // Solo los profesionales reservables online (excluye enfermería/cirugía por derivación).
+    st.medicos = res.success && Array.isArray(res.data)
+      ? res.data.filter((m) => Number(m.reservable ?? 1) === 1)
+      : [];
   }
   const grid = ctx.main.querySelector("#b-medgrid");
 
@@ -212,7 +215,7 @@ function medSelCard(m) {
   const foto = m.foto ? `<img src="${esc(m.foto)}" alt="" loading="lazy" />` : `<span class="medsel__ini">${esc(ini)}</span>`;
   return `<button class="medsel" data-id="${m.id_medico}">
     <span class="medsel__photo">${foto}</span>
-    <span class="medsel__body"><strong>Dr(a). ${esc(m.nombres)} ${esc(m.apellidos)}</strong><small>${esc(m.especialidad)}</small></span>
+    <span class="medsel__body"><strong>${esc(m.titulo || "Dr(a).")} ${esc(m.nombres)} ${esc(m.apellidos)}</strong><small>${esc(m.especialidad)}</small></span>
     <span class="medsel__arrow">${icon("chevronRight", 18)}</span>
   </button>`;
 }
