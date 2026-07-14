@@ -8,7 +8,7 @@ import { mount, icon, esc, toast, clearErrors, setFieldError, applyErrors, setLo
 import { validarDocumento, validarEmail, validarTelefono } from "../validators.js";
 
 const RAZON_SOCIAL = "GastroDigest Clínica de Gastroenterología S.A.C.";
-const RUC = "20601234567";
+const RUC = "10716090065";
 
 // ---------------------------------------------------------------------
 //  Libro de Reclamaciones
@@ -165,7 +165,7 @@ export function renderPrivacidad() {
     </section>
 
     <article class="legal-doc">
-      <p><strong>${RAZON_SOCIAL}</strong> (RUC ${RUC}), con domicilio en Jr. Dos de Mayo 1234, Huánuco, es responsable del tratamiento de tus datos personales.</p>
+      <p><strong>${RAZON_SOCIAL}</strong> (RUC ${RUC}), con domicilio en Pasaje 14 de Agosto 150, Huánuco, es responsable del tratamiento de tus datos personales.</p>
 
       <h2>1. Datos que recopilamos</h2>
       <p>Recopilamos los datos que nos brindas al crear tu cuenta, reservar una cita o comunicarte con nosotros: nombres, tipo y número de documento, fecha de nacimiento, teléfono, correo electrónico y dirección. Con motivo de la atención médica, tratamos también datos de salud, considerados <em>datos sensibles</em>.</p>

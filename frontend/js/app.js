@@ -47,7 +47,7 @@ route("/medicos", renderMedicos, {
 });
 route("/contacto", renderContacto, {
   title: "Contacto",
-  desc: "Estamos en Jr. Dos de Mayo 1234, Huánuco. Lun–Sáb 8:00 a. m. – 6:00 p. m. Teléfono y WhatsApp: +51 962 000 000.",
+  desc: "Estamos en Pasaje 14 de Agosto 150, Huánuco. Lun–Sáb 8:00 a. m. – 6:00 p. m. Teléfono y WhatsApp: +51 974 492 948.",
 });
 route("/reservar", renderReserva, {
   title: "Agendar cita",

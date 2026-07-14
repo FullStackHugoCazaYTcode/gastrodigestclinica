@@ -6,7 +6,7 @@
 import { icon, esc } from "../ui.js";
 
 // ⚠️ CAMBIAR por el número real de WhatsApp (formato internacional sin +).
-const WHATSAPP = "51962000000";
+const WHATSAPP = "51974492948";
 const WA_MSG = "Hola, tengo una consulta sobre GastroDigest.";
 
 // href SPA (/) → data-link · blank → nueva pestaña
@@ -33,7 +33,7 @@ const FAQ = {
   },
   horarios: {
     q: "Horarios y ubicación",
-    a: "Estamos en <strong>Jr. Dos de Mayo 1234, Huánuco</strong>. Atendemos de <strong>Lunes a Sábado, 8:00 a. m. – 6:00 p. m.</strong>",
+    a: "Estamos en <strong>Pasaje 14 de Agosto 150, Huánuco</strong>. Atendemos de <strong>Lunes a Sábado, 8:00 a. m. – 6:00 p. m.</strong>",
     actions: [["Cómo llegar", "/contacto", false]],
   },
   cuenta: {

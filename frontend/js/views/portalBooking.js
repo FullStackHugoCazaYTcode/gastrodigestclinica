@@ -13,8 +13,7 @@ const MODALIDAD = { presencial: "Presencial", virtual: "Virtual" };
 const PRECIOS = { "Endoscopía Digestiva": 280, Hepatología: 150, Gastroenterología: 120 };
 const PRECIO_DEFAULT = 120;
 const SEDES = [
-  "Sede Central — Jr. Dos de Mayo 1234, Huánuco",
-  "Sede Amarilis — Av. Los Laureles 550, Amarilis",
+  "Pasaje 14 de Agosto 150, Huánuco",
 ];
 
 // Franjas 08:00–19:30 agrupadas por Mañana / Tarde / Noche.
