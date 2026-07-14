@@ -8,11 +8,12 @@ namespace App\Models;
  */
 final class Medico extends BaseModel
 {
-    /** Médicos que admiten reservas online. */
+    /** Médicos que admiten reservas online (con su perfil público). */
     public function activos(): array
     {
         $stmt = $this->run(
-            'SELECT id_medico, cmp, nombres, apellidos, especialidad
+            'SELECT id_medico, cmp, nombres, apellidos, especialidad,
+                    foto, sub_especialidad, anios_experiencia, formacion, bio
              FROM Medicos WHERE estado_activo = 1 ORDER BY apellidos, nombres'
         );
         return $stmt->fetchAll();
@@ -71,13 +72,32 @@ final class Medico extends BaseModel
 
     // ---- Gestión desde el panel de administración ----
 
-    /** Todos los médicos (activos e inactivos) para el admin. */
+    /** Todos los médicos (activos e inactivos) para el admin, con su perfil. */
     public function todos(): array
     {
         return $this->run(
-            'SELECT id_medico, cmp, nombres, apellidos, especialidad, correo, telefono, estado_activo
+            'SELECT id_medico, cmp, nombres, apellidos, especialidad, correo, telefono, estado_activo,
+                    foto, sub_especialidad, anios_experiencia, formacion, bio
              FROM Medicos ORDER BY estado_activo DESC, apellidos, nombres'
         )->fetchAll();
+    }
+
+    /** Actualiza el perfil público del médico (foto, bio, experiencia…). */
+    public function actualizarPerfil(int $id, array $d): void
+    {
+        $this->run(
+            'UPDATE Medicos SET foto = :foto, sub_especialidad = :sub,
+                    anios_experiencia = :exp, formacion = :form, bio = :bio
+             WHERE id_medico = :id',
+            [
+                ':foto' => $d['foto'] ?? null,
+                ':sub'  => $d['sub_especialidad'] ?? null,
+                ':exp'  => $d['anios_experiencia'] ?? null,
+                ':form' => $d['formacion'] ?? null,
+                ':bio'  => $d['bio'] ?? null,
+                ':id'   => $id,
+            ]
+        );
     }
 
     public function cmpExiste(string $cmp): bool
