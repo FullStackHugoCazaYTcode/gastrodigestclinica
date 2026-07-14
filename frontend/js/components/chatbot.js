@@ -19,7 +19,7 @@ const FAQ = {
   reservar: {
     q: "¿Cómo reservo una cita?",
     a: "Muy fácil: pulsa <strong>Agendar cita</strong>, elige presencial o virtual, tu médico o especialidad, y el horario. Validamos con un código y ¡listo!",
-    actions: [["Agendar cita", "/reservar", true]],
+    actions: [["Agendar cita", "/portal", true]],
   },
   resultados: {
     q: "¿Dónde veo mis resultados?",

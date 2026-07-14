@@ -32,7 +32,7 @@ export function medicoCard(m) {
 
   const puedeReservar = Number(m.reservable ?? 1) === 1;
   const cta = puedeReservar
-    ? `<a class="btn btn--ghost btn--sm" href="/reservar" target="_blank" rel="noopener">Reservar <span class="visually-hidden">cita con ${titulo} ${nombre}</span>${icon("arrowRight", 16)}</a>`
+    ? `<a class="btn btn--ghost btn--sm" href="/portal" target="_blank" rel="noopener">Reservar <span class="visually-hidden">cita con ${titulo} ${nombre}</span>${icon("arrowRight", 16)}</a>`
     : `<p class="medico-card__nota">${icon("stethoscope", 14)} Atiende por derivación del equipo</p>`;
 
   return `<article class="medico-card" data-reveal>

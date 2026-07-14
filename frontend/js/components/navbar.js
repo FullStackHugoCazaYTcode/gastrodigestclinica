@@ -37,8 +37,8 @@ const NAV = [
     ver: "Ver todos los servicios",
     panel: {
       items: [
-        ["calendarCheck", "Reserva en línea", "Agenda tu cita en minutos, sin llamadas ni filas.", "/reservar", true],
-        ["message", "Confirmación por WhatsApp", "Recibe la confirmación de tu cita al instante.", "/servicios"],
+        ["calendarCheck", "Reserva en línea", "Agenda tu cita en minutos, sin llamadas ni filas.", "/portal", true],
+        ["message", "Confirmación por WhatsApp", "Recibe la confirmación de tu cita al instante.", "/contacto"],
         ["file", "Resultados en tu portal", "Recetas e informes clínicos disponibles 24/7.", "/portal", true],
         ["shieldCheck", "Preparación de exámenes", "Guía paso a paso para tu endoscopía o colonoscopía.", "/servicios"],
       ],
@@ -47,7 +47,7 @@ const NAV = [
         links: [
           ["heart", "Chequeos preventivos", "/servicios", false],
           ["clock", "Horarios de atención", "/contacto", false],
-          ["calendar", "Agendar una cita", "/reservar", true],
+          ["calendar", "Agendar una cita", "/portal", true],
         ],
       },
     },
@@ -61,7 +61,7 @@ const NAV = [
         ["heart", "Quiénes somos", "Una clínica dedicada a la salud digestiva en Huánuco.", "/nosotros"],
         ["sparkles", "Misión y visión", "Diagnóstico claro, tecnología y trato humano.", "/nosotros"],
         ["mapPin", "Nuestra sede", "Jr. Dos de Mayo 1234, en el corazón de Huánuco.", "/contacto"],
-        ["award", "Certificaciones", "Médicos colegiados (CMP) y equipos modernos.", "/nosotros"],
+        ["award", "Certificaciones", "Médicos colegiados (CMP) y equipos modernos.", "/medicos"],
       ],
       aside: {
         title: "Confianza",
@@ -80,14 +80,14 @@ const NAV = [
     panel: {
       items: [
         ["users", "Conoce al equipo", "Especialistas colegiados con amplia trayectoria.", "/medicos"],
-        ["stethoscope", "Agenda por médico", "Elige a tu especialista de confianza.", "/reservar", true],
-        ["search", "Agenda por especialidad", "Encuentra al médico según tu necesidad.", "/reservar", true],
+        ["stethoscope", "Agenda por médico", "Elige a tu especialista de confianza.", "/portal", true],
+        ["search", "Agenda por especialidad", "Encuentra al médico según tu necesidad.", "/portal", true],
         ["award", "Colegiatura CMP", "Todos nuestros médicos están debidamente colegiados.", "/medicos"],
       ],
       aside: {
         title: "Reserva",
         links: [
-          ["calendar", "Agendar una cita", "/reservar", true],
+          ["calendar", "Agendar una cita", "/portal", true],
           ["user", "Portal del paciente", "/portal", true],
         ],
       },
@@ -172,7 +172,7 @@ export function renderNavbar() {
         <div class="navbar__cta">
           <a class="navbar__phone" href="tel:+51962000000">${icon("phone", 16)} <span>962 000 000</span></a>
           <a class="navbar__portal" href="/portal" target="_blank" rel="noopener" aria-label="Portal del paciente" title="Portal del paciente">${icon("user", 19)}</a>
-          <a class="btn btn--cta btn--pill" href="/reservar" target="_blank" rel="noopener">${icon("calendar", 18)} Agendar cita</a>
+          <a class="btn btn--cta btn--pill" href="/portal" target="_blank" rel="noopener">${icon("calendar", 18)} Agendar cita</a>
         </div>
       </nav>
     </div>`;
