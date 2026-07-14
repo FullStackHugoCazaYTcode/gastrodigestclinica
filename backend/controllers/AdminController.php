@@ -169,6 +169,42 @@ final class AdminController
         Response::success((new Cita())->todas(), 'Agenda global.');
     }
 
+    /** GET /api/admin/recepcion?fecha= — agenda del día para el panel de recepción. */
+    public function recepcion(): void
+    {
+        SessionGuard::requireAdmin();
+        $fecha = (string) Request::query('fecha', '');
+        if (!Validator::fechaValida($fecha)) {
+            $fecha = date('Y-m-d');
+        }
+        Response::success([
+            'fecha' => $fecha,
+            'citas' => (new Cita())->agendaRecepcion($fecha),
+        ], 'Agenda de recepción.');
+    }
+
+    /** PATCH /api/admin/recepcion/{id} — recepción confirma llegada o marca inasistencia. */
+    public function recepcionTransicion(array $params): void
+    {
+        SessionGuard::requireAdmin();
+        $accion = (string) (Request::json()['accion'] ?? '');
+        $nuevo = match ($accion) {
+            'confirmar'  => 'CONFIRMADA_RECEPCION',
+            'no_asistio' => 'NO_ASISTIO',
+            default      => null,
+        };
+        if ($nuevo === null) {
+            Response::error('Acción no válida.', 400);
+        }
+
+        $res = (new Cita())->transicionar((int) $params['id'], $nuevo, 'RECEPCION', 'Recepción: ' . $accion);
+        match ($res) {
+            'OK'                      => Response::success(['estado' => $nuevo], 'Estado actualizado.'),
+            'TRANSICION_NO_PERMITIDA' => Response::error('Esa acción no aplica al estado actual de la cita.', 409),
+            default                   => Response::error('Cita no encontrada.', 404),
+        };
+    }
+
     /** Encuestas respondidas para moderar cuáles se publican como testimonios. */
     public function encuestas(): void
     {

@@ -445,6 +445,23 @@ final class Cita extends BaseModel
         )->fetchAll();
     }
 
+    /** Agenda del día para recepción (con documento del paciente). */
+    public function agendaRecepcion(string $fecha): array
+    {
+        return $this->run(
+            "SELECT c.id_cita, c.fecha_hora, c.estado_actual,
+                    CONCAT(p.nombres, ' ', p.apellidos) AS paciente,
+                    p.tipo_documento, p.numero_documento,
+                    CONCAT(m.nombres, ' ', m.apellidos) AS medico, m.especialidad
+             FROM Citas c
+             JOIN Pacientes p ON p.id_paciente = c.id_paciente
+             JOIN Medicos   m ON m.id_medico   = c.id_medico
+             WHERE DATE(c.fecha_hora) = ? AND c.estado_actual <> 'PENDIENTE_OTP'
+             ORDER BY c.fecha_hora ASC",
+            [$fecha]
+        )->fetchAll();
+    }
+
     /** Conteo de citas por estado (para el resumen del admin). */
     public function conteoPorEstado(): array
     {

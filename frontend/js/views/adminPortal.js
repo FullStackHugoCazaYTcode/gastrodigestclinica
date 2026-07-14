@@ -13,6 +13,7 @@ import { openHorariosModal } from "../components/horariosModal.js";
 const NAV = [
   ["resumen", "Resumen", "activity"],
   ["medicos", "Médicos", "stethoscope"],
+  ["recepcion", "Recepción", "clock"],
   ["citas", "Citas", "calendarCheck"],
   ["pacientes", "Pacientes", "users"],
   ["opiniones", "Opiniones", "heart"],
@@ -146,7 +147,7 @@ function go(sec) {
   );
   const main = document.getElementById("admin-main");
   window.scrollTo({ top: 0 });
-  ({ resumen: secResumen, medicos: secMedicos, citas: secCitas, pacientes: secPacientes, opiniones: secOpiniones }[sec] || secResumen)(main);
+  ({ resumen: secResumen, recepcion: secRecepcion, medicos: secMedicos, citas: secCitas, pacientes: secPacientes, opiniones: secOpiniones }[sec] || secResumen)(main);
 }
 
 async function cerrarSesion() {
@@ -352,6 +353,70 @@ async function crearMedico(e, main) {
   } else {
     toast(res.message || "No se pudo registrar.", "error");
   }
+}
+
+// ---------------------------------------------------------------------
+//  Recepción (agenda del día: confirmar llegada / no asistió)
+// ---------------------------------------------------------------------
+async function secRecepcion(main) {
+  const hoy = new Date().toISOString().slice(0, 10);
+  main.innerHTML = `
+    <div class="admin-head">
+      <h1 class="portal-h1">Recepción</h1>
+      <input class="input" type="date" id="rec-fecha" value="${hoy}" style="width:auto" aria-label="Fecha" />
+    </div>
+    <p class="portal-sub">Confirma la llegada de los pacientes o marca inasistencias sobre la agenda del día.</p>
+    <div id="rec-cont"><div class="skeleton" style="height:120px"></div></div>`;
+  const fechaInput = main.querySelector("#rec-fecha");
+  const cargar = () => cargarRecepcion(main, fechaInput.value || hoy);
+  fechaInput.addEventListener("change", cargar);
+  await cargar();
+}
+
+async function cargarRecepcion(main, fecha) {
+  const cont = main.querySelector("#rec-cont");
+  cont.innerHTML = `<div class="skeleton" style="height:120px"></div>`;
+  const res = await api.get(`/api/admin/recepcion?fecha=${encodeURIComponent(fecha)}`);
+  const citas = res.success && Array.isArray(res.data?.citas) ? res.data.citas : [];
+  if (!citas.length) {
+    cont.innerHTML = `<div class="portal-empty"><span class="portal-empty__icon">${icon("calendarCheck", 30)}</span><p>No hay citas para esta fecha.</p></div>`;
+    return;
+  }
+  cont.innerHTML = `<div class="cita-list">${citas.map(recepcionRow).join("")}</div>`;
+  cont.querySelectorAll("[data-rec]").forEach((b) =>
+    b.addEventListener("click", async () => {
+      setLoading(b, true);
+      const r = await api.patch(`/api/admin/recepcion/${b.dataset.id}`, { accion: b.dataset.rec });
+      if (r.success) { toast("Estado actualizado.", "success"); cargarRecepcion(main, fecha); }
+      else { setLoading(b, false); toast(r.message || "No se pudo actualizar.", "error"); }
+    })
+  );
+}
+
+function recepcionRow(c) {
+  const [label, cls] = ESTADO[c.estado_actual] || [c.estado_actual, "muted"];
+  const pendiente = ["RESERVADA_WEB", "CONFIRMADA_WSP"].includes(c.estado_actual);
+  const confirmada = c.estado_actual === "CONFIRMADA_RECEPCION";
+  const acciones = (pendiente || confirmada)
+    ? `<div class="cita-item__actions">
+        ${pendiente ? `<button class="btn btn--cta btn--sm" data-rec="confirmar" data-id="${c.id_cita}">${icon("check", 14)} Llegó</button>` : ""}
+        <button class="btn btn--ghost btn--sm" data-rec="no_asistio" data-id="${c.id_cita}">No asistió</button>
+       </div>`
+    : "";
+  return `<article class="cita-item">
+    <span class="cita-item__date">${icon("clock", 16)} ${fmtHoraCorta(c.fecha_hora)}</span>
+    <div class="cita-item__body">
+      <strong>${esc(c.paciente)}</strong>
+      <small>${esc(c.tipo_documento)} ${esc(c.numero_documento)} · Dr(a). ${esc(c.medico)} · ${esc(c.especialidad)}</small>
+    </div>
+    <span class="badge badge--${cls}">${esc(label)}</span>
+    ${acciones}
+  </article>`;
+}
+
+function fmtHoraCorta(f) {
+  const d = new Date(String(f).replace(" ", "T"));
+  return isNaN(d.getTime()) ? esc(f) : d.toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit" });
 }
 
 // ---------------------------------------------------------------------
