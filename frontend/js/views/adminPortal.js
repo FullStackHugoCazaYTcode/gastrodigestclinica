@@ -9,6 +9,7 @@ import {
 import { navigate } from "../router.js";
 import { logoMark } from "../components/logo.js";
 import { openHorariosModal } from "../components/horariosModal.js";
+import { openPerfilMedicoModal } from "../components/perfilMedicoModal.js";
 
 const NAV = [
   ["resumen", "Resumen", "activity"],
@@ -281,6 +282,12 @@ async function cargarMedicos(main) {
       if (m) openHorariosModal(m);
     })
   );
+  cont.querySelectorAll("[data-perfil]").forEach((b) =>
+    b.addEventListener("click", () => {
+      const m = medicos.find((x) => String(x.id_medico) === b.dataset.perfil);
+      if (m) openPerfilMedicoModal(m, () => cargarMedicos(main));
+    })
+  );
 }
 
 function medicoRow(m) {
@@ -293,6 +300,7 @@ function medicoRow(m) {
         <small>${esc(m.especialidad)} · CMP ${esc(m.cmp)} · ${esc(m.correo)}</small>
       </div>
       <span class="badge badge--${activo ? "atendida" : "cancelada"}">${activo ? "Activo" : "Inactivo"}</span>
+      <button class="btn btn--ghost btn--sm" data-perfil="${m.id_medico}">${icon("user", 14)} Perfil</button>
       <button class="btn btn--ghost btn--sm" data-horarios="${m.id_medico}">${icon("calendar", 14)} Horarios</button>
       <button class="btn btn--ghost btn--sm" data-toggle="${m.id_medico}" data-activo="${activo ? 1 : 0}">
         ${activo ? "Desactivar" : "Activar"}

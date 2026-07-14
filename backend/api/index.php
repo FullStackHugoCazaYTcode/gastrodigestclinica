@@ -88,6 +88,7 @@ $router->get('/api/admin/resumen-diario',      fn() => (new AdminController())->
 $router->get('/api/admin/medicos',             fn() => (new AdminController())->medicos());
 $router->post('/api/admin/medicos',            fn() => (new AdminController())->crearMedico());
 $router->patch('/api/admin/medicos/{id}',      fn($p) => (new AdminController())->cambiarEstadoMedico($p));
+$router->patch('/api/admin/medicos/{id}/perfil', fn($p) => (new AdminController())->actualizarPerfilMedico($p));
 $router->get('/api/admin/citas',               fn() => (new AdminController())->citas());
 $router->get('/api/admin/recepcion',           fn() => (new AdminController())->recepcion());
 $router->patch('/api/admin/recepcion/{id}',    fn($p) => (new AdminController())->recepcionTransicion($p));

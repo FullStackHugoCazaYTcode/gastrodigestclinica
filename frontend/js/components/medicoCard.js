@@ -19,13 +19,24 @@ export function medicoCard(m) {
     ? `<img src="${esc(m.foto)}" alt="Dr(a). ${nombre}" loading="lazy" />`
     : `<span class="medico-card__ini" aria-hidden="true">${esc(ini)}</span>`;
 
+  const esp = m.sub_especialidad ? `${esc(m.especialidad)} · ${esc(m.sub_especialidad)}` : esc(m.especialidad);
+  const bio = m.bio && String(m.bio).trim() ? esc(m.bio) : bioFor(m.especialidad);
+  const exp = m.anios_experiencia
+    ? `<p class="medico-card__cmp">${icon("clock", 14)} ${esc(String(m.anios_experiencia))} años de experiencia</p>`
+    : "";
+  const formacion = m.formacion && String(m.formacion).trim()
+    ? `<p class="medico-card__cmp">${icon("award", 14)} ${esc(m.formacion)}</p>`
+    : "";
+
   return `<article class="medico-card" data-reveal>
     <div class="medico-card__photo">${foto}</div>
     <div class="medico-card__body">
       <h3>Dr(a). ${nombre}</h3>
-      <p class="medico-card__esp">${esc(m.especialidad)}</p>
+      <p class="medico-card__esp">${esp}</p>
       <p class="medico-card__cmp">${icon("award", 14)} CMP ${esc(m.cmp)}</p>
-      <p class="medico-card__bio">${bioFor(m.especialidad)}</p>
+      ${exp}
+      ${formacion}
+      <p class="medico-card__bio">${bio}</p>
       <a class="btn btn--ghost btn--sm" href="/reservar" target="_blank" rel="noopener">Reservar <span class="visually-hidden">cita con Dr(a). ${nombre}</span>${icon("arrowRight", 16)}</a>
     </div>
   </article>`;

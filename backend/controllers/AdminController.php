@@ -163,6 +163,30 @@ final class AdminController
         Response::success(['estado_activo' => $activo], 'Estado actualizado.');
     }
 
+    /** PATCH /api/admin/medicos/{id}/perfil — foto, bio, experiencia, etc. */
+    public function actualizarPerfilMedico(array $params): void
+    {
+        SessionGuard::requireAdmin();
+        $d = Request::json();
+
+        $exp = $d['anios_experiencia'] ?? null;
+        $exp = ($exp === '' || $exp === null) ? null : (int) $exp;
+        if ($exp !== null && ($exp < 0 || $exp > 70)) {
+            Response::error('Años de experiencia inválidos.', 400, ['anios_experiencia' => 'Debe estar entre 0 y 70.']);
+        }
+
+        $limpiar = static fn($v, int $max) => ($v = trim((string) ($v ?? ''))) === '' ? null : mb_substr($v, 0, $max);
+
+        (new Medico())->actualizarPerfil((int) $params['id'], [
+            'foto'             => $limpiar($d['foto'] ?? null, 255),
+            'sub_especialidad' => $limpiar($d['sub_especialidad'] ?? null, 120),
+            'anios_experiencia' => $exp,
+            'formacion'        => $limpiar($d['formacion'] ?? null, 255),
+            'bio'              => $limpiar($d['bio'] ?? null, 800),
+        ]);
+        Response::success(null, 'Perfil del médico actualizado.');
+    }
+
     public function citas(): void
     {
         SessionGuard::requireAdmin();
