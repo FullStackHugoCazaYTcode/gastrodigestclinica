@@ -24,7 +24,7 @@ Guarda estas 5 imágenes aquí con EXACTAMENTE estos nombres (así el seed
 En **Administración → Médicos → Perfil**, en el campo **Foto** se pega la ruta:
 
 ```
-/img/medicos/dra-ruiz.jpg
+/img/medicos/dra-ruiz.png
 ```
 
 También se acepta una URL externa (Cloudinary, etc.) si se prefiere.
