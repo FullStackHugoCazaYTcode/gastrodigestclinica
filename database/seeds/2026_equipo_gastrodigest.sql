@@ -95,7 +95,23 @@ ON DUPLICATE KEY UPDATE
   `reservable`=VALUES(`reservable`), `foto`=VALUES(`foto`),
   `sub_especialidad`=VALUES(`sub_especialidad`), `formacion`=VALUES(`formacion`), `bio`=VALUES(`bio`);
 
--- 6) (OPCIONAL) Deja visible SOLO a este equipo: desactiva médicos de
+-- 6) Horario por defecto (Lun–Sáb 08:00–18:00) para los 3 médicos
+--    reservables, para que la reserva funcione de inmediato. (Editable luego
+--    en Admin → Médicos → Horarios.)
+INSERT INTO `Horarios_Medico` (`id_medico`, `dia_semana`, `hora_inicio`, `hora_fin`)
+SELECT m.`id_medico`, d.`dia`, '08:00:00', '18:00:00'
+FROM `Medicos` m
+CROSS JOIN (
+  SELECT 1 AS dia UNION ALL SELECT 2 UNION ALL SELECT 3
+  UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6
+) d
+WHERE m.`correo` IN (
+  'elena.ramirez@gastrodigest.pe', 'sofia.mendoza@gastrodigest.pe', 'camila.vargas@gastrodigest.pe'
+) AND NOT EXISTS (
+  SELECT 1 FROM `Horarios_Medico` h WHERE h.`id_medico` = m.`id_medico`
+);
+
+-- 7) (OPCIONAL) Deja visible SOLO a este equipo: desactiva médicos de
 --    prueba anteriores (no los borra, solo los oculta). Comenta estas
 --    líneas si quieres conservar visibles a otros médicos existentes.
 UPDATE `Medicos` SET `estado_activo` = 0
