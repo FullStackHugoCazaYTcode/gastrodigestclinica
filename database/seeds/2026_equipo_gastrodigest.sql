@@ -22,7 +22,7 @@ INSERT INTO `Medicos`
 VALUES
   ('045218', 'Elena', 'Ramírez Villalobos', 'Dra.', 'Gastroenterología',
    'elena.ramirez@gastrodigest.pe', '$2b$10$aXJeUPpzTZz/hdFL.a.6GOGWzIUVZj2vicA2mp83OudFOJ8RTEvIO',
-   1, 1, '/img/medicos/dra-ramirez.jpg', 'Endoscopía terapéutica avanzada · Directora Médica',
+   1, 1, '/img/medicos/dra-ramirez.png', 'Endoscopía terapéutica avanzada · Directora Médica',
    'UNHEVAL · Certificaciones en Corea del Sur, Brasil y Argentina',
    'Directora Médica de GastroDigest y jefa del área de endoscopía avanzada. Especialista en endoscopía terapéutica con certificaciones internacionales: disección submucosa endoscópica (National Cancer Center, Seúl), ultrasonografía endoscópica (USP, Brasil), manejo de enfermedad inflamatoria intestinal (Hospital Udaondo, Buenos Aires) y CPRE. Ponente habitual en la Semana Panamericana de las Enfermedades Digestivas.')
 ON DUPLICATE KEY UPDATE
@@ -38,7 +38,7 @@ INSERT INTO `Medicos`
 VALUES
   ('052390', 'Sofía', 'Mendoza Alarcón', 'Dra.', 'Gastroenterología',
    'sofia.mendoza@gastrodigest.pe', '$2b$10$aXJeUPpzTZz/hdFL.a.6GOGWzIUVZj2vicA2mp83OudFOJ8RTEvIO',
-   1, 1, '/img/medicos/dra-mendoza.jpg', 'Neurogastroenterología y motilidad',
+   1, 1, '/img/medicos/dra-mendoza.png', 'Neurogastroenterología y motilidad',
    'UPCH · Certificación internacional en manometría de alta resolución',
    'Especialista en neurogastroenterología y motilidad digestiva; atiende trastornos del movimiento intestinal y reflujo complejo. Cuenta con certificación internacional en manometría esofágica y anorrectal de alta resolución y acreditación en pH-metría de 24 horas.')
 ON DUPLICATE KEY UPDATE
@@ -54,7 +54,7 @@ INSERT INTO `Medicos`
 VALUES
   ('061147', 'Camila', 'Vargas del Carpio', 'Dra.', 'Gastroenterología',
    'camila.vargas@gastrodigest.pe', '$2b$10$aXJeUPpzTZz/hdFL.a.6GOGWzIUVZj2vicA2mp83OudFOJ8RTEvIO',
-   1, 1, '/img/medicos/dra-vargas.jpg', 'Hepatología clínica',
+   1, 1, '/img/medicos/dra-vargas.png', 'Hepatología clínica',
    'UNMSM · Elastografía hepática (FibroScan) · MAFLD',
    'Hepatóloga enfocada en el diagnóstico y manejo de las enfermedades del hígado. Certificada en elastografía hepática (FibroScan) y en el manejo de la enfermedad del hígado graso asociada al metabolismo (MAFLD).')
 ON DUPLICATE KEY UPDATE
@@ -70,7 +70,7 @@ INSERT INTO `Medicos`
 VALUES
   ('078455', 'Mateo', 'Rojas Cárdenas', 'Lic.', 'Enfermería endoscópica',
    'mateo.rojas@gastrodigest.pe', NULL,
-   1, 0, '/img/medicos/lic-rojas.jpg', 'Cuidados críticos digestivos',
+   1, 0, '/img/medicos/lic-rojas.png', 'Cuidados críticos digestivos',
    'USMP · ACLS (American Heart Association)',
    'Licenciado en enfermería especializado en procedimientos endoscópicos y cuidados críticos digestivos; asiste en la sala de procedimientos y sedación. Certificado en asistencia de procedimientos endoscópicos complejos y en Soporte Vital Cardiovascular Avanzado (ACLS, American Heart Association).')
 ON DUPLICATE KEY UPDATE
@@ -86,7 +86,7 @@ INSERT INTO `Medicos`
 VALUES
   ('049802', 'Lucía', 'Fernández Salazar', 'Dra.', 'Cirugía gastrointestinal',
    'lucia.fernandez@gastrodigest.pe', NULL,
-   1, 0, '/img/medicos/dra-fernandez.jpg', 'Laparoscopía avanzada',
+   1, 0, '/img/medicos/dra-fernandez.png', 'Laparoscopía avanzada',
    'UNMSM · Cirugía mínimamente invasiva y robótica · Fellowship oncológico',
    'Cirujana gastrointestinal especializada en laparoscopía avanzada. Interviene en los casos derivados por el equipo de gastroenterología que requieren tratamiento quirúrgico (resecciones intestinales, colecistectomías). Certificación internacional en cirugía mínimamente invasiva y robótica, y fellowship en cirugía oncológica del tracto digestivo.')
 ON DUPLICATE KEY UPDATE
