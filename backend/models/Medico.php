@@ -12,9 +12,9 @@ final class Medico extends BaseModel
     public function activos(): array
     {
         $stmt = $this->run(
-            'SELECT id_medico, cmp, nombres, apellidos, especialidad,
+            'SELECT id_medico, cmp, nombres, apellidos, titulo, especialidad, reservable,
                     foto, sub_especialidad, anios_experiencia, formacion, bio
-             FROM Medicos WHERE estado_activo = 1 ORDER BY apellidos, nombres'
+             FROM Medicos WHERE estado_activo = 1 ORDER BY reservable DESC, apellidos, nombres'
         );
         return $stmt->fetchAll();
     }
@@ -76,8 +76,8 @@ final class Medico extends BaseModel
     public function todos(): array
     {
         return $this->run(
-            'SELECT id_medico, cmp, nombres, apellidos, especialidad, correo, telefono, estado_activo,
-                    foto, sub_especialidad, anios_experiencia, formacion, bio
+            'SELECT id_medico, cmp, nombres, apellidos, titulo, especialidad, correo, telefono,
+                    estado_activo, reservable, foto, sub_especialidad, anios_experiencia, formacion, bio
              FROM Medicos ORDER BY estado_activo DESC, apellidos, nombres'
         )->fetchAll();
     }
