@@ -13,12 +13,12 @@ const LINKS = [
 ];
 
 const RAZON_SOCIAL = "GastroDigest Clínica de Gastroenterología S.A.C.";
-const RUC = "20601234567";
+const RUC = "10716090065";
 
 const REDES = [
   ["facebook", "Facebook", "https://facebook.com/gastrodigest"],
   ["instagram", "Instagram", "https://instagram.com/gastrodigest"],
-  ["whatsapp", "WhatsApp", "https://wa.me/51962000000"],
+  ["whatsapp", "WhatsApp", "https://wa.me/51974492948"],
 ];
 
 export function renderFooter() {
@@ -42,9 +42,9 @@ export function renderFooter() {
       <div class="footer__col">
         <h3 class="footer__title">Contacto</h3>
         <ul class="footer__contact">
-          <li>${icon("mapPin", 16)} Jr. Dos de Mayo 1234, Huánuco</li>
-          <li>${icon("phone", 16)} +51 962 000 000</li>
-          <li>${icon("mail", 16)} citas@gastrodigest.pe</li>
+          <li>${icon("mapPin", 16)} Pasaje 14 de Agosto 150, Huánuco</li>
+          <li>${icon("phone", 16)} +51 974 492 948</li>
+          <li>${icon("mail", 16)} hr177153@gmail.com</li>
           <li>${icon("clock", 16)} Lun – Sáb · 8:00 a 18:00</li>
         </ul>
       </div>

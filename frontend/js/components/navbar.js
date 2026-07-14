@@ -60,7 +60,7 @@ const NAV = [
       items: [
         ["heart", "Quiénes somos", "Una clínica dedicada a la salud digestiva en Huánuco.", "/nosotros"],
         ["sparkles", "Misión y visión", "Diagnóstico claro, tecnología y trato humano.", "/nosotros"],
-        ["mapPin", "Nuestra sede", "Jr. Dos de Mayo 1234, en el corazón de Huánuco.", "/contacto"],
+        ["mapPin", "Nuestra sede", "Pasaje 14 de Agosto 150, en el corazón de Huánuco.", "/contacto"],
         ["award", "Certificaciones", "Médicos colegiados (CMP) y equipos modernos.", "/medicos"],
       ],
       aside: {
@@ -99,10 +99,10 @@ const NAV = [
     ver: "Ir a contacto",
     panel: {
       items: [
-        ["mapPin", "Ubicación", "Jr. Dos de Mayo 1234, Huánuco.", "/contacto"],
-        ["phone", "Teléfono / WhatsApp", "+51 962 000 000", "tel:+51962000000"],
+        ["mapPin", "Ubicación", "Pasaje 14 de Agosto 150, Huánuco.", "/contacto"],
+        ["phone", "Teléfono / WhatsApp", "+51 974 492 948", "tel:+51974492948"],
         ["clock", "Horarios", "Lun – Sáb · 8:00 a. m. – 6:00 p. m.", "/contacto"],
-        ["mail", "Correo", "citas@gastrodigest.pe", "mailto:citas@gastrodigest.pe"],
+        ["mail", "Correo", "hr177153@gmail.com", "mailto:hr177153@gmail.com"],
       ],
       aside: {
         title: "Ayuda",
@@ -170,7 +170,7 @@ export function renderNavbar() {
         </ul>
 
         <div class="navbar__cta">
-          <a class="navbar__phone" href="tel:+51962000000">${icon("phone", 16)} <span>962 000 000</span></a>
+          <a class="navbar__phone" href="tel:+51974492948">${icon("phone", 16)} <span>974 492 948</span></a>
           <a class="navbar__portal" href="/portal" target="_blank" rel="noopener" aria-label="Portal del paciente" title="Portal del paciente">${icon("user", 19)}</a>
           <a class="btn btn--cta btn--pill" href="/portal" target="_blank" rel="noopener">${icon("calendar", 18)} Agendar cita</a>
         </div>
@@ -250,11 +250,11 @@ function renderTopbar() {
   bar.innerHTML = `
     <div class="container topbar__inner">
       <div class="topbar__info">
-        <span>${icon("mapPin", 14)} Jr. Dos de Mayo 1234, Huánuco</span>
+        <span>${icon("mapPin", 14)} Pasaje 14 de Agosto 150, Huánuco</span>
         <span>${icon("clock", 14)} Lun – Sáb · 8:00 a. m. – 6:00 p. m.</span>
       </div>
       <div class="topbar__links">
-        <a href="tel:+51962000000">${icon("phone", 14)} +51 962 000 000</a>
+        <a href="tel:+51974492948">${icon("phone", 14)} +51 974 492 948</a>
         <a href="/portal" target="_blank" rel="noopener">${icon("user", 14)} Portal del paciente</a>
       </div>
     </div>`;
