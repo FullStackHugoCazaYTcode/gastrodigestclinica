@@ -39,7 +39,7 @@ export function renderHome() {
         <p class="home-hero__lead">Endoscopía, colonoscopía y consulta especializada. Reserva en línea, confirma por WhatsApp y consulta tus resultados en tu portal seguro.</p>
         <p class="quick__greet">Hola, ¿qué necesitas hacer hoy?</p>
         <div class="quick-actions">
-          <a class="quick-card" href="/reservar" target="_blank" rel="noopener">
+          <a class="quick-card" href="/portal" target="_blank" rel="noopener">
             <span class="quick-card__icon">${icon("calendarCheck", 24)}</span>
             <span class="quick-card__title">Agendar una cita</span>
           </a>
@@ -91,7 +91,7 @@ export function renderHome() {
             <span class="bento__hero-icon">${icon("activity", 30)}</span>
             <h3>Endoscopía digestiva alta</h3>
             <p>Diagnóstico preciso de esófago, estómago y duodeno, con sedación y equipos de alta definición. Resultados el mismo día en tu portal.</p>
-            <a class="btn btn--pill bento__hero-cta" href="/reservar" target="_blank" rel="noopener">${icon("calendar", 18)} Agendar</a>
+            <a class="btn btn--pill bento__hero-cta" href="/portal" target="_blank" rel="noopener">${icon("calendar", 18)} Agendar</a>
           </article>
           ${SERVICIOS.filter(([, t]) => !t.includes("Endoscopía")).map(([ic, t, d]) => `
             <article class="feature-card" data-reveal>
@@ -144,7 +144,7 @@ export function renderHome() {
           <h2>¿Listo para cuidar tu salud digestiva?</h2>
           <p>Agenda tu cita hoy y recibe la confirmación al instante.</p>
         </div>
-        <a class="btn btn--cta btn--lg" href="/reservar" target="_blank" rel="noopener">${icon("calendar")} Reservar mi cita</a>
+        <a class="btn btn--cta btn--lg" href="/portal" target="_blank" rel="noopener">${icon("calendar")} Reservar mi cita</a>
       </div>
     </section>
   `);
@@ -197,7 +197,7 @@ async function cargarMedicos() {
     grid.innerHTML = `<div class="state" style="grid-column:1/-1">
       <div class="state__icon state__icon--info">${icon("users", 28)}</div>
       <p class="text-muted">Nuestro equipo te espera. Agenda tu cita y elige especialista.</p>
-      <a class="btn btn--cta" href="/reservar" target="_blank" rel="noopener">${icon("calendar")} Reservar cita</a>
+      <a class="btn btn--cta" href="/portal" target="_blank" rel="noopener">${icon("calendar")} Reservar cita</a>
     </div>`;
   }
 }
