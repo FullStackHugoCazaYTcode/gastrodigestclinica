@@ -39,25 +39,54 @@ final class Paciente extends BaseModel
         return (int) $this->run('SELECT COUNT(*) FROM Pacientes')->fetchColumn();
     }
 
-    /** Familiares (dependientes) a cargo de un apoderado. */
-    public function familiaresDe(int $idApoderado): array
+    /** Familiares (dependientes) a cargo de un paciente titular. */
+    public function familiaresDe(int $idTitular): array
     {
         return $this->run(
             'SELECT id_paciente, nombres, apellidos, tipo_documento, numero_documento,
                     fecha_nacimiento, sexo
-             FROM Pacientes WHERE id_apoderado = ? ORDER BY nombres, apellidos',
-            [$idApoderado]
+             FROM Pacientes WHERE id_titular = ? ORDER BY nombres, apellidos',
+            [$idTitular]
         )->fetchAll();
     }
 
-    /** ¿El paciente es un familiar/dependiente a cargo del apoderado? */
-    public function esFamiliarDe(int $idPaciente, int $idApoderado): bool
+    /** ¿El paciente es un familiar/dependiente a cargo del titular? */
+    public function esFamiliarDe(int $idPaciente, int $idTitular): bool
     {
         $stmt = $this->run(
-            'SELECT 1 FROM Pacientes WHERE id_paciente = ? AND id_apoderado = ? LIMIT 1',
-            [$idPaciente, $idApoderado]
+            'SELECT 1 FROM Pacientes WHERE id_paciente = ? AND id_titular = ? LIMIT 1',
+            [$idPaciente, $idTitular]
         );
         return $stmt->fetchColumn() !== false;
+    }
+
+    /**
+     * Crea un familiar/dependiente enlazado al titular (sin contraseña: no
+     * inicia sesión). Hereda el contacto del titular para los avisos.
+     * @param array<string,mixed> $d
+     */
+    public function crearFamiliar(array $d, int $idTitular): int
+    {
+        $this->run(
+            'INSERT INTO Pacientes
+                (tipo_documento, numero_documento, nombres, apellidos, fecha_nacimiento,
+                 sexo, telefono, correo, id_titular, consentimiento_datos, fecha_consentimiento)
+             VALUES
+                (:tipo, :num, :nom, :ape, :fnac, :sexo, :tel, :correo, :tit, 1, :fcons)',
+            [
+                ':tipo'   => $d['tipo_documento'],
+                ':num'    => $d['numero_documento'],
+                ':nom'    => $d['nombres'],
+                ':ape'    => $d['apellidos'],
+                ':fnac'   => $d['fecha_nacimiento'],
+                ':sexo'   => $d['sexo'] ?? 'X',
+                ':tel'    => $d['telefono'],
+                ':correo' => $d['correo'],
+                ':tit'    => $idTitular,
+                ':fcons'  => date('Y-m-d H:i:s'),
+            ]
+        );
+        return (int) $this->db->lastInsertId();
     }
 
     /** Pacientes registrados desde una fecha (para el digest diario). */

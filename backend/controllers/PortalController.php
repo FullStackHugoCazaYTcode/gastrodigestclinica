@@ -200,20 +200,18 @@ final class PortalController
             Response::error('Ya existe un paciente registrado con ese documento.', 409);
         }
 
-        // El familiar hereda el contacto del apoderado (ahí llegan sus avisos).
-        $apo = $paciente->porId($idApoderado);
-        $id = $paciente->crear([
-            'tipo_documento'       => $d['tipo_documento'],
-            'numero_documento'     => trim((string) $d['numero_documento']),
-            'nombres'              => trim((string) $d['nombres']),
-            'apellidos'            => trim((string) $d['apellidos']),
-            'fecha_nacimiento'     => (string) $d['fecha_nacimiento'],
-            'sexo'                 => $d['sexo'],
-            'telefono'             => $apo['telefono'] ?? null,
-            'correo'               => $apo['correo'] ?? null,
-            'id_apoderado'         => $idApoderado,
-            'consentimiento_datos' => true, // el apoderado otorga el consentimiento
-        ]);
+        // El familiar hereda el contacto del titular (ahí llegan sus avisos).
+        $titular = $paciente->porId($idApoderado);
+        $id = $paciente->crearFamiliar([
+            'tipo_documento'   => $d['tipo_documento'],
+            'numero_documento' => trim((string) $d['numero_documento']),
+            'nombres'          => trim((string) $d['nombres']),
+            'apellidos'        => trim((string) $d['apellidos']),
+            'fecha_nacimiento' => (string) $d['fecha_nacimiento'],
+            'sexo'             => $d['sexo'],
+            'telefono'         => $titular['telefono'] ?? '',
+            'correo'           => $titular['correo'] ?? '',
+        ], $idApoderado);
 
         Response::created(['id_paciente' => $id], 'Familiar agregado correctamente.');
     }
