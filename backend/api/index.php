@@ -21,6 +21,7 @@ use App\Controllers\MedicoPortalController;
 use App\Controllers\OtpController;
 use App\Controllers\PacienteController;
 use App\Controllers\ReclamacionController;
+use App\Controllers\ReniecController;
 use App\Controllers\PortalController;
 use App\Controllers\RegistroController;
 use App\Controllers\WebhookController;
@@ -45,6 +46,8 @@ $router = new Router();
 // Pacientes
 $router->post('/api/pacientes',          fn() => (new PacienteController())->registrar());
 $router->get('/api/pacientes/verificar', fn() => (new PacienteController())->verificarDocumento());
+// Autocompletado por DNI (RENIEC) para el registro
+$router->get('/api/reniec/dni',          fn() => (new ReniecController())->dni());
 
 // Libro de Reclamaciones (público)
 $router->post('/api/reclamaciones', fn() => (new ReclamacionController())->registrar());
