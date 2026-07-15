@@ -107,7 +107,7 @@ function paso1(panel) {
   const tipo = form.querySelector("#r_tipo");
   if (estado.datos.tipo_documento) tipo.value = estado.datos.tipo_documento;
 
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     clearErrors(form);
     const t = tipo.value;
@@ -119,6 +119,23 @@ function paso1(panel) {
     if (t === "DNI" && !femi) return setFieldError(form, "fecha_emision_dni", "Ingresa la fecha de emisión del DNI.");
 
     Object.assign(estado.datos, { tipo_documento: t, numero_documento: num, fecha_emision_dni: femi || null });
+
+    // Autocompletar con RENIEC (solo DNI y si aún no consultamos ese número).
+    // Si el servicio no responde, se continúa igual y el paciente llena manual.
+    if (t === "DNI" && estado.reniecPara !== num) {
+      const btn = form.querySelector('button[type="submit"]');
+      setLoading(btn, true);
+      const res = await api.get(`/api/reniec/dni?numero=${encodeURIComponent(num)}`);
+      setLoading(btn, false, `Continuar ${icon("arrowRight", 18)}`);
+      if (res.success && res.data) {
+        estado.datos.nombres = res.data.nombres || "";
+        estado.datos.apellido_paterno = res.data.apellido_paterno || "";
+        estado.datos.apellido_materno = res.data.apellido_materno || "";
+        if (res.data.fecha_nacimiento) estado.datos.fecha_nacimiento = res.data.fecha_nacimiento;
+        estado.reniecPara = num;
+        toast("Datos encontrados en RENIEC. Verifícalos y continúa.", "success");
+      }
+    }
     irAPaso(2);
   });
 }
