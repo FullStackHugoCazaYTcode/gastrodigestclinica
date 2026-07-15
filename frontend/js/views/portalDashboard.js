@@ -388,9 +388,7 @@ function renderPerfil(main, editando) {
   } else {
     main.querySelector("#perfil-editar").addEventListener("click", () => renderPerfil(main, true));
   }
-  main.querySelector("#perfil-familiar").addEventListener("click", () =>
-    toast("La gestión de familiares estará disponible próximamente.", "info")
-  );
+  main.querySelector("#perfil-familiar").addEventListener("click", () => go("familiares"));
 }
 
 async function guardarPerfil(e, main) {

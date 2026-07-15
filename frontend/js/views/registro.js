@@ -118,15 +118,24 @@ function paso1(panel) {
     if (docErr) return setFieldError(form, "numero_documento", docErr);
     if (t === "DNI" && !femi) return setFieldError(form, "fecha_emision_dni", "Ingresa la fecha de emisión del DNI.");
 
+    const btn = form.querySelector('button[type="submit"]');
+    setLoading(btn, true);
+
+    // 1) ¿Ya existe una cuenta con este documento? (no dejar avanzar si sí).
+    const chk = await api.get(`/api/pacientes/verificar?tipo=${encodeURIComponent(t)}&numero=${encodeURIComponent(num)}`);
+    if (chk.success && chk.data?.ya_registrado) {
+      setLoading(btn, false, `Continuar ${icon("arrowRight", 18)}`);
+      setFieldError(form, "numero_documento", "Este documento ya está registrado. Inicia sesión.");
+      toast("Ese documento ya tiene una cuenta. Inicia sesión.", "warning");
+      return;
+    }
+
     Object.assign(estado.datos, { tipo_documento: t, numero_documento: num, fecha_emision_dni: femi || null });
 
-    // Autocompletar con RENIEC (solo DNI y si aún no consultamos ese número).
-    // Si el servicio no responde, se continúa igual y el paciente llena manual.
+    // 2) Autocompletar con RENIEC (solo DNI y si aún no consultamos ese número).
+    //    Si el servicio no responde, se continúa igual y el paciente llena manual.
     if (t === "DNI" && estado.reniecPara !== num) {
-      const btn = form.querySelector('button[type="submit"]');
-      setLoading(btn, true);
       const res = await api.get(`/api/reniec/dni?numero=${encodeURIComponent(num)}`);
-      setLoading(btn, false, `Continuar ${icon("arrowRight", 18)}`);
       if (res.success && res.data) {
         estado.datos.nombres = res.data.nombres || "";
         estado.datos.apellido_paterno = res.data.apellido_paterno || "";
@@ -136,6 +145,7 @@ function paso1(panel) {
         toast("Datos encontrados en RENIEC. Verifícalos y continúa.", "success");
       }
     }
+    setLoading(btn, false, `Continuar ${icon("arrowRight", 18)}`);
     irAPaso(2);
   });
 }
