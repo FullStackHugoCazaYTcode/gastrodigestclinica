@@ -491,7 +491,6 @@
 @media (max-width: 768px) {
   .form-grid { grid-template-columns: 1fr; }
   .hero h1 { font-size: var(--text-2xl); }
-  .nav-links a span { display: none; }      /* solo iconos en móvil */
   .toast-root { right: var(--space-3); left: var(--space-3); max-width: none; }
 }
 @media (max-width: 480px) {
