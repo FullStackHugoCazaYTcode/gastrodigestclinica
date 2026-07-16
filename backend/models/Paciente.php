@@ -134,6 +134,15 @@ final class Paciente extends BaseModel
         );
     }
 
+    /** Actualiza la contraseña del paciente (recuperación). */
+    public function actualizarPassword(int $id, string $hash): void
+    {
+        $this->run(
+            'UPDATE Pacientes SET password_hash = :h WHERE id_paciente = :id',
+            [':h' => $hash, ':id' => $id]
+        );
+    }
+
     /**
      * Crea una cuenta de paciente verificada (registro del portal, Fase 2A):
      * incluye contraseña, dirección y consentimiento de datos (Ley 29733).

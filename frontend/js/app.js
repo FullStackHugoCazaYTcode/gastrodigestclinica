@@ -17,12 +17,13 @@ import { renderMedicoPortal } from "./views/medicoPortal.js";
 import { renderAdminPortal } from "./views/adminPortal.js";
 import { renderReprogramar } from "./views/reprogramar.js";
 import { renderEncuesta } from "./views/encuesta.js";
+import { renderRecuperar } from "./views/recuperar.js";
 import { renderLibroReclamaciones, renderPrivacidad } from "./views/legal.js";
 import { initMotion } from "./motion.js";
 import { hidePreloader } from "./components/preloader.js";
 
 // Evita el parpadeo del chrome de marketing si la app arranca en una vista de app.
-if (/^\/(portal|medico|admin|registro)/.test(location.pathname)) document.body.classList.add("portal-mode");
+if (/^\/(portal|medico|admin|registro|recuperar)/.test(location.pathname)) document.body.classList.add("portal-mode");
 
 // Layout persistente.
 renderNavbar();
@@ -54,6 +55,7 @@ route("/reservar", renderReserva, {
   desc: "Reserva tu cita gastroenterológica en línea, confírmala por WhatsApp y recibe tus resultados en tu portal.",
 });
 route("/registro", renderRegistro, { title: "Crear cuenta" });
+route("/recuperar", renderRecuperar, { title: "Recuperar contraseña" });
 route("/portal", renderPortal, { title: "Portal del paciente" });
 route("/medico", renderMedicoPortal, { title: "Acceso médicos" });
 route("/admin", renderAdminPortal, { title: "Administración" });

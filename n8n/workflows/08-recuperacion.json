@@ -1,0 +1,67 @@
+{
+  "name": "GastroDigest · 08 · Recuperar contraseña (codigo via Brevo)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "recuperacion",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "node-webhook-rec",
+      "name": "Recibir recuperacion (PHP)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 320],
+      "webhookId": "gastrodigest-recuperacion"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.brevo.com/v3/smtp/email",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "accept", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"sender\": { \"email\": \"hr177153@gmail.com\", \"name\": \"GastroDigest\" }, \"to\": [ { \"email\": \"{{ $('Recibir recuperacion (PHP)').item.json.body.correo }}\" } ], \"subject\": \"Codigo para recuperar tu contrasena: {{ $('Recibir recuperacion (PHP)').item.json.body.codigo }}\", \"htmlContent\": \"<div style='font-family:Arial,Helvetica,sans-serif;background:#FAF9F6;padding:32px 0'><div style='max-width:480px;margin:0 auto;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #E6E2DA'><div style='background:#0E4B42;padding:24px;text-align:center'><span style='display:inline-block;background:#2E7D6C;color:#ffffff;font-weight:bold;border-radius:9px;padding:6px 12px;font-size:18px'>G</span><div style='color:#ffffff;font-size:20px;font-weight:bold;margin-top:8px'>GastroDigest</div><div style='color:#bcd6ce;font-size:12px'>Clinica de Gastroenterologia</div></div><div style='padding:32px 28px;text-align:center'><p style='color:#1F2B28;font-size:16px;margin:0 0 6px 0'>Hola {{ $('Recibir recuperacion (PHP)').item.json.body.paciente }},</p><p style='color:#5C6B66;font-size:14px;margin:0 0 20px 0'>Recibimos una solicitud para restablecer la contrasena de tu portal. Ingresa este codigo:</p><div style='display:inline-block;background:#F1F5F3;border:1px dashed #0E4B42;border-radius:12px;padding:16px 28px'><span style='font-size:32px;font-weight:bold;letter-spacing:8px;color:#0E4B42'>{{ $('Recibir recuperacion (PHP)').item.json.body.codigo }}</span></div><p style='color:#5C6B66;font-size:13px;margin:20px 0 0 0'>Vence en <b>15 minutos</b>. No lo compartas con nadie.</p><p style='color:#94A3B8;font-size:12px;margin:16px 0 0 0'>Si no solicitaste este cambio, ignora este correo: tu contrasena no se modificara.</p></div><div style='background:#F1F5F3;padding:16px;text-align:center;color:#94A3B8;font-size:11px'>GastroDigest &middot; Huanuco, Peru &middot; Datos protegidos (Ley N. 29733)</div></div></div>\", \"textContent\": \"Hola {{ $('Recibir recuperacion (PHP)').item.json.body.paciente }}. Tu codigo para recuperar la contrasena es {{ $('Recibir recuperacion (PHP)').item.json.body.codigo }}. Vence en 15 minutos. Si no lo solicitaste, ignora este correo.\" }",
+        "options": {}
+      },
+      "id": "node-brevo-rec",
+      "name": "Enviar Email (Brevo)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [540, 320]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"success\": true, \"message\": \"Codigo de recuperacion enviado\", \"canal\": \"email\" }",
+        "options": {}
+      },
+      "id": "node-respond-rec",
+      "name": "Responder OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [840, 320]
+    }
+  ],
+  "connections": {
+    "Recibir recuperacion (PHP)": {
+      "main": [[{ "node": "Enviar Email (Brevo)", "type": "main", "index": 0 }]]
+    },
+    "Enviar Email (Brevo)": {
+      "main": [[{ "node": "Responder OK", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "pinData": {},
+  "tags": [{ "name": "gastrodigest" }]
+}
