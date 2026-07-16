@@ -21,6 +21,7 @@ use App\Controllers\MedicoPortalController;
 use App\Controllers\OtpController;
 use App\Controllers\PacienteController;
 use App\Controllers\ReclamacionController;
+use App\Controllers\RecuperacionController;
 use App\Controllers\ReniecController;
 use App\Controllers\PortalController;
 use App\Controllers\RegistroController;
@@ -124,6 +125,9 @@ $router->patch('/api/portal/citas/{id}/reprogramar', fn($p) => (new PortalContro
 $router->patch('/api/portal/perfil',         fn() => (new PortalController())->actualizarPerfil());
 $router->get('/api/portal/familiares',        fn() => (new PortalController())->familiares());
 $router->post('/api/portal/familiares',       fn() => (new PortalController())->agregarFamiliar());
+// Recuperación de contraseña (pública)
+$router->post('/api/portal/recuperar/solicitar', fn() => (new RecuperacionController())->solicitar());
+$router->post('/api/portal/recuperar/cambiar',   fn() => (new RecuperacionController())->cambiar());
 $router->get('/api/portal/documentos',       fn() => (new PortalController())->documentos());
 $router->get('/api/portal/documentos/{id}',  fn($p) => (new PortalController())->documento($p));
 

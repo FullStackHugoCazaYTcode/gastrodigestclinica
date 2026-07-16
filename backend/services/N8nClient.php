@@ -48,6 +48,12 @@ final class N8nClient
         return self::post('/webhook/encuesta', $payload);
     }
 
+    /** Envía el código para recuperar la contraseña del portal. */
+    public static function enviarRecuperacion(array $payload): bool
+    {
+        return self::post('/webhook/recuperacion', $payload);
+    }
+
     /**
      * POST JSON firmado al webhook de n8n. Devuelve false (sin lanzar) ante
      * fallos de red para no bloquear la transacción principal; el error queda
